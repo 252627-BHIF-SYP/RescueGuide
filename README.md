@@ -19,14 +19,18 @@ Die App vereint ein klares Design mit interaktiven Funktionen, die sowohl im Aku
 
 ---
 
-## 2. Grobe Zielsetzung
+## 2. Zielsetzung
 
 #### Hauptziel
 Die App soll Ersthelfern in Notfallsituationen eine **praktische, leicht verständliche Unterstützung** bieten und gleichzeitig helfen, Erste-Hilfe-Wissen regelmäßig aufzufrischen.
 
 #### Kernfunktionen
-- **Notfallmodus:** Eingabe von Eckdaten zur Situation → Ausgabe einer Schritt-für-Schritt-Anleitung  
-- **Herzdruckmassage-Metronom:** Akustische Unterstützung für den richtigen Rhythmus  
-- **Quiz- und Lernmodus:** Spielerisches Auffrischen von Erste-Hilfe-Wissen  
-- **Benutzerkonto (optional):** Speichern von Quizfortschritten oder Zertifikaten  
-- **Offline-Funktionalität:** Damit die App auch ohne Internet nutzbar ist  
+- **Notfallmodus:**
+-- Sprechverbindung bzw. Videoverbindung wird hergestellt
+-- Leitstelle kann Situation einschätzen und gibt auf der App Anweisungen aus (Audioanleitung, Animierte Bilder, ...)
+-- Foto / Video aufnehmen -> KI schätzt Situation ein und gibt Anweisungen aus (Audioanleitung, Animierte Bilder, ...)
+- **Offline Notfall / Hilfemodus:**
+-- Eingabe von Eckdaten zur Situation (Durch Menüs drücken)
+-- Ausgabe einer Schritt-für-Schritt-Anleitung (Audioanleitung, Animierte Bilder, ...)
+- **Quiz- und Lernmodus:**
+-- Spielerisches Auffrischen von Erste-Hilfe-Wissen
