@@ -10,10 +10,10 @@ Fehlendes Wissen, Angst vor Fehlern oder Überforderung führen oft dazu, dass g
 Zwar gibt es Erste-Hilfe-Kurse und teilweise auch Apps mit Informationen, jedoch sind diese meist entweder zu allgemein gehalten oder bieten im entscheidenden Moment keine klare Schritt-für-Schritt-Anleitung.  
 Erste-Hilfe-Wissen wird zudem oft nur selten aufgefrischt, wodurch Unsicherheiten mit der Zeit zunehmen.  
 
-👉 Diese Zeit kann über Leben und Tod entscheiden!
+Diese Zeit kann über **Leben** und **Tod** entscheiden!
 
 ### 1.2 Die Idee
-An diesem Punkt kommt **____** ins Spiel: **____** ist eine mobile App, die Ersthelfer in Echtzeit unterstützt und sie Schritt für Schritt durch die jeweilige Notfallsituation führt.  
+An diesem Punkt kommt **RescueGuide** ins Spiel: **RescueGuide** ist eine mobile App, die Ersthelfer in Echtzeit unterstützt und sie Schritt für Schritt durch die jeweilige Notfallsituation führt.  
 
 Die App vereint ein klares Design mit interaktiven Funktionen, die sowohl im Akutfall helfen als auch langfristig das Erste-Hilfe-Wissen auffrischen.
 
