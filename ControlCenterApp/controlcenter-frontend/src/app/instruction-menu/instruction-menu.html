@@ -1,0 +1,56 @@
+
+<div class="container">
+  <div class="content">
+
+    <div class="left-column">
+
+      <mat-card class="plan-card">
+        <mat-card-header>
+          <mat-card-title>Pläne</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Hier könnten Pläne aufgelistet werden -->
+          <p>Keine Pläne vorhanden</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary">
+            <mat-icon>add</mat-icon>
+            Plan erstellen
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+    </div>
+
+    <div class="right-column">
+
+      <mat-card class="status-card">
+        <mat-card-header>
+          <mat-card-title>Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <button mat-stroked-button color="warn" class="status-badge">
+            <mat-icon>person_off</mat-icon>
+            Abwesend
+          </button>
+
+          <mat-divider class="divider"></mat-divider>
+
+          <div class="measures-section">
+            <h3>Maßnahmen</h3>
+            <!-- Maßnahmen Liste -->
+            <mat-list>
+              <!-- Hier könnten Maßnahmen dynamisch geladen werden -->
+              <mat-list-item>Noch keine Maßnahmen</mat-list-item>
+            </mat-list>
+
+            <button mat-stroked-button color="primary" class="add-measure-btn">
+              <mat-icon>add</mat-icon>
+              Maßnahmen hinzufügen
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
