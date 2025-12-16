@@ -28,8 +28,7 @@ Die App soll Ersthelfern in Notfallsituationen eine **praktische, leicht verstä
 - **Notfallmodus:**
 - Sprechverbindung bzw. Videoverbindung wird hergestellt
 - Leitstelle kann Situation einschätzen und gibt auf der App Anweisungen aus (Audioanleitung, Animierte Bilder, ...)
-- Foto / Video aufnehmen -> KI schätzt Situation ein und gibt Anweisungen aus (Audioanleitung, Animierte Bilder, ...)
-- **Offline Notfall / Hilfemodus:**
+- **Hilfemodus:**
 - Eingabe von Eckdaten zur Situation (Durch Menüs drücken)
 - Ausgabe einer Schritt-für-Schritt-Anleitung (Audioanleitung, Animierte Bilder, ...)
 - **Quiz- und Lernmodus:**
