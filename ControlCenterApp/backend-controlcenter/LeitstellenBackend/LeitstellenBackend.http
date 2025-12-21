@@ -1,0 +1,15 @@
+@LeitstellenBackend_HostAddress = http://localhost:5062
+
+### Test: Alle empfangenen Notrufe abrufen
+GET {{LeitstellenBackend_HostAddress}}/api/leitstelle/all
+Accept: application/json
+
+### Teste den Empfang direkt (ohne User-Backend)
+POST {{LeitstellenBackend_HostAddress}}/api/leitstelle/receive
+Content-Type: application/json
+
+{
+  "userId": "Test_Direkt",
+  "latitude": 47.0,
+  "longitude": 15.0
+}
