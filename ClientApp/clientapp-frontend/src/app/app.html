@@ -1,0 +1,30 @@
+<div class="gps-container" style="max-width: 400px; margin: 2rem auto;">
+
+  <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;">
+    <button mat-raised-button color="primary" (click)="startGps()">Standort holen</button>
+    <button mat-stroked-button color="warn" (click)="stopGps()">Stop</button>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <p>{{ status() }}</p>
+
+      @if (latitude() && longitude()) {
+        <mat-list>
+          <mat-list-item>
+            <strong>Latitude:</strong> {{ latitude() }}
+          </mat-list-item>
+          <mat-list-item>
+            <strong>Longitude:</strong> {{ longitude() }}
+          </mat-list-item>
+          <mat-list-item>
+            <strong>Accuracy:</strong> {{ accuracy() }} m
+          </mat-list-item>
+        </mat-list>
+      } @else if (error()) {
+        <p style="color:red; font-weight: bold;">Fehler: {{ error() }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+</div>
