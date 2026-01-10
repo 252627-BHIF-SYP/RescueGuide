@@ -21,13 +21,13 @@ jobs:
       matrix:
         include:
           - image_name: cc-backend
-            context: ./RescueGuide/ControlCenterApp/controlcenter-backend
+            context: ./ControlCenterApp/controlcenter-backend
           - image_name: cc-frontend
-            context: ./RescueGuide/ControlCenterApp/controlcenter-frontend
+            context: ./ControlCenterApp/controlcenter-frontend
           - image_name: client-backend
-            context: ./RescueGuide/ClientApp/clientapp-backend
+            context: ./ClientApp/clientapp-backend
           - image_name: client-frontend
-            context: ./RescueGuide/ClientApp/clientapp-frontend
+            context: ./ClientApp/clientapp-frontend
 
     steps:
       - name: Checkout repository
