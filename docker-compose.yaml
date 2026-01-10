@@ -1,0 +1,38 @@
+services:
+  # --- Control Center App ---
+  cc-backend:
+    build: ./controlcenterapp/controlcenter-backend
+    container_name: cc-backend
+    ports:
+      - "5062:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  cc-frontend:
+    build: ./controlcenterapp/controlcenter-frontend
+    container_name: cc-frontend
+    ports:
+      - "4200:80"  
+    depends_on:
+      - cc-backend
+
+  # --- Client App ---
+  client-backend:
+    build: ./clientapp/clientapp-backend
+    container_name: client-backend
+    ports:
+      - "5273:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  client-frontend:
+    build: ./clientapp/clientapp-frontend
+    container_name: client-frontend
+    ports:
+      - "4201:80"
+    depends_on:
+      - client-backend
+
+networks:
+  default:
+    name: rescueguide-network
