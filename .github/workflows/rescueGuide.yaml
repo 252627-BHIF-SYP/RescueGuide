@@ -40,10 +40,16 @@ jobs:
           username: OmarAL-Desoky
           password: ${{ secrets.rescueGuideGhcrLogin }}
 
+      - name: Lowercase Registry Path
+        id: prep
+        run: |
+          REPO_LOWER="${GITHUB_REPOSITORY,,}"
+          echo "image_base=ghcr.io/${REPO_LOWER}" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.context }}
           push: true
           tags: |
-            ${{ env.IMAGE_BASE }}/${{ matrix.image_name }}:latest
+            ${{ steps.prep.outputs.image_base }}/${{ matrix.image_name }}:latest
