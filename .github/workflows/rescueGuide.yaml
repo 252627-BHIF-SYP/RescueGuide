@@ -33,6 +33,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Pfad-Check Live
+        run: |
+          echo "Was ist im Hauptverzeichnis?"
+          ls -F
+          echo "---"
+          find . -maxdepth 4 -name "controlcenter-frontend"
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
