@@ -1,0 +1,59 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: OmarAL-Desoky
+          password: ${{ secrets.rgGhcrLogin }}
+
+      - name: Build & Push Kassa Image
+        run: |
+         docker build -t ghcr.io/252627-bhif-syp/tadeottools/kassa:latest ./tadeot-frontend/kassa
+         docker push ghcr.io/252627-bhif-syp/tadeottools/kassa:latest
+
+      # 1. Controlcenter Frontend
+      - name: Build and push Controlcenter Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./rescueguide/controlcenterapp/controlcenter-frontend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/controlcenter-frontend:latest
+
+      # 2. Controlcenter Backend
+      - name: Build and push Controlcenter Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./rescueguide/controlcenterapp/controlcenter-backend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/controlcenter-backend:latest
+
+      # 3. Client Frontend
+      - name: Build and push Client Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./rescueguide/clientapp/client-frontend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/client-frontend:latest
+
+      # 4. Client Backend
+      - name: Build and push Client Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./rescueguide/clientapp/client-backend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/client-backend:latest
