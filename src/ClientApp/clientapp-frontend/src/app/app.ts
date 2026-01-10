@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatList, MatListItem } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
+import { VideoCall } from './video-call/video-call';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { MatButton } from '@angular/material/button';
     MatCardContent,
     MatList,
     MatListItem,
-    MatButton
+    MatButton,
+    VideoCall
   ]
 })
 export class App {
