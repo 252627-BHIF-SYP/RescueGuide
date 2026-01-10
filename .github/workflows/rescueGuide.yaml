@@ -1,59 +1,49 @@
-name: Build and Push Docker Images
+name: Build and Push Docker Images to GHCR
 
 on:
   push:
     branches:
-      - main  
-  pull_request:
+      - main  # Wird bei jedem Push auf den Main-Branch ausgeführt
+
+env:
+  REGISTRY: ghcr.io
+  # Dein Image-Pfad wird: ghcr.io/dein-nutzername/projektname
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        include:
+          - image_name: cc-backend
+            context: ./controlcenterapp/controlcenter-backend
+          - image_name: cc-frontend
+            context: ./controlcenterapp/controlcenter-frontend
+          - image_name: client-backend
+            context: ./clientapp/clientapp-backend
+          - image_name: client-frontend
+            context: ./clientapp/clientapp-frontend
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: OmarAL-Desoky
-          password: ${{ secrets.rgGhcrLogin }}
+          password: ${{ secrets.rescueGuideGhcrLogin }}
 
-      - name: Build & Push Kassa Image
-        run: |
-         docker build -t ghcr.io/252627-bhif-syp/tadeottools/kassa:latest ./tadeot-frontend/kassa
-         docker push ghcr.io/252627-bhif-syp/tadeottools/kassa:latest
-
-      # 1. Controlcenter Frontend
-      - name: Build and push Controlcenter Frontend
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./rescueguide/controlcenterapp/controlcenter-frontend
+          context: ${{ matrix.context }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/controlcenter-frontend:latest
-
-      # 2. Controlcenter Backend
-      - name: Build and push Controlcenter Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./rescueguide/controlcenterapp/controlcenter-backend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/controlcenter-backend:latest
-
-      # 3. Client Frontend
-      - name: Build and push Client Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./rescueguide/clientapp/client-frontend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/client-frontend:latest
-
-      # 4. Client Backend
-      - name: Build and push Client Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./rescueguide/clientapp/client-backend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.OWNER }}/client-backend:latest
+          tags: |
+            ${{ env.IMAGE_BASE }}/${{ matrix.image_name }}:latest
