@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "+PIclAKi0gM=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\omarg\\Desktop\\4BHIF\\SYP\\Projekt\\RescueGuide\\ClientApp\\clientapp-backend\\ClientBackend.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\omarg\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.0\\microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "C:\\Users\\omarg\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "C:\\Users\\omarg\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512"
+  ],
+  "logs": []
+}
