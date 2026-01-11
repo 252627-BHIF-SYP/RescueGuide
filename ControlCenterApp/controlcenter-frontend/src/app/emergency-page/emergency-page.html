@@ -1,5 +1,6 @@
 <div class="realtime-container">
-    <h1>Notfall</h1>
+  <h1>Notfall</h1>
+
   <div class="main-content">
 
     <div class="camera-column">
@@ -10,8 +11,9 @@
               <span class="recording-dot"></span>
               LIVE
             </div>
-            <div class="timestamp">14:45:23</div>
+            <div class="timestamp">{{ status() }}</div>
           </div>
+
           <div class="camera-image">
             <div class="grid-overlay"></div>
             <div class="crosshair"></div>
@@ -20,16 +22,14 @@
       </div>
     </div>
 
-    <!-- Rechte Spalte: Echtzeit Infos -->
     <div class="info-column">
 
-      <!-- Echtzeit Infos Card -->
       <mat-card class="info-card">
         <mat-card-header>
           <mat-card-title>
             <mat-icon class="card-icon">info</mat-icon>
             Echtzeit Infos
-          </mat-card-title>>
+          </mat-card-title>
         </mat-card-header>
 
         <mat-card-content>
@@ -40,28 +40,42 @@
               Standort
             </h3>
 
-            <div class="google-maps">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2428.409347923329!2d13.388859315807363!3d52.51693777981246!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47a851c655f20989%3A0x26bbfb4e84674c63!2sBrandenburger%20Tor!5e0!3m2!1sde!2sde!4v1648723456789!5m2!1sde!2sde"
-                width="100%"
-                height="300"
-                style="border:0;"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade">
-              </iframe>
+            <p class="status-text">{{ status() }}</p>
 
-              <div class="map-marker">
-                <mat-icon>location_on</mat-icon>
-              </div>
-            </div>
+            @if (mapUrl !== null) {
+              <div class="google-maps">
+                <iframe
+                  [src]="mapUrl!"
+                  width="100%"
+                  height="300"
+                  style="border:0;"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
 
-            <div class="coordinates">
-              <div class="coord-item">
-                <span class="coord-value">52.5169378° N</span>
-                <span class="coord-value">13.3888593° E</span>
+                <div class="map-marker">
+                  <mat-icon>location_on</mat-icon>
+                </div>
               </div>
+
+              <div class="coordinates">
+                <div class="coord-item">
+                  <span class="coord-value">
+                    {{ latitude() }}°
+                  </span>
+                  <span class="coord-value">
+                    {{ longitude() }}°
+                  </span>
+                </div>
+              </div>
+            } @else {
+              <p class="no-location">
+                Kein Standort verfügbar
+              </p>
+            }
           </div>
+
+          <!-- ⏱️ ETA -->
           <div class="eta-section">
             <h3>
               <mat-icon>schedule</mat-icon>
@@ -74,6 +88,7 @@
                   <mat-icon>local_fire_department</mat-icon>
                   <span>Feuerwehr</span>
                 </div>
+
                 <div class="eta-content">
                   <div class="eta-item">
                     <span class="eta-label">Ankunft in:</span>
@@ -84,14 +99,20 @@
                     <span class="eta-value">2 LF, 1 DLK</span>
                   </div>
                 </div>
-                <mat-progress-bar mode="determinate" value="60" color="warn"></mat-progress-bar>
+
+                <mat-progress-bar
+                  mode="determinate"
+                  value="60"
+                  color="warn">
+                </mat-progress-bar>
               </div>
             </div>
           </div>
-        </div>
+
         </mat-card-content>
       </mat-card>
 
+      <!-- 📋 ANWEISUNGEN -->
       <mat-card class="instructions-card">
         <mat-card-header>
           <mat-card-title>
@@ -102,13 +123,18 @@
 
         <mat-card-content>
           <mat-list class="instructions-list">
+
             <mat-list-item>
               <mat-icon matListItemIcon>folder</mat-icon>
-              <div matListItemTitle>Pläne →</div>
-              <div matListItemLine>Einsatzpläne einsehen und bearbeiten</div>
-              <button mat-icon-button color="primary"
-                      routerLink="/instruction-menu"
-                      routerLinkActive="active">
+              <div matListItemTitle>Pläne</div>
+              <div matListItemLine>
+                Einsatzpläne einsehen und bearbeiten
+              </div>
+              <button
+                mat-icon-button
+                color="primary"
+                routerLink="/instruction-menu"
+                routerLinkActive="active">
                 <mat-icon>arrow_forward</mat-icon>
               </button>
             </mat-list-item>
@@ -118,17 +144,22 @@
             <mat-list-item>
               <mat-icon matListItemIcon>assignment</mat-icon>
               <div matListItemTitle>Maßnahmen</div>
-              <div matListItemLine>Einsatzmaßnahmen koordinieren</div>
-              <button mat-icon-button color="primary"
-                      routerLink="/instruction-menu"
-                    routerLinkActive="active">
+              <div matListItemLine>
+                Einsatzmaßnahmen koordinieren
+              </div>
+              <button
+                mat-icon-button
+                color="primary"
+                routerLink="/instruction-menu"
+                routerLinkActive="active">
                 <mat-icon>arrow_forward</mat-icon>
               </button>
             </mat-list-item>
-            <mat-divider></mat-divider>
+
           </mat-list>
         </mat-card-content>
       </mat-card>
+
     </div>
   </div>
 </div>
