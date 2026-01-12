@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatList, MatListItem } from '@angular/material/list';
+import {VideoCall} from './video-call/video-call';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,8 @@ import { MatList, MatListItem } from '@angular/material/list';
     MatCardContent,
     MatButton,
     MatList,
-    MatListItem
+    MatListItem,
+    VideoCall
   ]
 })
 export class App {
