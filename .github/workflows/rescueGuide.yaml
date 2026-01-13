@@ -28,6 +28,8 @@ jobs:
             context: ./ClientApp/clientapp-backend
           - image_name: client-frontend
             context: ./ClientApp/clientapp-frontend
+          - image_name: webrtc-logic
+            context: ./webrtclogic
 
     steps:
       - name: Checkout repository
