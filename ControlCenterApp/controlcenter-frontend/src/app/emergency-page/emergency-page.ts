@@ -7,6 +7,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatDivider, MatList, MatListItem } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {MatIconButton} from '@angular/material/button';
+import {VideoCall} from '../video-call/video-call';
 
 interface Notruf {
   userId: string;
@@ -29,7 +30,8 @@ interface Notruf {
     MatDivider,
     RouterLink,
     RouterLinkActive,
-    MatIconButton
+    MatIconButton,
+    VideoCall
   ],
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',

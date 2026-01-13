@@ -1,5 +1,14 @@
 services:
   # --- Control Center App ---
+
+  webrtclogic:
+    build:
+      context: ./webrtclogic
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
   cc-backend:
     build: ./controlcenterapp/controlcenter-backend
     container_name: cc-backend
