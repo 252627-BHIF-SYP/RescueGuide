@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import {VideoCall} from '../video-call/video-call';
 
 interface Notruf {
   userId: string;
@@ -33,11 +34,13 @@ interface NominatimResponse {
     MatCardHeader,
     MatIcon,
     MatIconButton,
-    MatCardTitle
+    MatCardTitle,
+    VideoCall
   ],
   standalone: true
 })
 export class EmergencyPage implements OnInit {
+  public videoCall = inject(VideoCall);
   address = signal<string>('Standort wird geladen…');
   etaSeconds = signal(3 * 60 + 15);
   durationSeconds = signal(0);

@@ -4,6 +4,7 @@ import {EmergencyStateService} from '../emergency-state-service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
+import {VideoCall} from '../video-call/video-call';
 
 @Component({
   selector: 'app-startscreen',

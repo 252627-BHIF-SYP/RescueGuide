@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import {Component, ElementRef, Injectable, ViewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SignalingService } from '../services/signaling.service';
 
@@ -9,6 +9,8 @@ import { SignalingService } from '../services/signaling.service';
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })
+
+@Injectable({ providedIn: 'root' })
 export class VideoCall {
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
