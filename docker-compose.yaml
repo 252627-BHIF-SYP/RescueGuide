@@ -1,16 +1,17 @@
 services:
-  # --- Control Center App ---
-
+  # --- WebRTC Signaling Server ---
   webrtclogic:
     build:
       context: ./webrtclogic
       dockerfile: Dockerfile
+    container_name: webrtc-logic
     ports:
       - "3000:3000"
     restart: unless-stopped
 
+  # --- Control Center App ---
   cc-backend:
-    build: ./controlcenterapp/controlcenter-backend
+    build: ./ControlCenterApp/controlcenter-backend
     container_name: cc-backend
     ports:
       - "5062:8080"
@@ -18,7 +19,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
 
   cc-frontend:
-    build: ./controlcenterapp/controlcenter-frontend
+    build: ./ControlCenterApp/controlcenter-frontend
     container_name: cc-frontend
     ports:
       - "4200:80"  
@@ -27,7 +28,7 @@ services:
 
   # --- Client App ---
   client-backend:
-    build: ./clientapp/clientapp-backend
+    build: ./ClientApp/clientapp-backend
     container_name: client-backend
     ports:
       - "5273:8080"
@@ -35,7 +36,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
 
   client-frontend:
-    build: ./clientapp/clientapp-frontend
+    build: ./ClientApp/clientapp-frontend
     container_name: client-frontend
     ports:
       - "4201:80"
