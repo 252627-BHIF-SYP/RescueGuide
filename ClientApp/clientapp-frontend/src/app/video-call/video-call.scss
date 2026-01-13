@@ -1,7 +1,6 @@
 .video-call { display:flex; flex-direction:column; gap:8px; align-items:center; }
 .videos { display:flex; gap:8px; }
 video { background: #000; width: 240px; height: 180px; object-fit:cover; }
-video.local { width:120px; height:90px; }
-video.remote { width:240px; height:180px; }
+video.local { width:240px; height:180px; }
 .controls { display:flex; gap:8px; }
 

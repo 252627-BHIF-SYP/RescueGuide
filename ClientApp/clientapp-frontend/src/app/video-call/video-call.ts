@@ -10,7 +10,6 @@ import { SignalingService } from '../services/signaling.service';
   styleUrls: ['./video-call.scss']
 })
 
-@Injectable({ providedIn: 'root' })
 export class VideoCall {
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;

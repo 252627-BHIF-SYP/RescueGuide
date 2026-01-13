@@ -47,8 +47,8 @@ export class VideoCall {
 
   async handleOffer(from: string, sdp: any) {
     try {
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      this.localVideo.nativeElement.srcObject = this.localStream;
+      this.localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+      //this.localVideo.nativeElement.srcObject = this.localStream;
 
       this.pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
       this.localStream.getTracks().forEach(t => this.pc!.addTrack(t, this.localStream!));

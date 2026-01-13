@@ -4,6 +4,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import {VideoCall} from '../video-call/video-call';
+import { ViewChild, AfterViewInit } from '@angular/core';
 
 interface Notruf {
   userId: string;
@@ -39,8 +40,9 @@ interface NominatimResponse {
   ],
   standalone: true
 })
-export class EmergencyPage implements OnInit {
-  public videoCall = inject(VideoCall);
+export class EmergencyPage implements OnInit, AfterViewInit {
+  @ViewChild(VideoCall) videoCallComponent!: VideoCall;
+
   address = signal<string>('Standort wird geladen…');
   etaSeconds = signal(3 * 60 + 15);
   durationSeconds = signal(0);
@@ -51,6 +53,12 @@ export class EmergencyPage implements OnInit {
   ngOnInit() {
     this.fetchLatestLocation();
     this.startTimers();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.videoCallComponent.startCall();
+    }, 500);
   }
 
   fetchLatestLocation() {
