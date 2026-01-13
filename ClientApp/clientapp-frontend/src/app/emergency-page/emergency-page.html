@@ -1,0 +1,52 @@
+<mat-card class="phone-wrapper">
+  <mat-card-content class="phone">
+
+    <div class="header" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="space-between start">
+
+      <div class="header-info">
+        <p>
+          <strong>Zeit bis zum Eintreffen der Einsatzkräfte:</strong>
+          {{ formatTime(etaSeconds()) }}
+        </p>
+        <p>
+          <strong>Einsatzdauer:</strong>
+          {{ formatTime(durationSeconds()) }}
+        </p>
+        <p class="location">
+          <strong>Standort:</strong><br />
+          {{ address() }}
+        </p>
+      </div>
+
+      <mat-card class="camera-preview" appearance="outlined">
+        <mat-card-content>
+          Eigene<br />Kamera
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <mat-card class="instructions" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Anweisungen</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ol>
+          <li>Visier öffnen.</li>
+          <li>Helmschale vorsichtig weiten.</li>
+          <li>Helm nach oben abziehen, dabei Kopf stützen.</li>
+          <li>Halswirbelsäule nicht bewegen.</li>
+          <li>Rettungskräfte sind unterwegs.</li>
+        </ol>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="action-bar" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="16px">
+      <button mat-icon-button><mat-icon>flash_on</mat-icon></button>
+      <button mat-icon-button><mat-icon>mic</mat-icon></button>
+      <button mat-icon-button><mat-icon>camera_alt</mat-icon></button>
+      <button mat-icon-button><mat-icon>undo</mat-icon></button>
+    </div>
+
+  </mat-card-content>
+</mat-card>

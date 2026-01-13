@@ -1,0 +1,41 @@
+
+@if (!selectedTopic()) {
+  <mat-card class="home-screen">
+    <mat-card-header>
+      <mat-card-title>Erste Hilfe zuhause</mat-card-title>
+      <button mat-icon-button><mat-icon>search</mat-icon></button>
+    </mat-card-header>
+
+    <mat-card-content class="topic-grid">
+      @for (topic of topics; track topic.id) {
+        <button mat-raised-button (click)="openTopic(topic.id)">
+          {{ topic.title }}
+        </button>
+      }
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (selectedTopic(); as topic) {
+  <mat-card class="detail-screen">
+    <mat-card-header>
+      <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
+      <mat-card-title>{{ topic.title }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (topic.image) {
+        <img [src]="topic.image" class="topic-image"  alt=""/>
+      }
+      <p>{{ topic.instructions }}</p>
+      <button mat-raised-button color="warn" (click)="callEmergency()">Notfall/Rettung rufen</button>
+    </mat-card-content>
+  </mat-card>
+}
+
+<div class="action-bar" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="16px">
+  <button mat-icon-button ><mat-icon>alarm</mat-icon></button>
+  <button mat-icon-button routerLink="/fasthelp"><mat-icon>help_outline</mat-icon></button>
+  <button mat-icon-button routerLink="/study"><mat-icon>book</mat-icon></button>
+  <button mat-icon-button routerLink="/profile"><mat-icon>account_circle</mat-icon></button>
+</div>
