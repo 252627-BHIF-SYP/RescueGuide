@@ -57,37 +57,29 @@
             }
           </div>
 
-          <!-- ⏱️ ETA -->
           <div class="eta-section">
             <h3>
               <mat-icon>schedule</mat-icon>
-              Dauer & Eintreffen
+              Eintreffen Einsatzkräfte
             </h3>
 
-            <div class="eta-grid">
-              <div class="eta-card">
-                <div class="eta-header fire">
-                  <mat-icon>local_fire_department</mat-icon>
-                  <span>Feuerwehr</span>
-                </div>
-
-                <div class="eta-content">
-                  <div class="eta-item">
-                    <span class="eta-label">Ankunft in:</span>
-                    <span class="eta-value">8 Minuten</span>
-                  </div>
-                  <div class="eta-item">
-                    <span class="eta-label">Einheiten:</span>
-                    <span class="eta-value">2 LF, 1 DLK</span>
-                  </div>
-                </div>
-
-                <mat-progress-bar
-                  mode="determinate"
-                  value="60"
-                  color="warn">
-                </mat-progress-bar>
+            <div class="rescue-card">
+              <div class="rescue-header">
+                <mat-icon>medical_services</mat-icon>
+                <span>Rettungsdienst</span>
               </div>
+
+                <div class="info-row">
+                  <mat-icon>directions_car</mat-icon>
+                  <span class="label">Fahrzeuge: </span>
+                  <span class="value">RTW 1, NEF 12</span>
+                </div>
+              <mat-progress-bar
+                mode="determinate"
+                value="60"
+                color="primary"
+                class="eta-bar">
+              </mat-progress-bar>
             </div>
           </div>
 
