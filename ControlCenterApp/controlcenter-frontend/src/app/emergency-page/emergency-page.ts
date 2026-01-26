@@ -41,6 +41,7 @@ export class EmergencyPage implements OnInit {
   latitude = signal<number | null>(null);
   longitude = signal<number | null>(null);
   status = signal('Standort wird geladen…');
+  durationSeconds = signal(0);
 
   private backendUrl = 'http://localhost:5062/api/leitstelle/all';
 
@@ -51,8 +52,15 @@ export class EmergencyPage implements OnInit {
 
   ngOnInit() {
     this.fetchLatestLocation();
+    this.startTimers();
 
     setInterval(() => this.fetchLatestLocation(), 5000);
+  }
+
+  startTimers() {
+    setInterval(() => {
+      this.durationSeconds.update(v => v + 1);
+    }, 1000);
   }
 
   fetchLatestLocation() {
@@ -83,5 +91,11 @@ export class EmergencyPage implements OnInit {
 
     const url = `https://maps.google.com/maps?q=${this.latitude()},${this.longitude()}&z=16&output=embed`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  formatTime(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 }
