@@ -1,0 +1,77 @@
+<div class="login-wrapper">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        {{ isRegisterMode() ? 'Patienten Registrierung' : 'RescueGuide Login' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="form-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="username" placeholder="Vollständiger Name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Passwort</mat-label>
+          <input matInput type="password" [(ngModel)]="password" (keyup.enter)="isRegisterMode() ? onRegister() : onLogin()">
+        </mat-form-field>
+
+        @if (isRegisterMode()) {
+          <div class="registration-fields">
+            <h3 class="section-title">Generell</h3>
+            <mat-form-field appearance="outline">
+              <mat-label>Geburtsdatum</mat-label>
+              <input matInput type="date" [(ngModel)]="geburtsdatum">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Anschrift</mat-label>
+              <input matInput [(ngModel)]="anschrift" placeholder="Straße, PLZ, Ort">
+            </mat-form-field>
+
+            <mat-divider class="my-2"></mat-divider>
+
+            <h3 class="section-title">Speziell (Rescue-Daten)</h3>
+            <mat-form-field appearance="outline">
+              <mat-label>Allergien</mat-label>
+              <input matInput [(ngModel)]="allergien" placeholder="z.B. Pollen, Nüsse, Aspirin">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Vorerkrankungen</mat-label>
+              <input matInput [(ngModel)]="vorerkrankungen">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Aktuelle Medikamente</mat-label>
+              <input matInput [(ngModel)]="medikamente">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Blutgruppe</mat-label>
+              <input matInput [(ngModel)]="blutgruppe">
+            </mat-form-field>
+          </div>
+        }
+
+        @if (error()) {
+          <p class="error-message">{{ error() }}</p>
+        }
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button (click)="toggleMode()">
+        {{ isRegisterMode() ? 'Zurück zum Login' : 'Neues Konto erstellen' }}
+      </button>
+
+      @if (isRegisterMode()) {
+        <button mat-raised-button color="warn" (click)="onRegister()">Registrieren</button>
+      } @else {
+        <button mat-raised-button color="primary" (click)="onLogin()">Anmelden</button>
+      }
+    </mat-card-actions>
+  </mat-card>
+</div>
