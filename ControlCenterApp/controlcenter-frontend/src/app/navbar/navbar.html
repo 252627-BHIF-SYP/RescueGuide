@@ -1,4 +1,16 @@
-<mat-toolbar>
-<button matButton routerLink="/instruction-menu">Instruction Menu</button>
-<button matButton routerLink="/emergency-page">Emergency Page</button>
+<mat-toolbar color="primary">
+  <button mat-button routerLink="/instruction-menu">Instruction Menu</button>
+  <button mat-button routerLink="/emergency-page">Emergency Page</button>
+
+  <span style="flex: 1 1 auto;"></span>
+
+  @if (auth.userName()) {
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <mat-icon>person</mat-icon>
+      <span>{{ auth.userName() }}</span>
+      <button mat-icon-button (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  }
 </mat-toolbar>

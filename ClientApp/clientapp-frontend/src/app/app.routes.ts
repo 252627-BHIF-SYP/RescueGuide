@@ -6,11 +6,16 @@ import {EmergencyPage} from './emergency-page/emergency-page';
 import {Study} from './study/study';
 import {Profile} from './profile/profile';
 import {FastHelpComponent} from './fasthelp/fasthelp';
+import {Login} from './login/login';
 
 export const routes: Routes = [
   {
     path:'startscreen',
     component: Startscreen
+  },
+  {
+    path:'login',
+    component: Login
   },
   {
     path:'gps',

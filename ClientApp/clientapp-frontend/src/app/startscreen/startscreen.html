@@ -1,28 +1,37 @@
+<div class="panic-container"
+     (mousedown)="startHold()"
+     (mouseup)="stopHold()"
+     (mouseleave)="stopHold()"
+     (touchstart)="startHold()"
+     (touchend)="stopHold()">
 
+  <header>
+    <h1>Rescue Guide</h1>
+    <span class="subtitle">Notfall-Assistent</span>
+  </header>
 
-<div style="display: flex; justify-content: center; align-items: center; gap: 3rem;"
-  class="panic-button"
-  (mousedown)="startHold()"
-  (mouseup)="stopHold()"
-  (mouseleave)="stopHold()"
-  (touchstart)="startHold()"
-  (touchend)="stopHold()">
+  <div class="spinner-wrapper">
+    <mat-progress-spinner
+      diameter="250"
+      strokeWidth="12"
+      mode="determinate"
+      [value]="state.holdProgress()">
+    </mat-progress-spinner>
 
-  <h1>Rescue Guide Notfall </h1>
-
-  <mat-progress-spinner
-    diameter="220"
-    mode="determinate"
-    [value]="state.holdProgress()">
-  </mat-progress-spinner>
-
-  <p>2 Sekunden halten um Notfall zu starten</p>
-
-  <div class="action-bar" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="16px" style="margin: 1rem;">
-    <button mat-icon-button ><mat-icon>alarm</mat-icon></button>
-    <button mat-icon-button routerLink="/fasthelp"><mat-icon>help_outline</mat-icon></button>
-    <button mat-icon-button routerLink="/study"><mat-icon>book</mat-icon></button>
-    <button mat-icon-button routerLink="/profile"><mat-icon>account_circle</mat-icon></button>
+    <div class="emergency-icon" [class.is-holding]="state.holdProgress() > 0">
+      <mat-icon>notifications_active</mat-icon>
+    </div>
   </div>
 
+  <div class="instruction">
+    <p><strong>2 Sekunden halten</strong></p>
+    <span>um den Notfall zu starten</span>
+  </div>
+
+  <nav class="action-bar">
+    <button mat-fab color="basic" aria-label="Alarm"><mat-icon>alarm</mat-icon></button>
+    <button mat-fab color="basic" routerLink="/fasthelp"><mat-icon>help_outline</mat-icon></button>
+    <button mat-fab color="basic" routerLink="/study"><mat-icon>book</mat-icon></button>
+    <button mat-fab color="basic" routerLink="/profile"><mat-icon>account_circle</mat-icon></button>
+  </nav>
 </div>
