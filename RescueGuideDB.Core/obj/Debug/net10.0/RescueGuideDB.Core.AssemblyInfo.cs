@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RescueGuideDB.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e47fc9cb9cf9767aa028b271459d92f009f9aad6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad252c8bb3e2a97a647f625e9020ed1b8100927c")]
 [assembly: System.Reflection.AssemblyProductAttribute("RescueGuideDB.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RescueGuideDB.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

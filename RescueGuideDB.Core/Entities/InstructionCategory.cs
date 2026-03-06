@@ -7,4 +7,5 @@ public class InstructionCategory
     public string Name { get; set; }
 
     public ICollection<InstructionStep> Steps { get; set; }
+    public ICollection<Emergency> Emergencies { get; set; }
 }

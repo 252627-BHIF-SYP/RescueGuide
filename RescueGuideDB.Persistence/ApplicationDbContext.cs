@@ -10,16 +10,13 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<User> Users { get; set; }
+    
+    public DbSet<Client> Clients { get; set; }
     public DbSet<Emergency> Emergencies { get; set; }
-    public DbSet<Measure> Measures { get; set; }
-    public DbSet<Plan> Plans { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<InstructionCategory> InstructionCategories { get; set; }
     public DbSet<InstructionStep> InstructionSteps { get; set; }
-    public DbSet<Quiz> Quizzes { get; set; }
-    public DbSet<Question> Questions { get; set; }
-    public DbSet<AnswerOption> AnswerOptions { get; set; }
+    public DbSet<UserControlCenter> UserControlCenters { get; set; }
    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

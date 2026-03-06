@@ -22,7 +22,7 @@ namespace RescueGuideDB.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.AnswerOption", b =>
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,24 +30,45 @@ namespace RescueGuideDB.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("QuestionId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Allergies")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("QuestionId1")
-                        .HasColumnType("integer");
+                    b.Property<string>("BloodGroups")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("Text")
+                    b.Property<string>("DateOfBirth")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Medikaments")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PreExistingConditions")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionId1");
-
-                    b.ToTable("AnswerOptions");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.Emergency", b =>
@@ -58,8 +79,14 @@ namespace RescueGuideDB.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InstructionCategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("integer");
@@ -70,17 +97,21 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("UserControlCenterId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("UserId1")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("InstructionCategoryId");
+
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserControlCenterId");
 
                     b.ToTable("Emergencies");
                 });
@@ -117,10 +148,7 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("InstructionCategoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("InstructionCategoryId1")
+                    b.Property<int>("InstructionCategoryId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Order")
@@ -132,7 +160,7 @@ namespace RescueGuideDB.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InstructionCategoryId1");
+                    b.HasIndex("InstructionCategoryId");
 
                     b.ToTable("InstructionSteps");
                 });
@@ -145,9 +173,6 @@ namespace RescueGuideDB.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("EmergencyId")
-                        .HasColumnType("uuid");
-
                     b.Property<double>("Latitude")
                         .HasColumnType("double precision");
 
@@ -159,228 +184,91 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Measure", b =>
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.UserControlCenter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("EmergencyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("EmergencyId1")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmergencyId1");
-
-                    b.ToTable("Measures");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Plan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("EmergencyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("EmergencyId1")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmergencyId1");
-
-                    b.ToTable("Plans");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Question", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("QuizId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("QuizId1")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Text")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId1");
-
-                    b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Quiz", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Quizzes");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.AnswerOption", b =>
-                {
-                    b.HasOne("RescueGuideDB.Core.Entities.Question", "Question")
-                        .WithMany("AnswerOptions")
-                        .HasForeignKey("QuestionId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
+                    b.ToTable("UserControlCenters");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.Emergency", b =>
                 {
+                    b.HasOne("RescueGuideDB.Core.Entities.Client", "Client")
+                        .WithMany("Emergencies")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RescueGuideDB.Core.Entities.InstructionCategory", "Category")
+                        .WithMany("Emergencies")
+                        .HasForeignKey("InstructionCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RescueGuideDB.Core.Entities.Location", "Location")
-                        .WithMany()
+                        .WithMany("Emergencies")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RescueGuideDB.Core.Entities.User", "User")
+                    b.HasOne("RescueGuideDB.Core.Entities.UserControlCenter", "UserControlCenter")
                         .WithMany("Emergencies")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserControlCenterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Category");
+
+                    b.Navigation("Client");
+
                     b.Navigation("Location");
 
-                    b.Navigation("User");
+                    b.Navigation("UserControlCenter");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.InstructionStep", b =>
                 {
                     b.HasOne("RescueGuideDB.Core.Entities.InstructionCategory", "InstructionCategory")
                         .WithMany("Steps")
-                        .HasForeignKey("InstructionCategoryId1")
+                        .HasForeignKey("InstructionCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("InstructionCategory");
                 });
 
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Measure", b =>
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.Client", b =>
                 {
-                    b.HasOne("RescueGuideDB.Core.Entities.Emergency", "Emergency")
-                        .WithMany("Measures")
-                        .HasForeignKey("EmergencyId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Emergency");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Plan", b =>
-                {
-                    b.HasOne("RescueGuideDB.Core.Entities.Emergency", "Emergency")
-                        .WithMany("Plans")
-                        .HasForeignKey("EmergencyId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Emergency");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Question", b =>
-                {
-                    b.HasOne("RescueGuideDB.Core.Entities.Quiz", "Quiz")
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Quiz");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Emergency", b =>
-                {
-                    b.Navigation("Measures");
-
-                    b.Navigation("Plans");
+                    b.Navigation("Emergencies");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.InstructionCategory", b =>
                 {
+                    b.Navigation("Emergencies");
+
                     b.Navigation("Steps");
                 });
 
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Question", b =>
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.Location", b =>
                 {
-                    b.Navigation("AnswerOptions");
+                    b.Navigation("Emergencies");
                 });
 
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.Quiz", b =>
-                {
-                    b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("RescueGuideDB.Core.Entities.User", b =>
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.UserControlCenter", b =>
                 {
                     b.Navigation("Emergencies");
                 });

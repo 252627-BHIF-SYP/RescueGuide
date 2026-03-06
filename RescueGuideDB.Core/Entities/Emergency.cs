@@ -6,15 +6,20 @@ public class Emergency
     public int Id { get; set; }
 
     public int UserId { get; set; }
-    public User User { get; set; }
-
+    public UserControlCenter UserControlCenter { get; set; }
+    
+    public int ClientId { get; set; }
+    public Client Client { get; set; }
+    
+    public int InstructionCategoryId { get; set; }
+    public InstructionCategory Category { get; set; }
+    
     public DateTime StartedAt { get; set; }
     public DateTime? EndedAt { get; set; }
 
     public EmergencyStatus Status { get; set; }
 
+    public int LocationId { get; set; }
     public Location Location { get; set; }
-
-    public ICollection<Measure> Measures { get; set; }
-    public ICollection<Plan> Plans { get; set; }
+    
 }
