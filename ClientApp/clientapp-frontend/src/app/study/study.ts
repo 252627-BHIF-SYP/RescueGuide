@@ -3,6 +3,7 @@ import { QuizQuestion, QuizService } from '../quiz-service';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import {Navbar} from '../navbar/navbar';
 
 @Component({
   selector: 'app-study',
@@ -10,7 +11,8 @@ import { RouterLink } from '@angular/router';
     MatButton,
     MatIcon,
     MatIconButton,
-    RouterLink
+    RouterLink,
+    Navbar
   ],
   templateUrl: 'study.html',
   styleUrl: 'study.scss',

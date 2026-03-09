@@ -78,6 +78,11 @@
     }
   }
 
+  // GPS-Komponente verstecken (nur für Funktionalität)
+  app-gps {
+    display: none;
+  }
+
   .action-bar {
     width: 100%;
     max-width: 400px;

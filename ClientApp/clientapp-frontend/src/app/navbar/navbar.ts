@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [MatIcon, RouterLink],
+  imports: [MatIcon, RouterLink, RouterLinkActive],
   template: `
     <nav class="action-bar bottom-nav">
-      <button mat-fab color="basic" aria-label="Alarm"><mat-icon>alarm</mat-icon></button>
-      <button mat-fab color="basic" routerLink="/fasthelp"><mat-icon>help_outline</mat-icon></button>
-      <button mat-fab color="basic" routerLink="/study"><mat-icon>book</mat-icon></button>
-      <button mat-fab color="basic" routerLink="/profile"><mat-icon>account_circle</mat-icon></button>
+      <button mat-fab color="basic" routerLink="/startscreen" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><mat-icon>alarm</mat-icon></button>
+      <button mat-fab color="basic" routerLink="/fasthelp" routerLinkActive="active"><mat-icon>help_outline</mat-icon></button>
+      <button mat-fab color="basic" routerLink="/study" routerLinkActive="active"><mat-icon>book</mat-icon></button>
+      <button mat-fab color="basic" routerLink="/profile" routerLinkActive="active"><mat-icon>account_circle</mat-icon></button>
     </nav>
   `,
   styles: [
@@ -35,6 +35,9 @@ import { RouterLink } from '@angular/router';
       mat-icon {
         color: #555;
       }
+    }
+    .action-bar button.active mat-icon {
+      color: #d32f2f; /* highlight color */
     }
     `
   ]

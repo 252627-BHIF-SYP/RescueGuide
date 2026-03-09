@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
 import { Navbar } from '../navbar/navbar';
 import {EmergencyStateService} from '../emergency-state-service';
@@ -22,11 +22,26 @@ import { Gps } from '../gps/gps';
   templateUrl: 'startscreen.html',
   styleUrl: 'startscreen.scss',
 })
-export class Startscreen {
+export class Startscreen implements OnInit, AfterViewInit {
   private router = inject(Router);
   state = inject(EmergencyStateService);
 
+  @ViewChild('gps') gpsComponent!: Gps;
+
   private interval?: number;
+
+  ngOnInit() {
+    // Initialisierung
+  }
+
+  ngAfterViewInit() {
+    // GPS automatisch nach View-Initialisierung starten
+    setTimeout(() => {
+      if (this.gpsComponent) {
+        this.gpsComponent.startGps();
+      }
+    }, 1000);
+  }
 
   startHold() {
     this.state.status.set('holding');

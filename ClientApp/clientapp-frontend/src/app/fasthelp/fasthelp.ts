@@ -3,6 +3,7 @@ import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/mat
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
+import {Navbar} from '../navbar/navbar';
 
 interface Topic {
   id: number;
@@ -23,7 +24,8 @@ interface Topic {
     MatCardContent,
     MatButton,
     MatCardTitle,
-    RouterLink
+    RouterLink,
+    Navbar
   ],
   standalone: true
 })
