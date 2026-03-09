@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import {Startscreen} from './startscreen/startscreen';
 import {ConnectingComponent} from './connecting-component/connecting-component';
 import {EmergencyPage} from './emergency-page/emergency-page';
-import {Study} from './study/study';
+import {QuizComponent} from './quiz/quiz';
 import {Profile} from './profile/profile';
 import {FastHelpComponent} from './fasthelp/fasthelp';
 
@@ -25,8 +25,8 @@ export const routes: Routes = [
     component: EmergencyPage
   },
   {
-    path:'study',
-    component: Study
+    path:'quiz',
+    component: QuizComponent
   },
   {
     path:'profile',

@@ -10,7 +10,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     <nav class="action-bar bottom-nav">
       <button mat-fab color="basic" routerLink="/startscreen" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><mat-icon>alarm</mat-icon></button>
       <button mat-fab color="basic" routerLink="/fasthelp" routerLinkActive="active"><mat-icon>help_outline</mat-icon></button>
-      <button mat-fab color="basic" routerLink="/study" routerLinkActive="active"><mat-icon>book</mat-icon></button>
+      <button mat-fab color="basic" routerLink="/quiz" routerLinkActive="active"><mat-icon>book</mat-icon></button>
       <button mat-fab color="basic" routerLink="/profile" routerLinkActive="active"><mat-icon>account_circle</mat-icon></button>
     </nav>
   `,

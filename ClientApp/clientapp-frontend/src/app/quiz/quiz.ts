@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
 import { Navbar } from '../navbar/navbar';
 
 @Component({
-  selector: 'app-study',
+  selector: 'app-quiz',
   imports: [
     MatButton,
     MatIcon,
@@ -27,10 +27,10 @@ import { Navbar } from '../navbar/navbar';
     RouterLink,
     Navbar
   ],
-  templateUrl: 'study.html',
-  styleUrl: 'study.scss',
+  templateUrl: 'quiz.html',
+  styleUrl: 'quiz.scss',
 })
-export class Study implements OnInit {
+export class QuizComponent implements OnInit {
   public quizService = inject(QuizService);
 
   searchTerm = signal('');
