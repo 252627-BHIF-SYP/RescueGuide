@@ -31,11 +31,9 @@ export class Startscreen implements OnInit, AfterViewInit {
   private interval?: number;
 
   ngOnInit() {
-    // Initialisierung
   }
 
   ngAfterViewInit() {
-    // GPS automatisch nach View-Initialisierung starten
     setTimeout(() => {
       if (this.gpsComponent) {
         this.gpsComponent.startGps();

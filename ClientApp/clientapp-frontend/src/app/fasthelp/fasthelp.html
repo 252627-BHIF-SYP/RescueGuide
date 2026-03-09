@@ -3,12 +3,16 @@
   <mat-card class="home-screen">
     <mat-card-header>
       <mat-card-title>Erste Hilfe zuhause</mat-card-title>
-      <button mat-icon-button><mat-icon>search</mat-icon></button>
     </mat-card-header>
 
-    <mat-card-content class="topic-grid">
-      @for (topic of topics; track topic.id) {
-        <button mat-raised-button (click)="openTopic(topic.id)">
+    <mat-form-field appearance="outline" class="search-field">
+      <input matInput [(ngModel)]="query" placeholder="Thema suchen" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-card-content class="topic-list">
+      @for (topic of filteredTopics(); track topic.id) {
+        <button mat-stroked-button class="topic-button" (click)="openTopic(topic.id)">
           {{ topic.title }}
         </button>
       }
@@ -33,5 +37,4 @@
   </mat-card>
 }
 
-<!-- bottom navigation -->
 <app-navbar></app-navbar>

@@ -120,12 +120,10 @@ export class Gps implements OnInit, OnDestroy {
     }
   }
 
-  // Start GPS automatisch beim Initialisieren der Komponente
   ngOnInit(): void {
     this.startGps();
   }
 
-  // Aufräumen beim Zerstören der Komponente
   ngOnDestroy(): void {
     this.stopGps();
   }

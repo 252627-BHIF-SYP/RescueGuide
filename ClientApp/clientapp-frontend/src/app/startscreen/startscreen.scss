@@ -3,12 +3,12 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  min-height: 100dvh; // Nutzt die dynamische Viewport-Höhe für Mobile
-  padding: 1rem 1rem 8rem 1rem; // Weniger Padding unten, mehr Abstand zwischen Elementen
+  min-height: 100dvh;
+  padding: 1rem 1rem 8rem 1rem;
   background: radial-gradient(circle at center, #ffffff 0%, #f4f4f4 100%);
   overflow: auto;
   font-family: 'Roboto', sans-serif;
-  user-select: none; // Verhindert Textmarkierung beim Halten
+  user-select: none;
 
   header {
     text-align: center;
@@ -33,7 +33,6 @@
     align-items: center;
     margin: 2rem 0;
 
-    // Das innere "Blaulicht"
     .emergency-icon {
       position: absolute;
       width: 160px;
@@ -53,7 +52,6 @@
         color: #999;
       }
 
-      // Blaulicht-Animation beim Halten
       &.is-holding {
         animation: blue-flash 0.5s infinite alternate;
         transform: scale(0.95);
@@ -78,7 +76,6 @@
     }
   }
 
-  // GPS-Komponente verstecken (nur für Funktionalität)
   app-gps {
     display: none;
   }
@@ -101,7 +98,6 @@
   }
 }
 
-// Blaulicht Animation
 @keyframes blue-flash {
   from {
     background-color: #0046ad;
@@ -113,7 +109,6 @@
   }
 }
 
-// Responsive Anpassungen
 @media (max-height: 700px) {
   .panic-container {
     padding: 1rem;
