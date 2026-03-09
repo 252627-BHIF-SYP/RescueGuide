@@ -1,22 +1,23 @@
 .panic-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   min-height: 100dvh; // Nutzt die dynamische Viewport-Höhe für Mobile
-  padding: 2rem 1rem;
+  padding: 1rem 1rem 8rem 1rem; // Weniger Padding unten, mehr Abstand zwischen Elementen
   background: radial-gradient(circle at center, #ffffff 0%, #f4f4f4 100%);
-  overflow: hidden;
+  overflow: auto;
   font-family: 'Roboto', sans-serif;
   user-select: none; // Verhindert Textmarkierung beim Halten
 
   header {
     text-align: center;
+    margin-bottom: 2rem;
     h1 {
       color: #d32f2f;
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 800;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       text-transform: uppercase;
     }
     .subtitle {
@@ -35,8 +36,8 @@
     // Das innere "Blaulicht"
     .emergency-icon {
       position: absolute;
-      width: 180px;
-      height: 180px;
+      width: 160px;
+      height: 160px;
       background-color: #f5f5f5;
       border-radius: 50%;
       display: flex;
@@ -66,8 +67,9 @@
 
   .instruction {
     text-align: center;
+    margin-bottom: 3rem;
     p {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       margin-bottom: 0.2rem;
       color: #333;
     }

@@ -15,8 +15,28 @@ import { RouterLink } from '@angular/router';
     </nav>
   `,
   styles: [
-    `.bottom-nav { display:flex; justify-content:space-around; padding:12px; position:sticky; bottom:0; background:transparent; }`,
-    `.action-bar button { box-shadow: none; }`
+    `
+    .bottom-nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 1rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 12px 12px 0 0;
+      z-index: 100;
+    }
+    .action-bar button {
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      mat-icon {
+        color: #555;
+      }
+    }
+    `
   ]
 })
 export class Navbar {}
