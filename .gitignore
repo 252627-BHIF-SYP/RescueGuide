@@ -1,2 +1,80 @@
-node_modules
-.idea/copilot.data.migration.ask2agent.xml
+# Build results
+
+bin/
+obj/
+out/
+
+# Visual Studio files
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+
+.idea/
+*.sln.iml
+
+# VS Code
+
+.vscode/
+
+# Logs
+
+*.log
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Environment files
+
+.env
+.env.*
+
+# NuGet
+
+*.nupkg
+packages/
+
+# Test results
+
+TestResults/
+*.trx
+
+# ASP.NET Scaffolding
+
+ScaffoldingReadMe.txt
+
+# Entity Framework migrations snapshots (optional if generated)
+
+Migrations/*Designer.cs
+
+# Publish output
+
+publish/
+*.Publish.xml
+
+# Local database files
+
+*.mdf
+*.ldf
+
+# SQLite
+
+*.db
+*.db-shm
+*.db-wal
+
+# Node (falls Frontend im selben Projekt ist)
+
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Docker
+
+docker-compose.override.yml

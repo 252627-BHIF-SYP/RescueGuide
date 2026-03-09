@@ -5,6 +5,7 @@ import {EmergencyPage} from './emergency-page/emergency-page';
 import {QuizComponent} from './quiz/quiz';
 import {Profile} from './profile/profile';
 import {FastHelpComponent} from './fasthelp/fasthelp';
+import {Login} from './login/login';
 
 export const routes: Routes = [
   {
