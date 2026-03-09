@@ -102,6 +102,7 @@ export class Study implements OnInit {
       this.currentIndex.update(idx => idx + 1);
     } else {
       this.currentIndex.set(this.quizService.questions().length);
+      this.quizService.completeQuiz();
     }
   }
 

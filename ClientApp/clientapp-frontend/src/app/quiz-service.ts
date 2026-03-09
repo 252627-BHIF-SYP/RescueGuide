@@ -21,6 +21,15 @@ export interface QuizResult {
   correct: boolean;
 }
 
+export interface CompletedQuiz {
+  quizId: number;
+  quizTitle: string;
+  completedAt: Date;
+  score: number;
+  totalQuestions: number;
+  results: QuizResult[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class QuizService {
   quizzes = signal<Quiz[]>([
@@ -65,6 +74,7 @@ export class QuizService {
   selectedQuiz = signal<Quiz | null>(null);
   questions = signal<QuizQuestion[]>([]);
   results = signal<QuizResult[]>([]);
+  quizHistory = signal<CompletedQuiz[]>([]);
 
   selectQuiz(quizId: number) {
     const quiz = this.quizzes().find(q => q.id === quizId);
@@ -93,6 +103,29 @@ export class QuizService {
 
   resetQuiz() {
     this.results.set([]);
+  }
+
+  completeQuiz() {
+    const selectedQuiz = this.selectedQuiz();
+    if (!selectedQuiz) return;
+
+    const correctAnswers = this.results().filter(r => r.correct).length;
+    const totalQuestions = selectedQuiz.questions.length;
+
+    const completedQuiz: CompletedQuiz = {
+      quizId: selectedQuiz.id,
+      quizTitle: selectedQuiz.title,
+      completedAt: new Date(),
+      score: correctAnswers,
+      totalQuestions: totalQuestions,
+      results: [...this.results()]
+    };
+
+    this.quizHistory.set([completedQuiz, ...this.quizHistory()]);
+  }
+
+  getQuizHistory() {
+    return this.quizHistory();
   }
 
   getSelectedQuiz() {

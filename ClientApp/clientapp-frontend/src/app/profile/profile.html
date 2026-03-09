@@ -1,21 +1,90 @@
-<h2>Profil & Quiz-Ergebnisse</h2>
+<div class="profile-container">
+  <h2>Profil & Quiz-Verlauf</h2>
 
-@if (quizService.results().length > 0) {
-  <div>
-    <ul>
-      @for (res of quizService.results(); track res) {
-        <li>
-          Frage {{ res.questionId }}:
-          <strong [style.color]="res.correct ? 'green' : 'red'">
-            {{ res.correct ? 'Richtig' : 'Falsch' }}
-          </strong> (Deine Antwort: {{ res.selectedAnswer }})
-        </li>
-      }
-    </ul>
-  </div>
-} @else {
-  <p>Du hast noch kein Quiz abgeschlossen.</p>
-}
+  @if (quizService.getQuizHistory().length > 0) {
+    <div class="quiz-history-section">
+      <h3>Abgeschlossene Quizzes</h3>
 
+      <div class="quiz-history-grid">
+        @for (completedQuiz of quizService.getQuizHistory(); track completedQuiz.quizId + '-' + completedQuiz.completedAt.getTime()) {
+          <mat-card class="quiz-history-card">
+            <mat-card-header>
+              <mat-card-title>{{ completedQuiz.quizTitle }}</mat-card-title>
+              <mat-card-subtitle>{{ completedQuiz.completedAt | date:'dd.MM.yyyy HH:mm' }}</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="score-display">
+                <div class="score-circle">
+                  <span class="score-number">{{ completedQuiz.score }}</span>
+                  <span class="score-total">/ {{ completedQuiz.totalQuestions }}</span>
+                </div>
+                <p class="score-text">{{ getScorePercentage(completedQuiz) }}% richtig</p>
+              </div>
+
+              <div class="result-summary">
+                <p class="correct-answers">{{ completedQuiz.results.filter(r => r.correct).length }} von {{ completedQuiz.totalQuestions }} Fragen richtig</p>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              <button mat-button (click)="showQuizDetails(completedQuiz)">
+                <mat-icon>expand_more</mat-icon>
+                Details anzeigen
+              </button>
+            </mat-card-actions>
+
+            @if (selectedQuizForDetails() === completedQuiz) {
+              <mat-card-content class="quiz-details">
+                <h4>Detailübersicht:</h4>
+                @for (result of completedQuiz.results; track result.questionId; let i = $index) {
+                  <div class="result-item" [class.correct]="result.correct" [class.wrong]="!result.correct">
+                    <span class="question-number">Frage {{ i + 1 }}:</span>
+                    <span class="result-status">
+                      {{ result.correct ? 'Richtig' : 'Falsch' }}
+                    </span>
+                    @if (!result.correct) {
+                      <span class="correct-answer">
+                        Richtige Antwort: {{ getCorrectAnswerForHistory(completedQuiz.quizId, result.questionId) }}
+                      </span>
+                    }
+                  </div>
+                }
+              </mat-card-content>
+            }
+          </mat-card>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="no-quizzes">
+      <mat-icon class="no-quizzes-icon">school</mat-icon>
+      <h3>Noch keine Quizzes abgeschlossen</h3>
+      <p>Starte dein erstes Quiz, um deinen Lernfortschritt zu verfolgen!</p>
+      <button mat-raised-button color="primary" routerLink="/study">
+        <mat-icon>play_arrow</mat-icon>
+        Zum Quiz-Bereich
+      </button>
+    </div>
+  }
+
+  @if (quizService.results().length > 0 && !quizService.getSelectedQuiz()) {
+    <div class="current-results-section">
+      <h3>Aktuelles Quiz-Ergebnis</h3>
+      <div class="current-results">
+        <ul>
+          @for (res of quizService.results(); track res) {
+            <li>
+              Frage {{ res.questionId }}:
+              <strong [style.color]="res.correct ? 'green' : 'red'">
+                {{ res.correct ? 'Richtig' : 'Falsch' }}
+              </strong> (Deine Antwort: {{ res.selectedAnswer }})
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+</div>
 
 <app-navbar></app-navbar>
