@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    
+    public DbSet<FirstHelp> FirstHelps { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Emergency> Emergencies { get; set; }
     public DbSet<Location> Locations { get; set; }

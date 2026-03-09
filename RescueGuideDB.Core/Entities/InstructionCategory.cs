@@ -4,8 +4,7 @@ public class InstructionCategory
 {
     public int Id { get; set; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public ICollection<InstructionStep> Steps { get; set; }
-    public ICollection<Emergency> Emergencies { get; set; }
+    public ICollection<InstructionStep> Steps { get; set; } = [];
 }

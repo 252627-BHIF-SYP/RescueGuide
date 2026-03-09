@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RescueGuideDB.Core", "Rescu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RescueGuideDB.Persistence", "RescueGuideDB.Persistence\RescueGuideDB.Persistence.csproj", "{DB6A0642-AB6B-4F6A-9907-A8A11A6FC66E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RescueGuideDB.WebApp", "RescueGuideDB.WebApp\RescueGuideDB.WebApp.csproj", "{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{DB6A0642-AB6B-4F6A-9907-A8A11A6FC66E}.Release|x64.Build.0 = Release|Any CPU
 		{DB6A0642-AB6B-4F6A-9907-A8A11A6FC66E}.Release|x86.ActiveCfg = Release|Any CPU
 		{DB6A0642-AB6B-4F6A-9907-A8A11A6FC66E}.Release|x86.Build.0 = Release|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Debug|x64.Build.0 = Debug|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Debug|x86.Build.0 = Debug|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x64.ActiveCfg = Release|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x64.Build.0 = Release|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x86.ActiveCfg = Release|Any CPU
+		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

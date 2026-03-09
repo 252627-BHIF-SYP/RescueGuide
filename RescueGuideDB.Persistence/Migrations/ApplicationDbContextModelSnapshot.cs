@@ -31,14 +31,12 @@ namespace RescueGuideDB.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Allergies")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("BloodGroups")
+                    b.Property<string>("BloodGroup")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -47,7 +45,6 @@ namespace RescueGuideDB.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
@@ -59,11 +56,9 @@ namespace RescueGuideDB.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Medikaments")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PreExistingConditions")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -85,9 +80,6 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("InstructionCategoryId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("LocationId")
                         .HasColumnType("integer");
 
@@ -107,13 +99,32 @@ namespace RescueGuideDB.Persistence.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("InstructionCategoryId");
-
                     b.HasIndex("LocationId");
 
                     b.HasIndex("UserControlCenterId");
 
                     b.ToTable("Emergencies");
+                });
+
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.FirstHelp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FirstHelps");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.InstructionCategory", b =>
@@ -213,12 +224,6 @@ namespace RescueGuideDB.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RescueGuideDB.Core.Entities.InstructionCategory", "Category")
-                        .WithMany("Emergencies")
-                        .HasForeignKey("InstructionCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RescueGuideDB.Core.Entities.Location", "Location")
                         .WithMany("Emergencies")
                         .HasForeignKey("LocationId")
@@ -230,8 +235,6 @@ namespace RescueGuideDB.Persistence.Migrations
                         .HasForeignKey("UserControlCenterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
 
                     b.Navigation("Client");
 
@@ -258,8 +261,6 @@ namespace RescueGuideDB.Persistence.Migrations
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.InstructionCategory", b =>
                 {
-                    b.Navigation("Emergencies");
-
                     b.Navigation("Steps");
                 });
 

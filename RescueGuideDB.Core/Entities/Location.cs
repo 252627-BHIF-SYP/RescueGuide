@@ -7,6 +7,6 @@ public class Location
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     
-    public ICollection<Emergency> Emergencies { get; set; }
+    public required ICollection<Emergency> Emergencies { get; set; }
     
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RescueGuideDB.Persistence")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad252c8bb3e2a97a647f625e9020ed1b8100927c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d0d0df8e167dd1fede421fcf522f61be44fb8aa")]
 [assembly: System.Reflection.AssemblyProductAttribute("RescueGuideDB.Persistence")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RescueGuideDB.Persistence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

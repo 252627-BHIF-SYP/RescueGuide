@@ -166,3 +166,4 @@ C:\Users\talha\HTL\SYP\RescueGuide\RescueGuideDB.Persistence\bin\Debug\net10.0\D
 C:\Users\talha\HTL\SYP\RescueGuide\RescueGuideDB.Persistence\bin\Debug\net10.0\Data\instructionsteps.csv
 C:\Users\talha\HTL\SYP\RescueGuide\RescueGuideDB.Persistence\bin\Debug\net10.0\Data\locations.csv
 C:\Users\talha\HTL\SYP\RescueGuide\RescueGuideDB.Persistence\bin\Debug\net10.0\Data\usercontrolcenters.csv
+C:\Users\talha\HTL\SYP\RescueGuide\RescueGuideDB.Persistence\bin\Debug\net10.0\Data\emergencies.csv
