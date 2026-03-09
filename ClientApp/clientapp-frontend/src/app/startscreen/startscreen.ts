@@ -5,6 +5,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {VideoCall} from '../video-call/video-call';
+import { Gps } from '../gps/gps';
 
 @Component({
   selector: 'app-startscreen',
@@ -13,7 +14,8 @@ import {VideoCall} from '../video-call/video-call';
     MatProgressSpinner,
     MatIcon,
     MatIconButton,
-    RouterLink
+    RouterLink,
+    Gps
   ],
   templateUrl: 'startscreen.html',
   styleUrl: 'startscreen.scss',

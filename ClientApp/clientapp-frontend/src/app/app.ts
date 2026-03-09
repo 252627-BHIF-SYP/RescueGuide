@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatList, MatListItem } from '@angular/material/list';
-import {Navbar} from './navbar/navbar';
 import {RouterOutlet} from '@angular/router';
 
 @Component({
@@ -17,7 +16,6 @@ import {RouterOutlet} from '@angular/router';
     MatButton,
     MatList,
     MatListItem,
-    Navbar,
     RouterOutlet
   ]
 })

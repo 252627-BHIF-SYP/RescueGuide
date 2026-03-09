@@ -1,18 +1,10 @@
 import { Component } from '@angular/core';
-import {MatToolbar} from '@angular/material/toolbar';
-import {MatButton} from '@angular/material/button';
-import {RouterLink} from '@angular/router';
 
+// Navbar was removed from the UI but kept as a harmless stub to avoid
+// breaking imports during incremental refactors. The app does not render
+// this component anymore.
 @Component({
   selector: 'app-navbar',
-  imports: [
-    MatToolbar,
-    MatButton,
-    RouterLink
-  ],
-  templateUrl: './navbar.html',
-  styleUrl: './navbar.scss',
+  template: ''
 })
-export class Navbar {
-
-}
+export class Navbar {}

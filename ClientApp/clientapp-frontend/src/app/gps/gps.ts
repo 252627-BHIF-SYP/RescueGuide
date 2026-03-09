@@ -1,18 +1,17 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatList, MatListItem } from '@angular/material/list';
-import { Navbar } from '../navbar/navbar';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-gps',
-  imports: [MatButton, MatCard, MatCardContent, MatList, MatListItem, Navbar],
+  imports: [MatButton, MatCard, MatCardContent, MatList, MatListItem],
   templateUrl: './gps.html',
   styleUrls: ['./gps.scss'],
   standalone: true
 })
-export class Gps {
+export class Gps implements OnInit, OnDestroy {
   latitude = signal<number | null>(null);
   longitude = signal<number | null>(null);
   accuracy = signal<number | null>(null);
@@ -119,5 +118,15 @@ export class Gps {
       this.watchId = undefined;
       this.status.set('Standortüberwachung gestoppt');
     }
+  }
+
+  // Start GPS automatisch beim Initialisieren der Komponente
+  ngOnInit(): void {
+    this.startGps();
+  }
+
+  // Aufräumen beim Zerstören der Komponente
+  ngOnDestroy(): void {
+    this.stopGps();
   }
 }
