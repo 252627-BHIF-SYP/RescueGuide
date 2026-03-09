@@ -1,4 +1,3 @@
-﻿Id,UserId,ClientId,InstructionCategoryId,StartedAt,EndedAt,Status,LocationId
-1,1,2,1,2026-03-09T10:15:00,,Active,1
-2,2,4,2,2026-03-09T11:20:00,2026-03-09T11:45:00,Completed,2
-3,1,1,3,2026-03-09T12:30:00,,Active,3
+﻿Id,UserId,ClientId,StartedAt,EndedAt,Status,LocationId
+1,1,1,2026-03-09T10:15:00,,Active,1
+2,2,2,2026-03-09T11:20:00,2026-03-09T11:45:00,Completed,2
