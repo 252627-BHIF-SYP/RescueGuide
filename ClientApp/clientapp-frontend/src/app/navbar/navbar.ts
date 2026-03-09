@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { MatIconButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [MatIcon, MatIconButton, RouterLink],
+  imports: [MatIcon, RouterLink],
   template: `
     <nav class="action-bar bottom-nav">
       <button mat-fab color="basic" aria-label="Alarm"><mat-icon>alarm</mat-icon></button>
