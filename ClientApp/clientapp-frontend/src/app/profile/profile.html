@@ -1,19 +1,22 @@
 <h2>Profil & Quiz-Ergebnisse</h2>
 
-<div *ngIf="quizService.results().length > 0; else noResults">
-  <ul>
-    <li *ngFor="let res of quizService.results()">
-      Frage {{ res.questionId }}:
-      <strong [style.color]="res.correct ? 'green' : 'red'">
-        {{ res.correct ? 'Richtig' : 'Falsch' }}
-      </strong> (Deine Antwort: {{ res.selectedAnswer }})
-    </li>
-  </ul>
-</div>
-
-<ng-template #noResults>
+@if (quizService.results().length > 0) {
+  <div>
+    <ul>
+      @for (res of quizService.results(); track res) {
+        <li>
+          Frage {{ res.questionId }}:
+          <strong [style.color]="res.correct ? 'green' : 'red'">
+            {{ res.correct ? 'Richtig' : 'Falsch' }}
+          </strong> (Deine Antwort: {{ res.selectedAnswer }})
+        </li>
+      }
+    </ul>
+  </div>
+} @else {
   <p>Du hast noch kein Quiz abgeschlossen.</p>
-</ng-template>
+}
+
 
 <div class="action-bar" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="16px">
   <button mat-icon-button ><mat-icon>alarm</mat-icon></button>
