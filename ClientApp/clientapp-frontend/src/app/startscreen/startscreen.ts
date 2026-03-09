@@ -1,5 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
+import { Navbar } from '../navbar/navbar';
 import {EmergencyStateService} from '../emergency-state-service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
@@ -15,7 +16,8 @@ import { Gps } from '../gps/gps';
     MatIcon,
     MatIconButton,
     RouterLink,
-    Gps
+    Gps,
+    Navbar
   ],
   templateUrl: 'startscreen.html',
   styleUrl: 'startscreen.scss',
