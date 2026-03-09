@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  padding: 1rem;
+}
+
+.home-screen {
+  mat-card-header {
+    text-align: center;
+  }
+
+  .search-field {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .topic-button {
+    justify-content: flex-start;
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* detail screen keep similar look */
+.detail-screen {
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    button {
+      margin-right: 1rem;
+    }
+  }
+}

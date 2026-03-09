@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
 import {Startscreen} from './startscreen/startscreen';
-import {Gps} from './gps/gps';
 import {ConnectingComponent} from './connecting-component/connecting-component';
 import {EmergencyPage} from './emergency-page/emergency-page';
-import {Study} from './study/study';
+import {QuizComponent} from './quiz/quiz';
 import {Profile} from './profile/profile';
 import {FastHelpComponent} from './fasthelp/fasthelp';
 import {Login} from './login/login';
@@ -14,12 +13,9 @@ export const routes: Routes = [
     component: Startscreen
   },
   {
-    path:'login',
-    component: Login
-  },
-  {
-    path:'gps',
-    component: Gps
+    path:'',
+    redirectTo: 'startscreen',
+    pathMatch: 'full'
   },
   {
     path:'connecting',
@@ -30,8 +26,8 @@ export const routes: Routes = [
     component: EmergencyPage
   },
   {
-    path:'study',
-    component: Study
+    path:'quiz',
+    component: QuizComponent
   },
   {
     path:'profile',
@@ -40,6 +36,13 @@ export const routes: Routes = [
   {
     path:'fasthelp',
     component: FastHelpComponent
+  }
+
+  ,
+  // Catch-all: redirect unknown routes to startscreen
+  {
+    path: '**',
+    redirectTo: 'startscreen'
   }
 
 ];

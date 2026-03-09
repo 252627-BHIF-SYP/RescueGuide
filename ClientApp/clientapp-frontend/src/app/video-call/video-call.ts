@@ -1,11 +1,11 @@
 import {Component, ElementRef, Injectable, ViewChild} from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { SignalingService } from '../services/signaling.service';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })

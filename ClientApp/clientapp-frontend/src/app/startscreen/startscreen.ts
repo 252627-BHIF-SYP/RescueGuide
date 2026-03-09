@@ -1,10 +1,12 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
+import { Navbar } from '../navbar/navbar';
 import {EmergencyStateService} from '../emergency-state-service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {VideoCall} from '../video-call/video-call';
+import { Gps } from '../gps/gps';
 
 @Component({
   selector: 'app-startscreen',
@@ -13,16 +15,31 @@ import {VideoCall} from '../video-call/video-call';
     MatProgressSpinner,
     MatIcon,
     MatIconButton,
-    RouterLink
+    RouterLink,
+    Gps,
+    Navbar
   ],
   templateUrl: 'startscreen.html',
   styleUrl: 'startscreen.scss',
 })
-export class Startscreen {
+export class Startscreen implements OnInit, AfterViewInit {
   private router = inject(Router);
   state = inject(EmergencyStateService);
 
+  @ViewChild('gps') gpsComponent!: Gps;
+
   private interval?: number;
+
+  ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.gpsComponent) {
+        this.gpsComponent.startGps();
+      }
+    }, 1000);
+  }
 
   startHold() {
     this.state.status.set('holding');

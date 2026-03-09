@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import {VideoCall} from '../video-call/video-call';
+import {Navbar} from '../navbar/navbar';
 import { ViewChild, AfterViewInit } from '@angular/core';
 
 interface Notruf {
@@ -32,11 +33,10 @@ interface NominatimResponse {
   imports: [
     MatCard,
     MatCardContent,
-    MatCardHeader,
     MatIcon,
     MatIconButton,
-    MatCardTitle,
-    VideoCall
+    VideoCall,
+    Navbar
   ],
   standalone: true
 })

@@ -1,0 +1,123 @@
+<div class="page-container">
+  @if (!quizService.getSelectedQuiz()) {
+    <!-- Quiz Selection Screen -->
+    <div class="quiz-selection-container">
+      <div class="selection-header">
+        <h1 class="selection-title">Wähle ein Quiz</h1>
+        <div class="search-container">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Suche nach Quiz...</mat-label>
+            <input matInput
+                   [(ngModel)]="searchTerm"
+                   (input)="onSearchChange()"
+                   placeholder="Quiz-Titel oder Beschreibung">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="quiz-grid">
+        @for (quiz of filteredQuizzes(); track quiz.id) {
+          <mat-card class="quiz-card" (click)="selectQuiz(quiz.id)">
+            <mat-card-header>
+              <mat-card-title>{{ quiz.title }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="quiz-description">{{ quiz.description }}</p>
+              <p class="quiz-info">{{ quiz.questions.length }} Fragen</p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-raised-button color="primary" class="start-quiz-btn">
+                <mat-icon>play_arrow</mat-icon>
+                Starten
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- Quiz Taking Screen -->
+    @if (currentIndex() < quizService.questions().length) {
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <button mat-icon-button class="back-button" (click)="backToSelection()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h2 class="question-counter">Frage {{ currentIndex() + 1 }} / {{ quizService.questions().length }}</h2>
+          <span class="quiz-title">{{ quizService.getSelectedQuiz()?.title }}</span>
+        </div>
+
+        <div class="question-card">
+          <p class="question-text">{{ currentQuestion().question }}</p>
+
+          <div class="options-grid">
+            @for (opt of currentQuestion().options; track opt; let i = $index) {
+              <button mat-raised-button
+                      class="option-button"
+                      (click)="selectAnswer(opt)">
+                {{ opt }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (currentIndex() >= quizService.questions().length && quizService.questions().length > 0) {
+      <div class="results-container">
+        <div class="result-card">
+          <div class="result-header">
+            <button mat-icon-button class="back-button" (click)="backToSelection()">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h2 class="result-title">Quiz beendet!</h2>
+          </div>
+
+          <div class="score-section">
+            <div class="score-circle">
+              <span class="score-number">{{ correctCount() }}</span>
+              <span class="score-total">/ {{ quizService.questions().length }}</span>
+            </div>
+            <p class="score-text">{{ getScorePercentage() }}% richtig</p>
+          </div>
+
+          <div class="result-details">
+            <h3>Detailübersicht:</h3>
+            @for (result of quizService.results(); track result.questionId; let i = $index) {
+              <div class="result-item" [class.correct]="result.correct" [class.wrong]="!result.correct">
+                <span class="question-number">Frage {{ i + 1 }}:</span>
+                <span class="result-status">
+                  {{ result.correct ? 'Richtig' : 'Falsch' }}
+                </span>
+                @if (!result.correct) {
+                  <span class="correct-answer">
+                    Richtige Antwort: {{ getCorrectAnswer(result.questionId) }}
+                  </span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="result-actions">
+            <button mat-raised-button
+                    color="primary"
+                    class="restart-button"
+                    (click)="restartQuiz()">
+              <mat-icon>replay</mat-icon>
+              Quiz neu starten
+            </button>
+            <button mat-raised-button
+                    class="back-to-selection-button"
+                    (click)="backToSelection()">
+              <mat-icon>list</mat-icon>
+              Zurück zur Auswahl
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<app-navbar></app-navbar>
