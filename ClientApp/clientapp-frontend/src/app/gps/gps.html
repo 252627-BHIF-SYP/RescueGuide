@@ -1,8 +1,8 @@
 
 
-<div class="gps-container" style="max-width: 400px; margin: 2rem auto;">
+<div class="gps-container">
 
-  <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;">
+  <div class="button-container">
     <button mat-raised-button color="primary" (click)="startGps()">
       Standort holen
     </button>
@@ -28,7 +28,7 @@
           </mat-list-item>
         </mat-list>
       } @else if (error() !== null) {
-        <p style="color:red; font-weight: bold;">
+        <p class="error-message">
           Fehler: {{ error() }}
         </p>
       }
