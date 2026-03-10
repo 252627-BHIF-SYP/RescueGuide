@@ -1,67 +1,63 @@
 name: Build and Push Docker Images to GHCR
 
 on:
-push:
-branches:
-- main
+  push:
+    branches:
+      - main
 
 env:
-REGISTRY: ghcr.io
-IMAGE_BASE: ghcr.io/${{ github.repository }}
+  REGISTRY: ghcr.io
+  # Note: I removed the IMAGE_BASE env here because you are 
+  # calculating a lowercase version in your 'prep' step anyway.
 
 jobs:
-build-and-push:
-runs-on: ubuntu-latest
+  build-and-push:
+    runs-on: ubuntu-latest
+    # Line 16: permissions must be indented under the job name
+    permissions:
+      contents: read
+      packages: write
 
-```
-permissions:
-  contents: read
-  packages: write
+    strategy:
+      matrix:
+        include:
+          - image_name: rescueguide-backend
+            context: ./RescueGuideDB.WebApp
+          - image_name: cc-frontend
+            context: ./ControlCenterApp/controlcenter-frontend
+          - image_name: client-frontend
+            context: ./ClientApp/clientapp-frontend
+          - image_name: webrtc-logic
+            context: ./webrtclogic
 
-strategy:
-  matrix:
-    include:
-      - image_name: rescueguide-backend
-        context: ./RescueGuideDB.WebApp
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - image_name: cc-frontend
-        context: ./ControlCenterApp/controlcenter-frontend
+      - name: Pfad-Check Live
+        run: |
+          echo "Was ist im Hauptverzeichnis?"
+          ls -F
+          echo "---"
+          find . -maxdepth 4 -type d
 
-      - image_name: client-frontend
-        context: ./ClientApp/clientapp-frontend
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.rescueGuideGhcrLogin }}
 
-      - image_name: webrtc-logic
-        context: ./webrtclogic
+      - name: Lowercase Registry Path
+        id: prep
+        run: |
+          REPO_LOWER="${GITHUB_REPOSITORY,,}"
+          echo "image_base=ghcr.io/${REPO_LOWER}" >> $GITHUB_OUTPUT
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
-
-  - name: Pfad-Check Live
-    run: |
-      echo "Was ist im Hauptverzeichnis?"
-      ls -F
-      echo "---"
-      find . -maxdepth 4 -type d
-
-  - name: Log in to the Container registry
-    uses: docker/login-action@v3
-    with:
-      registry: ghcr.io
-      username: ${{ github.actor }}
-      password: ${{ secrets.rescueGuideGhcrLogin }}
-
-  - name: Lowercase Registry Path
-    id: prep
-    run: |
-      REPO_LOWER="${GITHUB_REPOSITORY,,}"
-      echo "image_base=ghcr.io/${REPO_LOWER}" >> $GITHUB_OUTPUT
-
-  - name: Build and push Docker image
-    uses: docker/build-push-action@v5
-    with:
-      context: ${{ matrix.context }}
-      push: true
-      tags: |
-        ${{ steps.prep.outputs.image_base }}/${{ matrix.image_name }}:latest
-```
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: |
+            ${{ steps.prep.outputs.image_base }}/${{ matrix.image_name }}:latest
