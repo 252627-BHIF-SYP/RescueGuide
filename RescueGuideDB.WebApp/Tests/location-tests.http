@@ -1,0 +1,58 @@
+﻿### RescueGuide API - Location Controller Tests
+@baseUrl = http://localhost:5238/api/location
+
+### Get all locations
+GET {{baseUrl}}
+
+### Get location by ID
+GET {{baseUrl}}/1
+
+### Get location by ID (non-existent)
+GET {{baseUrl}}/999
+
+### Create new location
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "latitude": 48.2082,
+  "longitude": 16.3738
+}
+
+### Create another location
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 7,
+  "latitude": 48.3069,
+  "longitude": 14.2858
+}
+
+### Update location
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "latitude": 48.2500,
+  "longitude": 16.3800
+}
+
+### Delete location
+DELETE {{baseUrl}}/1
+
+### Delete non-existent location
+DELETE {{baseUrl}}/999
+
+### Update non-existent location
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "latitude": 50.0,
+  "longitude": 15.0
+}
+

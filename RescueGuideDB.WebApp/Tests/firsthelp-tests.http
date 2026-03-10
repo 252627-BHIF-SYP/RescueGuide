@@ -1,0 +1,58 @@
+﻿### RescueGuide API - FirstHelp Controller Tests
+@baseUrl = http://localhost:5238/api/firsthelp
+
+### Get all first help items
+GET {{baseUrl}}
+
+### Get first help item by ID
+GET {{baseUrl}}/1
+
+### Get first help item by ID (non-existent)
+GET {{baseUrl}}/999
+
+### Create new first help item
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "name": "Beatmung",
+  "description": "Künstliche Beatmung durchführen"
+}
+
+### Create another first help item
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "id": 7,
+  "name": "Herzdruckmassage",
+  "description": "Herzdruckmassage durchführen bei Herzstillstand"
+}
+
+### Update first help item
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Beatmung - Aktualisiert",
+  "description": "Aktualisierte Anleitung zur künstlichen Beatmung"
+}
+
+### Delete first help item
+DELETE {{baseUrl}}/1
+
+### Delete non-existent first help item
+DELETE {{baseUrl}}/999
+
+### Update non-existent first help item
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "name": "Test Help",
+  "description": "Test Description"
+}
+

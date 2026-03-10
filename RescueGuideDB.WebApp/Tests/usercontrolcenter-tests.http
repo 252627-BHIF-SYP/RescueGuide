@@ -1,0 +1,62 @@
+﻿### RescueGuide API - UserControlCenter Controller Tests
+@baseUrl = http://localhost:5238/api/usercontrolcenter
+
+### Get all users
+GET {{baseUrl}}
+
+### Get user by ID
+GET {{baseUrl}}/1
+
+### Get user by ID (non-existent)
+GET {{baseUrl}}/999
+
+### Create new user
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "name": "NewOperator",
+  "passwordHash": "$2a$11$newhashedpassword",
+  "emergencies": []
+}
+
+### Create another user
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 7,
+  "name": "AnotherOperator",
+  "passwordHash": "$2a$11$anotherhashedpassword",
+  "emergencies": []
+}
+
+### Update user
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "UpdatedOperator",
+  "passwordHash": "$2a$11$updatedhash",
+  "emergencies": []
+}
+
+### Delete user
+DELETE {{baseUrl}}/1
+
+### Delete non-existent user
+DELETE {{baseUrl}}/999
+
+### Update non-existent user
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "name": "TestOperator",
+  "passwordHash": "$2a$11$testhash",
+  "emergencies": []
+}
+

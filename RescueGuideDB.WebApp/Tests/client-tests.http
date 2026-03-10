@@ -1,0 +1,86 @@
+﻿### RescueGuide API - Client Controller Tests
+@baseUrl = http://localhost:5238/api/client
+
+### Get all clients
+GET {{baseUrl}}
+
+### Get client by ID
+GET {{baseUrl}}/1
+
+### Get client by ID (non-existent)
+GET {{baseUrl}}/999
+
+### Create new client (with explicit ID 6)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "email": "max@example.com",
+  "dateOfBirth": "1990-01-15",
+  "address": "Musterstraße 10",
+  "allergies": "Penicillin",
+  "preExistingConditions": "Diabetes",
+  "medikaments": "Metformin",
+  "bloodGroup": "O+"
+}
+
+### Create another client (with explicit ID 7)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 7,
+  "firstName": "Anna",
+  "lastName": "Schmidt",
+  "email": "anna@example.com",
+  "dateOfBirth": "1985-05-20",
+  "address": "Schillerstraße 5",
+  "allergies": "None",
+  "preExistingConditions": "Hypertonie",
+  "medikaments": "Bisoprolol",
+  "bloodGroup": "B+"
+}
+
+### Update client (ID 6)
+PUT {{baseUrl}}/6
+Content-Type: application/json
+
+{
+  "id": 6,
+  "firstName": "Maximilian",
+  "lastName": "Mustermann",
+  "email": "max.updated@example.com",
+  "dateOfBirth": "1990-01-15",
+  "address": "Neue Straße 20",
+  "allergies": "Penicillin, Aspirin",
+  "preExistingConditions": "Diabetes",
+  "medikaments": "Metformin",
+  "bloodGroup": "O+"
+}
+
+### Delete client (ID 6)
+DELETE {{baseUrl}}/6
+
+### Delete non-existent client (should return 404)
+DELETE {{baseUrl}}/999
+
+### Update non-existent client (should return 404)
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "firstName": "Test",
+  "lastName": "Test",
+  "email": "test@test.com",
+  "dateOfBirth": "2000-01-01",
+  "address": "Test",
+  "allergies": "None",
+  "preExistingConditions": "None",
+  "medikaments": "None",
+  "bloodGroup": "O+"
+}
+

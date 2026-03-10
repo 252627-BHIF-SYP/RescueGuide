@@ -1,0 +1,74 @@
+﻿### RescueGuide API - InstructionStep Controller Tests
+@baseUrl = http://localhost:5238/api/instructionstep
+
+### Get all instruction steps
+GET {{baseUrl}}
+
+### Get instruction step by ID
+GET {{baseUrl}}/1
+
+### Get instruction step by ID (non-existent)
+GET {{baseUrl}}/999
+
+### Create new instruction step
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 7,
+  "instructionCategoryId": 1,
+  "instructionCategory": null,
+  "order": 1,
+  "title": "Neuer Schritt",
+  "description": "Beschreibung des neuen Schritts",
+  "imageUrl": "https://example.com/image.jpg"
+}
+
+### Create another instruction step
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 8,
+  "instructionCategoryId": 1,
+  "instructionCategory": null,
+  "order": 2,
+  "title": "Zweiter Schritt",
+  "description": "Beschreibung des zweiten Schritts",
+  "imageUrl": "https://example.com/image2.jpg"
+}
+
+### Update instruction step
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "instructionCategoryId": 1,
+  "instructionCategory": null,
+  "order": 1,
+  "title": "Aktualisierter Schritt",
+  "description": "Aktualisierte Beschreibung",
+  "imageUrl": "https://example.com/updated-image.jpg"
+}
+
+### Delete instruction step
+DELETE {{baseUrl}}/1
+
+### Delete non-existent instruction step
+DELETE {{baseUrl}}/999
+
+### Update non-existent instruction step
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "instructionCategoryId": 1,
+  "instructionCategory": null,
+  "order": 1,
+  "title": "Test",
+  "description": "Test Description",
+  "imageUrl": null
+}
+
