@@ -12,9 +12,11 @@ IMAGE_BASE: ghcr.io/${{ github.repository }}
 jobs:
 build-and-push:
 runs-on: ubuntu-latest
+
+```
 permissions:
-contents: read
-packages: write
+  contents: read
+  packages: write
 
 strategy:
   matrix:
@@ -62,3 +64,4 @@ steps:
       push: true
       tags: |
         ${{ steps.prep.outputs.image_base }}/${{ matrix.image_name }}:latest
+```
