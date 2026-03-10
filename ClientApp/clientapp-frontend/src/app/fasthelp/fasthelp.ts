@@ -1,8 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
+import {Navbar} from '../navbar/navbar';
+import {FormsModule} from '@angular/forms';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 
 interface Topic {
   id: number;
@@ -23,7 +27,11 @@ interface Topic {
     MatCardContent,
     MatButton,
     MatCardTitle,
-    RouterLink
+    RouterLink,
+    Navbar,
+    FormsModule,
+    MatFormField,
+    MatInput
   ],
   standalone: true
 })
@@ -36,6 +44,14 @@ export class FastHelpComponent {
     { id: 5, title: 'Wiederbelebung', instructions: 'Herzdruckmassage und Beatmung gemäß Anleitung.' },
     { id: 6, title: 'Vergiftung', instructions: 'Gift identifizieren, Notruf absetzen, kein Erbrechen erzwingen.' }
   ];
+
+  query = signal('');
+
+  filteredTopics = computed(() => {
+    const q = this.query().toLowerCase();
+    if (!q) return this.topics;
+    return this.topics.filter(t => t.title.toLowerCase().includes(q));
+  });
 
   selectedTopic = signal<Topic | null>(null);
 

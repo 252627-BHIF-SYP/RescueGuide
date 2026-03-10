@@ -1,32 +1,36 @@
-<mat-card class="phone-wrapper">
-  <mat-card-content class="phone">
-
-    <div class="header" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="space-between start">
+<div class="emergency-container">
+  <div class="emergency-content">
+    <header>
       <h1>Ersthelfer</h1>
-      <div class="header-info">
-        <p>
-          <strong>Einsatzdauer:</strong>
-          {{ formatTime(durationSeconds()) }}
-        </p>
-        <p class="location">
-          <strong>Standort:</strong><br />
-          {{ address() }}
-        </p>
+      <div class="emergency-info">
+        <p><strong>Einsatzdauer:</strong> {{ formatTime(durationSeconds()) }}</p>
+        <p class="location"><strong>Standort:</strong><br />{{ address() }}</p>
       </div>
+    </header>
 
-      <mat-card class="camera-preview" appearance="outlined">
+    <div class="video-section">
+      <mat-card class="video-card" appearance="outlined">
         <mat-card-content>
           <app-video-call></app-video-call>
+
+          <div class="controls-section">
+            <div class="action-buttons">
+              <button mat-icon-button aria-label="Blitzlicht">
+                <mat-icon>flash_on</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Mikrofon">
+                <mat-icon>mic</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Kamera">
+                <mat-icon>camera_alt</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Rückgängig">
+                <mat-icon>undo</mat-icon>
+              </button>
+            </div>
+          </div>
         </mat-card-content>
       </mat-card>
-
     </div>
-    <div class="action-bar" fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="16px">
-      <button mat-icon-button><mat-icon>flash_on</mat-icon></button>
-      <button mat-icon-button><mat-icon>mic</mat-icon></button>
-      <button mat-icon-button><mat-icon>camera_alt</mat-icon></button>
-      <button mat-icon-button><mat-icon>undo</mat-icon></button>
-    </div>
-
-  </mat-card-content>
-</mat-card>
+  </div>
+</div>

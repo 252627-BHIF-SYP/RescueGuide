@@ -1,0 +1,16 @@
+.gps-container {
+  max-width: 400px;
+  margin: 2rem auto;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
