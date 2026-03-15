@@ -19,9 +19,7 @@ class MeinApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      // Der Wrapper hält jetzt die Tabs
       home: const MainWrapper(),
-      // Die anderen Routen bleiben für den Navigator erreichbar
       routes: {
         '/connecting': (context) => const ConnectingScreen(),
         '/emergency': (context) => const EmergencyScreen(),
