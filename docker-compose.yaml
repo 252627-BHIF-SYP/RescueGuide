@@ -1,3 +1,5 @@
+name: rescueguide
+
 services:
   # --- PostgreSQL Database ---
   postgres:
@@ -12,8 +14,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
-    networks:
-      - rescueguide-network
 
   # --- WebRTC Signaling Server ---
   webrtclogic:
@@ -32,21 +32,25 @@ services:
       dockerfile: RescueGuideDB.WebApp/Dockerfile
     container_name: rescueguide-backend
     ports:
-      - "8081:8080"
+      - "5238:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
   # --- Control Center Backend ---
   cc-backend:
     build:
       context: .
-      dockerfile: ./ControlCenterApp/controlcenter-backend/Dockerfile
+      dockerfile: ControlCenterApp/controlcenter-backend/Dockerfile
     container_name: cc-backend
     ports:
       - "5062:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      # Falls dieses Backend auch die DB braucht, hier den ConnectionString einfügen
     depends_on:
       - rescueguide-backend
 
@@ -54,7 +58,7 @@ services:
   client-backend:
     build:
       context: .
-      dockerfile: ./ClientApp/client-backend/Dockerfile
+      dockerfile: ClientApp/clientapp-backend/Dockerfile
     container_name: client-backend
     ports:
       - "5273:8080"
@@ -81,6 +85,5 @@ services:
     depends_on:
       - client-backend
 
-networks:
-  default:
-    name: rescueguide-network
+volumes:
+  postgres_data:
