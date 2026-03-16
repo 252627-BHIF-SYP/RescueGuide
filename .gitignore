@@ -78,3 +78,39 @@ yarn-error.log
 # Docker
 
 docker-compose.override.yml
+
+# IDE & System
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Flutter Standard
+.dart_tool/
+build/
+.pub-cache/
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Generierte Dateien
+generated_plugin_registrant.cc
+generated_plugin_registrant.h
+generated_plugin_registrant.java
+GeneratedPluginRegistrant.swift
+generated_plugins.cmake
+
+# Android
+.gradle/
+gradlew
+gradlew.bat
+local.properties
+key.properties
+*.jks
+
+# iOS
+Pods/
+.generated/
+Flutter.framework
+App.framework

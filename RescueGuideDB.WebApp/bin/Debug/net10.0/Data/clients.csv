@@ -1,6 +1,0 @@
-﻿Id,FirstName,LastName,Email,DateOfBirth,Address,Allergies,PreExistingConditions,Medikaments,BloodGroup
-1,Anna,Mayer,anna.mayer@email.com,1995-04-12,Hauptstraße 5,None,None,None,A+
-2,Lukas,Huber,lukas.huber@email.com,1988-09-22,Parkweg 3,Peanuts,Asthma,Ventolin,O-
-3,Sarah,Gruber,sarah.gruber@email.com,2001-02-17,Seestraße 12,None,None,None,B+
-4,Michael,Bauer,michael.bauer@email.com,1975-11-05,Berggasse 9,Penicillin,Diabetes,Insulin,AB+
-5,Laura,Hofer,laura.hofer@email.com,1999-07-30,Schulweg 2,None,None,Nonec,A-
