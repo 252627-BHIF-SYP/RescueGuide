@@ -24,11 +24,13 @@ jobs:
             dockerfile: ./RescueGuideDB.WebApp/Dockerfile
           - image_name: cc-backend
             context: ./ControlCenterApp/controlcenter-backend
+            dockerfile: ./ControlCenterApp/controlcenter-backend/Dockerfile
           - image_name: cc-frontend
             context: ./ControlCenterApp/controlcenter-frontend
             dockerfile: ./ControlCenterApp/controlcenter-frontend/Dockerfile
           - image_name: client-backend
             context: ./ClientApp/clientapp-backend
+            dockerfile: ./ClientApp/clientapp-backend/Dockerfile
           - image_name: client-frontend
             context: ./ClientApp/clientapp-frontend
             dockerfile: ./ClientApp/clientapp-frontend/Dockerfile
