@@ -1,0 +1,62 @@
+﻿### RescueGuide API - InstructionCategory Controller Tests
+@baseUrl = http://localhost:5238/api/instructioncategory
+
+### Get all instruction categories
+GET {{baseUrl}}
+
+### Get instruction category by ID
+GET {{baseUrl}}/1
+
+### Get instruction category by ID (non-existent)
+GET {{baseUrl}}/999
+
+### Create new instruction category
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 6,
+  "name": "Erste Hilfe bei Verbrennungen",
+  "description": "Anleitung zur Behandlung von Verbrennungen",
+  "steps": []
+}
+
+### Create another instruction category
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 7,
+  "name": "Erste Hilfe bei Schnittwunden",
+  "description": "Anleitung zur Behandlung von Schnittwunden",
+  "steps": []
+}
+
+### Update instruction category
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Erste Hilfe bei Verbrennungen - Aktualisiert",
+  "description": "Aktualisierte Anleitung zur Behandlung von Verbrennungen",
+  "steps": []
+}
+
+### Delete instruction category
+DELETE {{baseUrl}}/1
+
+### Delete non-existent instruction category
+DELETE {{baseUrl}}/999
+
+### Update non-existent instruction category
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "name": "Test Category",
+  "description": "Test Description",
+  "steps": []
+}
+

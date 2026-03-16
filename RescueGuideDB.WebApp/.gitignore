@@ -1,0 +1,67 @@
+﻿# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Visual Studio
+.vs/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Dependency directories
+node_modules/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# .NET Core
+project.assets.json
+*.runtimeconfig.dev.json
+
+# Publish output
+publish/
+
+# Test results
+TestResults/
+
+# Entity Framework
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets
+secrets.json
+appsettings.Development.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml

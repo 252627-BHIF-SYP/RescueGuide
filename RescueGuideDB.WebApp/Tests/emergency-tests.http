@@ -1,0 +1,101 @@
+﻿### RescueGuide API - Emergency Controller Tests
+
+@baseUrl = http://localhost:5238/api/emergency
+
+### Get all emergencies
+
+GET {{baseUrl}}
+Accept: application/json
+
+### Get emergency by ID
+
+GET {{baseUrl}}/1
+Accept: application/json
+
+### Get emergency by ID (non-existent)
+
+GET {{baseUrl}}/999
+Accept: application/json
+
+### Create new emergency
+
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 7,
+  "userId": 1,
+  "userControlCenter": null,
+  "clientId": 1,
+  "client": null,
+  "startedAt": "2026-03-10T09:00:00Z",
+  "endedAt": null,
+  "status": 2,
+  "locationId": 1,
+  "location": null
+}
+
+### Create another emergency
+
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "id": 8,
+  "userId": 2,
+  "userControlCenter": null,
+  "clientId": 2,
+  "client": null,
+  "startedAt": "2026-03-10T10:30:00Z",
+  "endedAt": "2026-03-10T11:00:00Z",
+  "status": 1,
+  "locationId": 2,
+  "location": null
+}
+
+### Update emergency (ID 7)
+
+PUT {{baseUrl}}/7
+Content-Type: application/json
+
+{
+  "id": 7,
+  "userId": 1,
+  "userControlCenter": null,
+  "clientId": 1,
+  "client": null,
+  "startedAt": "2026-03-10T09:00:00Z",
+  "endedAt": "2026-03-10T09:30:00Z",
+  "status": "Completed",
+  "locationId": 1,
+  "location": null
+}
+
+
+### Update non-existent emergency
+
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "id": 999,
+  "userId": 1,
+  "userControlCenter": null,
+  "clientId": 1,
+  "client": null,
+  "startedAt": "2026-03-10T14:30:00Z",
+  "endedAt": null,
+  "status": "Active",
+  "locationId": 1,
+  "location": null
+}
+
+### Delete emergency (ID 7)
+
+DELETE {{baseUrl}}/7
+
+###
+
+### Delete non-existent emergency
+
+DELETE {{baseUrl}}/999

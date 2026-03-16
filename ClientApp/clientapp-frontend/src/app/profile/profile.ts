@@ -50,4 +50,8 @@ export class Profile {
     const question = quiz.questions.find(q => q.id === questionId);
     return question?.correctAnswer || 'Nicht verfügbar';
   }
+
+  getCorrectAnswersCount(completedQuiz: any): number {
+    return completedQuiz.results.filter((r: any) => r.correct).length;
+  }
 }
