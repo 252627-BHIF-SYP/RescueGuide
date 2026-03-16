@@ -16,7 +16,7 @@ export class VideoCall {
 
   private pc?: RTCPeerConnection;
   private localStream?: MediaStream;
-  private serverUrl = 'http://localhost:3000';
+  private serverUrl = 'http://192.168.6.10:3000';
   private myId = 'clientapp';
   private targetId = 'controlcenter';
 
