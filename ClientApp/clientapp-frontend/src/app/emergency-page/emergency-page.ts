@@ -6,7 +6,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
 import { Navbar } from '../navbar/navbar';
-import { LocationService } from '../../services/location.service';
+import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-emergency-page',

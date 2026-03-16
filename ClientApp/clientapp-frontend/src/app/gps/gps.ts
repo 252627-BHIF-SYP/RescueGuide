@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatList, MatListItem } from '@angular/material/list';
-import { LocationService } from '../../services/location.service';
+import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-gps',

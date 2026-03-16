@@ -8,7 +8,7 @@ import { MatDivider, MatList, MatListItem } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
-import { LocationService, Notruf } from '../../services/location.service';
+import { LocationService, Notruf } from '../services/location.service';
 
 @Component({
   selector: 'app-emergency-page',

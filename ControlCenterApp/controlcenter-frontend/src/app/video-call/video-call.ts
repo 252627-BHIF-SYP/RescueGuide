@@ -139,4 +139,11 @@ export class VideoCall implements OnInit, OnDestroy {
     this.incomingFrom = null;
     console.log('Video-Call beendet');
   }
+
+  async acceptCall() {
+    console.log('Anruf-Button geklickt');
+    if (this.incomingFrom) {
+      this.incomingFrom = null; 
+    }
+  }
 }
