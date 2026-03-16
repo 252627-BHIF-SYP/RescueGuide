@@ -11,12 +11,15 @@ services:
 
   # --- Backend ---
   rescueguide-backend:
-    build: ./RescueGuideDB.WebApp
+    build:
+      context: .  
+      dockerfile: RescueGuideDB.WebApp/Dockerfile
     container_name: rescueguide-backend
     ports:
-      - "8080:80"
+      - "8081:8080" 
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
 
   # --- Control Center App ---
   cc-frontend:
@@ -25,7 +28,7 @@ services:
     ports:
       - "4200:80"
     depends_on:
-      - cc-backend
+      - rescueguide-backend
 
   # --- Client App ---
   client-frontend:
@@ -34,7 +37,7 @@ services:
     ports:
       - "4201:80"
     depends_on:
-      - client-backend
+      - rescueguide-backend
 
 networks:
   default:
