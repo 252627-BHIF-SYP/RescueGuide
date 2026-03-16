@@ -32,7 +32,7 @@ services:
       dockerfile: RescueGuideDB.WebApp/Dockerfile
     container_name: rescueguide-backend
     ports:
-      - "5238:8080"
+      - "8080:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
