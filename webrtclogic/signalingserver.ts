@@ -9,7 +9,7 @@ const io = new Server(server, {
     cors: {
         origin: ['http://localhost:4200', 'http://localhost:4201', 'http://192.168.6.10:3000', 'http://192.168.6.10:3001'],
         methods: ['GET', 'POST'],
-        credentials: true
+        credentials: false
     }
 });
 
