@@ -47,7 +47,9 @@ export class EmergencyPage implements OnInit, AfterViewInit {
   etaSeconds = signal(3 * 60 + 15);
   durationSeconds = signal(0);
 
-  private backendUrl = 'http://localhost:5062/api/leitstelle/all';
+  //private backendUrl = 'http://localhost:5062/api/leitstelle/all';
+  private backendUrl = "http://cc-backend:8080/api/leitstelle/receive";
+
   private http = inject(HttpClient);
 
   ngOnInit() {
