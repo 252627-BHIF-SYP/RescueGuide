@@ -10,7 +10,9 @@ builder.Services.AddCors(options => {
                     "http://localhost:4200",    
                     "http://localhost:65493",   
                     "https://localhost:4200",
-                    "https://localhost:65493"
+                    "https://localhost:65493",
+                    "http://192.168.6.10:3000", 
+                    "http://192.168.6.10:3001"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
