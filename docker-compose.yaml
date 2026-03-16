@@ -9,35 +9,63 @@ services:
       - "3000:3000"
     restart: unless-stopped
 
-  # --- Backend ---
+  # --- Main Backend (RescueGuideDB) ---
   rescueguide-backend:
     build:
-      context: .  
+      context: .
       dockerfile: RescueGuideDB.WebApp/Dockerfile
     container_name: rescueguide-backend
     ports:
-      - "8081:8080" 
+      - "8081:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
 
-  # --- Control Center App ---
+  # --- Control Center Backend ---
+  cc-backend:
+    build:
+      context: .
+      dockerfile: ControlCenterApp/controlcenter-backend/Dockerfile
+    container_name: cc-backend
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      - rescueguide-backend
+
+  # --- Client Backend ---
+  client-backend:
+    build:
+      context: .
+      dockerfile: ClientApp/client-backend/Dockerfile
+    container_name: client-backend
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    depends_on:
+      - rescueguide-backend
+
+  # --- Control Center Frontend ---
   cc-frontend:
     build: ./ControlCenterApp/controlcenter-frontend
     container_name: cc-frontend
     ports:
       - "4200:80"
     depends_on:
-      - rescueguide-backend
+      - cc-backend
 
-  # --- Client App ---
+  # --- Client Frontend ---
   client-frontend:
     build: ./ClientApp/clientapp-frontend
     container_name: client-frontend
     ports:
       - "4201:80"
     depends_on:
-      - rescueguide-backend
+      - client-backend
 
 networks:
   default:
