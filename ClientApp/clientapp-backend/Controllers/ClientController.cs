@@ -18,8 +18,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> SendLocation([FromBody] LocationUpdate update)
     {
         var client = _httpClientFactory.CreateClient();
-        var leitstelleUrl = "http://localhost:5062/api/leitstelle/receive"; 
-        //var leitstelleUrl = "http://cc-backend:8080/api/leitstelle/receive";
+        var leitstelleUrl = "http://cc-backend:8080/api/leitstelle/receive";
 
         var response = await client.PostAsJsonAsync(leitstelleUrl, update);
 

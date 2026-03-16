@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatList, MatListItem } from '@angular/material/list';
-import { HttpClient } from '@angular/common/http';
+import { LocationService } from '../../services/location.service';
 
 @Component({
   selector: 'app-gps',
@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
   standalone: true
 })
 export class Gps implements OnInit, OnDestroy {
+  // Signals für die UI
   latitude = signal<number | null>(null);
   longitude = signal<number | null>(null);
   accuracy = signal<number | null>(null);
@@ -19,10 +20,18 @@ export class Gps implements OnInit, OnDestroy {
   error = signal<string | null>(null);
 
   private watchId?: number;
-  private backendUrl = 'http://localhost:5062/api/leitstelle/receive';
   private lastSent = 0;
 
-  private http = inject(HttpClient);
+  // Services injecten
+  private locationService = inject(LocationService);
+
+  ngOnInit(): void {
+    this.startGps();
+  }
+
+  ngOnDestroy(): void {
+    this.stopGps();
+  }
 
   startGps() {
     if (!navigator.geolocation) {
@@ -32,7 +41,6 @@ export class Gps implements OnInit, OnDestroy {
 
     this.error.set(null);
     this.status.set('Warte auf GPS…');
-
 
     this.watchId = navigator.geolocation.watchPosition(
       (pos) => this.onPositionSuccess(pos),
@@ -63,17 +71,9 @@ export class Gps implements OnInit, OnDestroy {
         this.status.set('Standort konnte nicht ermittelt werden');
         break;
       case err.POSITION_UNAVAILABLE:
-        this.error.set('Position nicht verfügbar');
-        this.status.set('Erneuter Versuch in 5 Sekunden…');
-        this.retryPosition();
-        break;
       case err.TIMEOUT:
-        this.error.set('Timeout – GPS nicht gefunden');
-        this.status.set('Erneuter Versuch in 5 Sekunden…');
-        this.retryPosition();
-        break;
       default:
-        this.error.set('Unbekannter Fehler');
+        this.error.set(err.message || 'GPS Fehler');
         this.status.set('Erneuter Versuch in 5 Sekunden…');
         this.retryPosition();
         break;
@@ -85,29 +85,37 @@ export class Gps implements OnInit, OnDestroy {
       navigator.geolocation.clearWatch(this.watchId);
       this.watchId = undefined;
     }
-
     setTimeout(() => this.startGps(), 5000);
   }
 
   private sendToBackend() {
     const now = Date.now();
+    // Throttle: Nur alle 5 Sekunden senden, um das Netz zu schonen
     if (now - this.lastSent < 5000) return;
-    this.lastSent = now;
+    
+    const lat = this.latitude();
+    const lon = this.longitude();
 
-    if (this.latitude() === null || this.longitude() === null) return;
+    if (lat === null || lon === null) return;
+
+    this.lastSent = now;
 
     const payload = {
       userId: 'Angular_Client_1',
-      latitude: this.latitude(),
-      longitude: this.longitude(),
+      latitude: lat,
+      longitude: lon,
       accuracy: this.accuracy()
     };
 
-    this.http.post(this.backendUrl, payload).subscribe({
-      next: () => this.status.set('GPS-Daten an Leitstelle gesendet'),
+    // Nutzt jetzt den zentralen Service (und damit die VM-IP aus der environment)
+    this.locationService.sendLocation(payload).subscribe({
+      next: () => {
+        this.status.set('GPS-Daten an Leitstelle gesendet');
+        this.error.set(null);
+      },
       error: (err) => {
-        console.error(err);
-        this.error.set('Backend nicht erreichbar');
+        console.error('Senden fehlgeschlagen:', err);
+        this.error.set('Backend (VM) nicht erreichbar');
       }
     });
   }
@@ -118,13 +126,5 @@ export class Gps implements OnInit, OnDestroy {
       this.watchId = undefined;
       this.status.set('Standortüberwachung gestoppt');
     }
-  }
-
-  ngOnInit(): void {
-    this.startGps();
-  }
-
-  ngOnDestroy(): void {
-    this.stopGps();
   }
 }

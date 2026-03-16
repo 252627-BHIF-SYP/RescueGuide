@@ -8,10 +8,10 @@ builder.Services.AddCors(options => {
             policy
                 .WithOrigins(
                     "http://localhost:4200",    
-                    "http://localhost:65493",   
-                    "https://localhost:4200",
-                    "https://localhost:65493",
-                    "http://192.168.6.10:3000", 
+                    "http://localhost:4201",
+                    "http://192.168.6.10:4200", // CC-Frontend auf VM
+                    "http://192.168.6.10:4201", // Client-Frontend auf VM
+                    "http://192.168.6.10:3000", // Signaling Server
                     "http://192.168.6.10:3001"
                 )
                 .AllowAnyHeader()

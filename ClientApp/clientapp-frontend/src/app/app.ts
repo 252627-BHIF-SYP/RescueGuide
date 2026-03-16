@@ -1,4 +1,30 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatButton } from '@angular/material/button';
+import { MatList, MatListItem } from '@angular/material/list';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.html',
+  styleUrls: ['./app.scss'],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatCardContent,
+    MatButton,
+    MatList,
+    MatListItem,
+    RouterOutlet // Das ist das Wichtigste für die Navigation
+  ]
+})
+export class App {
+  // Hier muss eigentlich nichts mehr stehen, 
+  // da die GPS-Logik jetzt in deiner Gps-Komponente 
+  // und im LocationService wohnt.
+}
+
+/*import { Component, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
@@ -97,4 +123,4 @@ export class App {
       this.status.set('Standortüberwachung gestoppt');
     }
   }
-}
+}*/

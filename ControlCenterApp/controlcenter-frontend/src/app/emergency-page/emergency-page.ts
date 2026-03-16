@@ -1,24 +1,20 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, signal, inject, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatDivider, MatList, MatListItem } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import {MatIconButton} from '@angular/material/button';
-import {VideoCall} from '../video-call/video-call';
-
-interface Notruf {
-  userId: string;
-  latitude: number;
-  longitude: number;
-}
+import { MatIconButton } from '@angular/material/button';
+import { VideoCall } from '../video-call/video-call';
+import { LocationService, Notruf } from '../../services/location.service';
 
 @Component({
   selector: 'app-emergency-page',
   standalone: true,
   imports: [
+    CommonModule,
     MatIcon,
     MatCard,
     MatCardHeader,
@@ -36,25 +32,29 @@ interface Notruf {
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
 })
-export class EmergencyPage implements OnInit {
-
+export class EmergencyPage implements OnInit, OnDestroy {
+  // Signale
   latitude = signal<number | null>(null);
   longitude = signal<number | null>(null);
   status = signal('Standort wird geladen…');
   durationSeconds = signal(0);
 
-  private backendUrl = 'http://localhost:5062/api/leitstelle/all';
+  // Injections
+  private locationService = inject(LocationService);
+  private sanitizer = inject(DomSanitizer);
 
-  constructor(
-    private http: HttpClient,
-    private sanitizer: DomSanitizer
-  ) {}
+  private pollInterval?: any;
 
   ngOnInit() {
     this.fetchLatestLocation();
     this.startTimers();
 
-    setInterval(() => this.fetchLatestLocation(), 5000);
+    // Polling: Alle 5 Sekunden nach neuen Daten fragen
+    this.pollInterval = setInterval(() => this.fetchLatestLocation(), 5000);
+  }
+
+  ngOnDestroy() {
+    if (this.pollInterval) clearInterval(this.pollInterval);
   }
 
   startTimers() {
@@ -64,7 +64,7 @@ export class EmergencyPage implements OnInit {
   }
 
   fetchLatestLocation() {
-    this.http.get<Notruf[]>(this.backendUrl).subscribe({
+    this.locationService.getLatestLocations().subscribe({
       next: (notrufe) => {
         if (!notrufe || notrufe.length === 0) {
           this.status.set('Kein Notruf vorhanden');
@@ -74,7 +74,6 @@ export class EmergencyPage implements OnInit {
         }
 
         const last = notrufe[notrufe.length - 1];
-
         this.latitude.set(last.latitude);
         this.longitude.set(last.longitude);
         this.status.set('Aktueller Notruf');
@@ -86,10 +85,14 @@ export class EmergencyPage implements OnInit {
     });
   }
 
+  /** Generiert die Google Maps URL für das iFrame */
   get mapUrl(): SafeResourceUrl | null {
-    if (this.latitude() === null || this.longitude() === null) return null;
+    const lat = this.latitude();
+    const lon = this.longitude();
+    if (lat === null || lon === null) return null;
 
-    const url = `https://maps.google.com/maps?q=${this.latitude()},${this.longitude()}&z=16&output=embed`;
+    // Fix: Die URL-Struktur für Google Maps Embed
+    const url = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 

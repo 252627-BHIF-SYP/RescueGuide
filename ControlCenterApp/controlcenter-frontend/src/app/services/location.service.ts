@@ -1,19 +1,20 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
+
+export interface Notruf {
+  userId: string;
+  latitude: number;
+  longitude: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
-  private apiUrl = 'http://localhost:5273/api/user/send-location';
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/leitstelle`;
 
-  constructor(private http: HttpClient) {}
-
-  sendToBackend(lat: number, lng: number) {
-    const body = {
-      userId: 'Ersthelfer_Mobil',
-      latitude: lat,
-      longitude: lng,
-      timestamp: new Date().toISOString()
-    };
-    return this.http.post(this.apiUrl, body);
+  getLatestLocations(): Observable<Notruf[]> {
+    return this.http.get<Notruf[]>(`${this.apiUrl}/all`);
   }
 }
