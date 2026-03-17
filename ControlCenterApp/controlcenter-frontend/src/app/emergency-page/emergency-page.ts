@@ -14,7 +14,7 @@ import { LocationService, Notruf } from '../services/location.service';
   selector: 'app-emergency-page',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     MatIcon,
     MatCard,
     MatCardHeader,
@@ -39,55 +39,43 @@ export class EmergencyPage implements OnInit, OnDestroy {
   status = signal('Standort wird geladen…');
   durationSeconds = signal(0);
 
-  safeMapUrl = signal<SafeResourceUrl | null>(null);
-
   // Injections
   private locationService = inject(LocationService);
   private sanitizer = inject(DomSanitizer);
 
   private pollInterval?: any;
-  private timerInterval?: any;
 
   ngOnInit() {
     this.fetchLatestLocation();
     this.startTimers();
+
+    // Polling: Alle 5 Sekunden nach neuen Daten fragen
     this.pollInterval = setInterval(() => this.fetchLatestLocation(), 5000);
   }
 
   ngOnDestroy() {
     if (this.pollInterval) clearInterval(this.pollInterval);
-    if (this.timerInterval) clearInterval(this.timerInterval);
   }
 
   startTimers() {
-    this.timerInterval = setInterval(() => {
+    setInterval(() => {
       this.durationSeconds.update(v => v + 1);
     }, 1000);
   }
 
   fetchLatestLocation() {
     this.locationService.getLatestLocations().subscribe({
-      next: (notrufe: any[]) => {
+      next: (notrufe) => {
         if (!notrufe || notrufe.length === 0) {
           this.status.set('Kein Notruf vorhanden');
           this.latitude.set(null);
           this.longitude.set(null);
-          this.safeMapUrl.set(null);
           return;
         }
 
         const last = notrufe[notrufe.length - 1];
-        
-        // Prüfen, ob sich die Koordinaten überhaupt geändert haben, um unnötige Map-Reloads zu vermeiden
-        if (last.latitude !== this.latitude() || last.longitude !== this.longitude()) {
-            this.latitude.set(last.latitude);
-            this.longitude.set(last.longitude);
-            
-            // Hier die URL einmalig berechnen und setzen
-            const url = `https://maps.google.com/maps?q=${last.latitude},${last.longitude}&z=15&output=embed`;
-            this.safeMapUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
-        }
-        
+        this.latitude.set(last.latitude);
+        this.longitude.set(last.longitude);
         this.status.set('Aktueller Notruf');
       },
       error: (err) => {
