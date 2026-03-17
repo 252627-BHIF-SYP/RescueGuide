@@ -1,15 +1,16 @@
 <div class="video-call">
-  <div *ngIf="incomingFrom" class="incoming">
-    <p>Eingehender Anruf von {{ incomingFrom }}</p>
-    <button mat-raised-button color="primary" (click)="acceptCall()">Annehmen</button>
-    <button mat-stroked-button color="warn" (click)="incomingFrom = null">Ablehnen</button>
-  </div>
-
-  <div class="videos">
-    <!--<video #localVideo autoplay muted playsinline class="local"></video>-->
+  <div class="videos" *ngIf="localStream">
+    <video #localVideo autoplay muted playsinline class="local"></video>
     <video #remoteVideo autoplay playsinline class="remote"></video>
   </div>
-  <div class="controls">
-    <button mat-stroked-button color="warn" (click)="endCall()">Beenden</button>
+  
+  <div class="controls" *ngIf="localStream">
+    <button mat-fab color="warn" (click)="endCall()">
+      <mat-icon>call_end</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="!localStream && incomingFrom" class="auto-connecting">
+    <p>Verbindung mit Patient wird aufgebaut...</p>
   </div>
 </div>

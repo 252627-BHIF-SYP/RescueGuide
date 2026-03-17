@@ -15,12 +15,16 @@ export class VideoCall implements OnInit, OnDestroy {
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
 
   private pc?: RTCPeerConnection;
-  public localStream?: MediaStream; // public, damit HTML darauf zugreifen kann
+  public localStream?: MediaStream;
   
+  // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
   private myId = 'controlcenter';
   private targetId = 'clientapp';
 
+  incomingFrom: string | null = null;
+
+  // Signal Service injecten
   private signaling = inject(SignalingService);
 
   ngOnInit() {
@@ -34,20 +38,26 @@ export class VideoCall implements OnInit, OnDestroy {
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
 
-    // Sobald ein Offer reinkommt, wird handleOffer SOFORT aufgerufen
+    // Wenn ein Anruf reinkommt, speichern wir, von wem er kommt (für das UI)
+    this.signaling.on('incoming-call', (p: any) => {
+      console.log('Eingehender Anruf von:', p.from);
+      this.incomingFrom = p.from;
+    });
+
+    // WebRTC: Der Client schickt sein Angebot (Offer)
     this.signaling.on('call-offer', async (p: any) => {
-      console.log('Eingehender Anruf: Starte automatische Verbindung...');
       if (p.sdp) {
         await this.handleOffer(p.from, p.sdp);
       }
     });
 
+    // WebRTC: ICE Candidates austauschen
     this.signaling.on('ice-candidate', async (p: any) => {
       if (p.candidate && this.pc) {
         try {
           await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
         } catch (e) {
-          console.warn('ICE Error:', e);
+          console.warn('ICE Candidate Error:', e);
         }
       }
     });
@@ -57,55 +67,58 @@ export class VideoCall implements OnInit, OnDestroy {
     });
   }
 
-  private async handleOffer(from: string, sdp: any) {
+  // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
+  async handleOffer(from: string, sdp: any) {
     try {
-      // 1. Medienzugriff (Kamera/Mikro)
+      // Leitstelle sendet meistens nur Audio zurück (oder Video optional)
       this.localStream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, 
+        video: true, // Ändern auf 'false', wenn die Leitstelle nicht gesehen werden soll
         audio: true 
       });
 
-      if (this.localVideo) {
+      if (this.localVideo && this.localStream) {
         this.localVideo.nativeElement.srcObject = this.localStream;
       }
 
-      // 2. WebRTC Verbindung initialisieren
       this.pc = new RTCPeerConnection({
         iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
       });
 
-      // 3. Eigene Tracks hinzufügen
+      // Eigene Tracks hinzufügen
       this.localStream.getTracks().forEach(t => this.pc!.addTrack(t, this.localStream!));
 
-      // 4. Remote Video Stream empfangen
+      // Remote Stream (vom Client/Handy) empfangen
       this.pc.ontrack = (ev) => {
         if (this.remoteVideo) {
           this.remoteVideo.nativeElement.srcObject = ev.streams[0];
         }
       };
 
-      // 5. ICE Candidates senden
       this.pc.onicecandidate = (ev) => {
         if (ev.candidate) {
           this.signaling.emit('ice-candidate', { 
-            to: from, from: this.myId, candidate: ev.candidate 
+            to: from, 
+            from: this.myId, 
+            candidate: ev.candidate 
           });
         }
       };
 
-      // 6. SDP Handshake (Answer erstellen)
+      // Verbindung herstellen
       await this.pc.setRemoteDescription(new RTCSessionDescription(sdp));
       const answer = await this.pc.createAnswer();
       await this.pc.setLocalDescription(answer);
 
-      // 7. Antwort zurückschicken
+      // Antwort (Answer) zurück an den Client senden
       this.signaling.emit('call-answer', { 
-        to: from, from: this.myId, sdp: this.pc.localDescription 
+        to: from, 
+        from: this.myId, 
+        sdp: this.pc.localDescription 
       });
-
-      console.log('Verbindung automatisch hergestellt.');
+      
+      this.incomingFrom = null;
     } catch (err) {
-      console.error('Auto-Annahme fehlgeschlagen:', err);
+      console.error('Fehler bei der Anrufannahme:', err);
     }
   }
 
@@ -122,6 +135,15 @@ export class VideoCall implements OnInit, OnDestroy {
     if (this.localStream) {
       this.localStream.getTracks().forEach(t => t.stop());
       this.localStream = undefined;
+    }
+    this.incomingFrom = null;
+    console.log('Video-Call beendet');
+  }
+
+  async acceptCall() {
+    console.log('Anruf-Button geklickt');
+    if (this.incomingFrom) {
+      this.incomingFrom = null; 
     }
   }
 }
