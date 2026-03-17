@@ -25,10 +25,10 @@
 
             <p class="status-text">{{ status() }}</p>
 
-            @if (mapUrl !== null) {
+            @if (safeMapUrl() !== null) {
               <div class="google-maps">
                 <iframe
-                  [src]="mapUrl!"
+                  [src]="safeMapUrl()!"
                   width="100%"
                   height="300"
                   style="border:0;"

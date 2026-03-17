@@ -17,14 +17,14 @@ export class VideoCall implements OnInit, OnDestroy {
   private pc?: RTCPeerConnection;
   private localStream?: MediaStream;
   
-  // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
   private myId = 'controlcenter';
   private targetId = 'clientapp';
 
+  // Hier speichern wir das Angebot, bis der User auf "Annehmen" klickt
+  private pendingOffer: any = null; 
   incomingFrom: string | null = null;
 
-  // Signal Service injecten
   private signaling = inject(SignalingService);
 
   ngOnInit() {
@@ -38,87 +38,94 @@ export class VideoCall implements OnInit, OnDestroy {
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
 
-    // Wenn ein Anruf reinkommt, speichern wir, von wem er kommt (für das UI)
+    // Event: Ein Anruf kommt rein (Signaling-Ebene)
     this.signaling.on('incoming-call', (p: any) => {
-      console.log('Eingehender Anruf von:', p.from);
+      console.log('Anruf-Signal von:', p.from);
       this.incomingFrom = p.from;
     });
 
-    // WebRTC: Der Client schickt sein Angebot (Offer)
+    // Event: Das WebRTC-Angebot (SDP) kommt an
     this.signaling.on('call-offer', async (p: any) => {
-      if (p.sdp) {
-        await this.handleOffer(p.from, p.sdp);
-      }
+      console.log('WebRTC Offer erhalten von:', p.from);
+      this.incomingFrom = p.from;
+      this.pendingOffer = p; // Angebot zwischenspeichern
     });
 
-    // WebRTC: ICE Candidates austauschen
     this.signaling.on('ice-candidate', async (p: any) => {
       if (p.candidate && this.pc) {
-        try {
-          await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
-        } catch (e) {
-          console.warn('ICE Candidate Error:', e);
-        }
+        await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate)).catch(console.warn);
       }
     });
 
-    this.signaling.on('call-end', () => {
-      this.closeConnection();
-    });
+    this.signaling.on('call-end', () => this.closeConnection());
   }
 
-  // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
-  async handleOffer(from: string, sdp: any) {
+  /**
+   * Wird vom Button "Annehmen" im HTML aufgerufen
+   */
+  async acceptCall() {
+    if (!this.pendingOffer) {
+      console.warn("Kein Anruf zum Annehmen vorhanden.");
+      return;
+    }
+
+    console.log('Anruf wird angenommen, Kamera startet...');
+    await this.handleOffer(this.pendingOffer.from, this.pendingOffer.sdp);
+    
+    // UI zurücksetzen (Button ausblenden)
+    this.pendingOffer = null;
+    this.incomingFrom = null;
+  }
+
+  private async handleOffer(from: string, sdp: any) {
     try {
-      // Leitstelle sendet meistens nur Audio zurück (oder Video optional)
+      // 1. Kamera & Mikrofon aktivieren
       this.localStream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, // Ändern auf 'false', wenn die Leitstelle nicht gesehen werden soll
+        video: true, 
         audio: true 
       });
 
-      if (this.localVideo && this.localStream) {
+      if (this.localVideo) {
         this.localVideo.nativeElement.srcObject = this.localStream;
       }
 
+      // 2. PeerConnection erstellen
       this.pc = new RTCPeerConnection({
         iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
       });
 
-      // Eigene Tracks hinzufügen
+      // 3. Eigene Medien-Tracks hinzufügen
       this.localStream.getTracks().forEach(t => this.pc!.addTrack(t, this.localStream!));
 
-      // Remote Stream (vom Client/Handy) empfangen
+      // 4. Remote-Stream (vom Client) empfangen
       this.pc.ontrack = (ev) => {
         if (this.remoteVideo) {
           this.remoteVideo.nativeElement.srcObject = ev.streams[0];
         }
       };
 
+      // 5. ICE Candidates verschicken
       this.pc.onicecandidate = (ev) => {
         if (ev.candidate) {
           this.signaling.emit('ice-candidate', { 
-            to: from, 
-            from: this.myId, 
-            candidate: ev.candidate 
+            to: from, from: this.myId, candidate: ev.candidate 
           });
         }
       };
 
-      // Verbindung herstellen
+      // 6. Verbindung herstellen (SDP Handshake)
       await this.pc.setRemoteDescription(new RTCSessionDescription(sdp));
       const answer = await this.pc.createAnswer();
       await this.pc.setLocalDescription(answer);
 
-      // Antwort (Answer) zurück an den Client senden
+      // 7. Antwort an Client senden
       this.signaling.emit('call-answer', { 
-        to: from, 
-        from: this.myId, 
-        sdp: this.pc.localDescription 
+        to: from, from: this.myId, sdp: this.pc.localDescription 
       });
-      
-      this.incomingFrom = null;
+
     } catch (err) {
-      console.error('Fehler bei der Anrufannahme:', err);
+      console.error('Kamera konnte nicht gestartet werden:', err);
+      alert("Kamera-Zugriff verweigert oder nicht möglich (HTTPS/Chrome Flags prüfen!)");
     }
   }
 
@@ -128,22 +135,9 @@ export class VideoCall implements OnInit, OnDestroy {
   }
 
   private closeConnection() {
-    if (this.pc) {
-      this.pc.close();
-      this.pc = undefined;
-    }
-    if (this.localStream) {
-      this.localStream.getTracks().forEach(t => t.stop());
-      this.localStream = undefined;
-    }
+    if (this.pc) { this.pc.close(); this.pc = undefined; }
+    if (this.localStream) { this.localStream.getTracks().forEach(t => t.stop()); this.localStream = undefined; }
     this.incomingFrom = null;
-    console.log('Video-Call beendet');
-  }
-
-  async acceptCall() {
-    console.log('Anruf-Button geklickt');
-    if (this.incomingFrom) {
-      this.incomingFrom = null; 
-    }
+    this.pendingOffer = null;
   }
 }
