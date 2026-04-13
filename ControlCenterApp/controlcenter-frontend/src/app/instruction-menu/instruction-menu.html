@@ -9,11 +9,27 @@
           <mat-card-title>Pläne</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <!-- Hier könnten Pläne aufgelistet werden -->
-          <p>Keine Pläne vorhanden</p>
+          <mat-list>
+            @for (plan of plans; track plan.id) {
+              <mat-list-item>
+                <span>{{ plan.name }}</span>
+                <div class="actions">
+                  <button mat-icon-button (click)="editPlan(plan)" aria-label="Plan bearbeiten">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="deletePlan(plan)" aria-label="Plan löschen">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+            }
+            @if (plans.length === 0) {
+              <mat-list-item>Keine Pläne vorhanden</mat-list-item>
+            }
+          </mat-list>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="primary">
+          <button mat-raised-button color="primary" (click)="createPlan()">
             <mat-icon>add</mat-icon>
             Plan erstellen
           </button>
@@ -38,16 +54,75 @@
 
           <div class="measures-section">
             <h3>Maßnahmen</h3>
-            <!-- Maßnahmen Liste -->
-            <mat-list>
-              <!-- Hier könnten Maßnahmen dynamisch geladen werden -->
-              <mat-list-item>Noch keine Maßnahmen</mat-list-item>
-            </mat-list>
+            @if (currentMeasures.length > 0) {
+              <mat-list>
+                @for (measure of currentMeasures; track measure.id) {
+                  <mat-list-item>
+                    <div class="measure-item">
+                      <div class="measure-header">
+                        <span>{{ measure.name }}</span>
+                        <button mat-icon-button (click)="toggleDescription(measure.id)" class="expand-icon" [attr.aria-label]="expandedDescriptions[measure.id] ? 'Beschreibung zuklappen' : 'Beschreibung aufklappen'">
+                          <mat-icon>{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        </button>
+                      </div>
+                      @if (expandedDescriptions[measure.id]) {
+                        <div class="measure-description">
+                          {{ measure.description }}
+                        </div>
+                      }
+                    </div>
+                    <div class="actions">
+                      <button mat-icon-button (click)="editMeasure(measure)" aria-label="Maßnahme bearbeiten">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button mat-icon-button (click)="removeMeasure(measure)" aria-label="Maßnahme entfernen">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p>Noch keine Maßnahmen</p>
+            }
 
-            <button mat-stroked-button color="primary" class="add-measure-btn">
-              <mat-icon>add</mat-icon>
-              Maßnahmen hinzufügen
-            </button>
+            <div class="add-measures">
+              <h4>Vorhandene Maßnahmen</h4>
+              <mat-list>
+                @for (measure of availableMeasures; track measure.id) {
+                  <mat-list-item>
+                    <div class="measure-item">
+                      <div class="measure-header">
+                        <span>{{ measure.name }}</span>
+                        <button mat-icon-button (click)="toggleDescription(measure.id)" class="expand-icon" [attr.aria-label]="expandedDescriptions[measure.id] ? 'Beschreibung zuklappen' : 'Beschreibung aufklappen'">
+                          <mat-icon>{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        </button>
+                      </div>
+                      @if (expandedDescriptions[measure.id]) {
+                        <div class="measure-description">
+                          {{ measure.description }}
+                        </div>
+                      }
+                    </div>
+                    <div class="actions">
+                      <button mat-icon-button (click)="editMeasure(measure)" aria-label="Maßnahme bearbeiten">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button mat-icon-button (click)="addMeasure(measure)" [disabled]="currentMeasures.includes(measure)" aria-label="Maßnahme hinzufügen">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                      <button mat-icon-button (click)="deleteMeasure(measure)" aria-label="Maßnahme löschen">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </mat-list-item>
+                }
+              </mat-list>
+              <button mat-stroked-button color="primary" (click)="createMeasure()">
+                <mat-icon>add</mat-icon>
+                Neue Maßnahme erstellen
+              </button>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>

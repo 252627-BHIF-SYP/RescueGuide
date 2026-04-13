@@ -58,9 +58,102 @@
   padding: 10px 0;
 }
 
+.add-measures {
+  margin-top: 20px;
+}
+
+.add-measures h4 {
+  margin-bottom: 10px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.add-measures mat-list {
+  background-color: #fafafa;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.plan-card mat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan-card .actions {
+  display: flex;
+  gap: 8px;
+}
+
 .add-measure-btn {
   margin-top: 20px;
   align-self: flex-start;
+}
+
+.clickable-name {
+  cursor: pointer;
+  color: #1976d2;
+  text-decoration: underline;
+}
+
+.clickable-name:hover {
+  color: #0d47a1;
+}
+
+mat-list-item {
+  height: auto !important;
+  min-height: 48px;
+  transition: background-color 0.2s ease;
+}
+
+mat-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.plan-card, .status-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.plan-card:hover, .status-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.actions button {
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.actions button:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.actions button:active {
+  transform: scale(0.95);
+}
+
+.measure-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.measure-description {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: rgba(0, 0, 0, 0.7);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background-color: #f9f9f9;
+  padding: 8px;
+  border-radius: 4px;
+  border-left: 4px solid #1976d2;
+}
+
+.status-badge {
+  background-color: #fff3e0;
+  border: 1px solid #ff9800;
+  border-radius: 16px;
+  padding: 4px 12px;
 }
 
 /* Responsive Design */
