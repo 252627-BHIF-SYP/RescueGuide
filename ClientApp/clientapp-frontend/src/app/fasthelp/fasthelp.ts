@@ -1,4 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
+import { OnInit, inject } from '@angular/core';
+import { FirstHelpService, FirstHelp } from './firsthelp.service';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
@@ -8,12 +10,7 @@ import {FormsModule} from '@angular/forms';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 
-interface Topic {
-  id: number;
-  title: string;
-  image?: string;
-  instructions?: string;
-}
+
 
 @Component({
   selector: 'app-fasthelp',
@@ -35,28 +32,22 @@ interface Topic {
   ],
   standalone: true
 })
-export class FastHelpComponent {
-  topics: Topic[] = [
-    { id: 1, title: 'Verbrennungen', image: 'assets/verbrennungen.jpg', instructions: 'Sofort kühlen: Betroffene Stelle unter fließendes Wasser (ca. 20°C) halten (10-15 Min.)' },
-    { id: 2, title: 'Brüche', instructions: 'Ruhigstellen, Notruf bei starken Schmerzen.' },
-    { id: 3, title: 'Prellungen', instructions: 'Kühlen, hochlagern, Schonung.' },
-    { id: 4, title: 'Schnitte', instructions: 'Reinigen, verbinden, Blutstillung.' },
-    { id: 5, title: 'Wiederbelebung', instructions: 'Herzdruckmassage und Beatmung gemäß Anleitung.' },
-    { id: 6, title: 'Vergiftung', instructions: 'Gift identifizieren, Notruf absetzen, kein Erbrechen erzwingen.' }
-  ];
+export class FastHelpComponent implements OnInit {
+  topics = signal<FirstHelp[]>([]);
 
   query = signal('');
 
   filteredTopics = computed(() => {
     const q = this.query().toLowerCase();
-    if (!q) return this.topics;
-    return this.topics.filter(t => t.title.toLowerCase().includes(q));
+    const all = this.topics();
+    if (!q) return all;
+    return all.filter(t => t.name.toLowerCase().includes(q));
   });
 
-  selectedTopic = signal<Topic | null>(null);
+  selectedTopic = signal<FirstHelp | null>(null);
 
   openTopic(id: number) {
-    const topic = this.topics.find(t => t.id === id) ?? null;
+    const topic = this.topics().find(t => t.id === id) ?? null;
     this.selectedTopic.set(topic);
   }
 
@@ -66,5 +57,18 @@ export class FastHelpComponent {
 
   callEmergency() {
     alert('Notruf wird gewählt!');
+  }
+
+  private firstHelpService = inject(FirstHelpService);
+
+  ngOnInit(): void {
+    this.firstHelpService.getAll().subscribe({
+      next: (data) => {
+        this.topics.set(data);
+      },
+      error: (err) => {
+        console.error('Fehler beim Laden der FirstHelp-Daten', err);
+      }
+    });
   }
 }

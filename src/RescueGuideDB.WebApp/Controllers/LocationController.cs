@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using RescueGuideDB.Core.Entities;
+using RescueGuideDB.Core.Entities.DTOs;
 using RescueGuideDB.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,9 +31,22 @@ public class LocationController : ControllerBase
         return location;
     }
 
+
     [HttpPost]
-    public async Task<ActionResult<Location>> Create(Location location)
+    public async Task<ActionResult<Location>> Create(LocationDto dto)
     {
+        int maxId = 0;
+        if (_context.Locations.Any())
+        {
+            maxId = _context.Locations.Max(l => l.Id);
+        }
+        var location = new Location
+        {
+            Id = maxId + 1,
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
+            Emergencies = new List<Emergency>()
+        };
         _context.Locations.Add(location);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = location.Id }, location);

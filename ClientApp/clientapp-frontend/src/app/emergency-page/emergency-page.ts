@@ -34,8 +34,40 @@ export class EmergencyPage implements OnInit, AfterViewInit {
   durationSeconds = signal(0);
 
   ngOnInit() {
+    this.sendCurrentLocation();
     this.fetchLatestLocation();
     this.startTimers();
+    // Poll alle 10 Sekunden für neuen Standort
+    setInterval(() => this.fetchLatestLocation(), 10000);
+  }
+  /** Holt aktuelle Location vom Browser und sendet sie ans Backend */
+  sendCurrentLocation() {
+    if (!navigator.geolocation) {
+      this.address.set('Geolocation nicht unterstützt');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        // Sende an Backend
+        this.locationService.sendLocation({
+          latitude: lat,
+          longitude: lon
+        }).subscribe({
+          next: () => {
+            // Optional: Feedback
+          },
+          error: (err) => {
+            console.error('Fehler beim Senden der Location:', err);
+          }
+        });
+      },
+      (err) => {
+        this.address.set('Standort konnte nicht ermittelt werden');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
+    );
   }
 
   ngAfterViewInit() {

@@ -14,12 +14,12 @@ export interface Notruf {
 })
 export class LocationService {
   private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/leitstelle`;
+  private apiUrl = `${environment.apiUrl}/Location`;
 
   /** Holt alle Standortdaten vom Control-Center Backend */
   getLocations(): Observable<Notruf[]> {
     console.log('Using API URL:', this.apiUrl);
-    return this.http.get<Notruf[]>(`${this.apiUrl}/all`);
+    return this.http.get<Notruf[]>(`${this.apiUrl}`);
   }
 
   /** Wandelt Koordinaten in eine lesbare Adresse um (OpenStreetMap) */
@@ -30,6 +30,6 @@ export class LocationService {
 
   sendLocation(payload: any): Observable<any> {
   // Nutzt die URL aus der environment.prod.ts (http://192.168.6.10:5062/api/leitstelle/receive)
-  return this.http.post(`${this.apiUrl}/receive`, payload);
+  return this.http.post(`${this.apiUrl}`, payload);
 }
 }

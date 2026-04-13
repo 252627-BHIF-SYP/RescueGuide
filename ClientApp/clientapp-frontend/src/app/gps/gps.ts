@@ -100,11 +100,10 @@ export class Gps implements OnInit, OnDestroy {
 
     this.lastSent = now;
 
+
     const payload = {
-      userId: 'Angular_Client_1',
       latitude: lat,
-      longitude: lon,
-      accuracy: this.accuracy()
+      longitude: lon
     };
 
     // Nutzt jetzt den zentralen Service (und damit die VM-IP aus der environment)
