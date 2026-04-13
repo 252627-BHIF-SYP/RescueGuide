@@ -11,6 +11,16 @@ services:
       - "3000:3000"
     restart: unless-stopped
 
+  # --- Backend (ASP.NET WebApp) ---
+  rescueguide-backend:
+    build:
+      context: .
+      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
+    container_name: rescueguide-backend
+    ports:
+      - "5238:80"
+    restart: unless-stopped
+
   # --- Control Center Frontend ---
   cc-frontend:
     build: ./ControlCenterApp/controlcenter-frontend
@@ -18,7 +28,7 @@ services:
     ports:
       - "4200:80"
     depends_on:
-      - cc-backend
+      - rescueguide-backend
 
   # --- Client Frontend ---
   client-frontend:
@@ -27,4 +37,4 @@ services:
     ports:
       - "4201:80"
     depends_on:
-      - client-backend
+      - rescueguide-backend
