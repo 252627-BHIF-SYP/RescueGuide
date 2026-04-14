@@ -12,9 +12,10 @@ export interface Notruf {
 @Injectable({ providedIn: 'root' })
 export class LocationService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/leitstelle`;
+  private apiUrl = `${environment.apiUrl}/Location`;
 
-  getLatestLocations(): Observable<Notruf[]> {
-    return this.http.get<Notruf[]>(`${this.apiUrl}/all`);
+  getLocations(): Observable<Notruf[]> {
+    console.log('Using API URL:', this.apiUrl);
+    return this.http.get<Notruf[]>(`${this.apiUrl}`);
   }
 }

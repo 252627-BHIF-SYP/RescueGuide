@@ -36,26 +36,21 @@ export class EmergencyPage implements OnInit, OnDestroy {
   // Signale
   latitude = signal<number | null>(null);
   longitude = signal<number | null>(null);
+  address = signal<string>('Adresse wird geladen…');
   status = signal('Standort wird geladen…');
   durationSeconds = signal(0);
+  mapUrl = signal<SafeResourceUrl | null>(null);
 
   // Injections
   private locationService = inject(LocationService);
   private sanitizer = inject(DomSanitizer);
 
-  private pollInterval?: any;
-
   ngOnInit() {
     this.fetchLatestLocation();
     this.startTimers();
-
-    // Polling: Alle 5 Sekunden nach neuen Daten fragen
-    this.pollInterval = setInterval(() => this.fetchLatestLocation(), 5000);
   }
 
-  ngOnDestroy() {
-    if (this.pollInterval) clearInterval(this.pollInterval);
-  }
+  ngOnDestroy() {}
 
   startTimers() {
     setInterval(() => {
@@ -64,12 +59,14 @@ export class EmergencyPage implements OnInit, OnDestroy {
   }
 
   fetchLatestLocation() {
-    this.locationService.getLatestLocations().subscribe({
+    this.locationService.getLocations().subscribe({
       next: (notrufe) => {
         if (!notrufe || notrufe.length === 0) {
           this.status.set('Kein Notruf vorhanden');
           this.latitude.set(null);
           this.longitude.set(null);
+          this.address.set('Kein Standort verfügbar');
+          this.mapUrl.set(null);
           return;
         }
 
@@ -77,23 +74,32 @@ export class EmergencyPage implements OnInit, OnDestroy {
         this.latitude.set(last.latitude);
         this.longitude.set(last.longitude);
         this.status.set('Aktueller Notruf');
+        this.fetchAddress(last.latitude, last.longitude);
+        // Setze mapUrl nur einmalig beim Standort-Fetch
+        const url = `https://maps.google.com/maps?q=${last.latitude},${last.longitude}&z=15&output=embed`;
+        this.mapUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
       },
       error: (err) => {
         console.error('Fehler beim Laden der Notrufe', err);
         this.status.set('Backend nicht erreichbar');
+        this.address.set('Backend nicht erreichbar');
+        this.mapUrl.set(null);
       }
     });
   }
 
-  /** Generiert die Google Maps URL für das iFrame */
-  get mapUrl(): SafeResourceUrl | null {
-    const lat = this.latitude();
-    const lon = this.longitude();
-    if (lat === null || lon === null) return null;
-
-    // Fix: Die URL-Struktur für Google Maps Embed
-    const url = `https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  /** Holt die Adresse zu den Koordinaten (Reverse Geocoding via Nominatim) */
+  fetchAddress(lat: number, lon: number) {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=de`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.display_name) {
+          this.address.set(data.display_name);
+        } else {
+          this.address.set('Adresse nicht gefunden');
+        }
+      })
+      .catch(() => this.address.set('Adresse nicht gefunden'));
   }
 
   formatTime(seconds: number): string {

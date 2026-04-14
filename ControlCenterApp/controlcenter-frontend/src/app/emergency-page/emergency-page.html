@@ -1,106 +1,101 @@
-<div class="realtime-container">
-  <h1>Notfall</h1>
-  <strong>Einsatzdauer:</strong>
-  {{ formatTime(durationSeconds()) }}
-  <div class="main-content">
-    <div class="info-column">
+<div class="emergency-container">
+  <div class="emergency-content">
+    <header>
+      <h1 style="color: #d32f2f;">Leitstelle</h1>
+      <div class="emergency-info">
+        <p><strong>Einsatzdauer:</strong> {{ formatTime(durationSeconds()) }}</p>
+      </div>
+    </header>
 
-      <app-video-call></app-video-call>
-
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon class="card-icon">info</mat-icon>
-            Echtzeit Infos
-          </mat-card-title>
-        </mat-card-header>
-
+    <div class="video-section">
+      <mat-card class="video-card" appearance="outlined">
         <mat-card-content>
+          <app-video-call></app-video-call>
 
-          <div class="map-container">
-            <h3>
-              <mat-icon>location_on</mat-icon>
-              Standort
-            </h3>
-
-            <p class="status-text">{{ status() }}</p>
-
-            @if (mapUrl !== null) {
-              <div class="google-maps">
-                <iframe
-                  [src]="mapUrl!"
-                  width="100%"
-                  height="300"
-                  style="border:0;"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-
-                <div class="map-marker">
-                  <mat-icon>location_on</mat-icon>
-                </div>
-              </div>
-
-              <div class="coordinates">
-                <div class="coord-item">
-                  <span class="coord-value">
-                    {{ latitude() }}°
-                  </span>
-                  <span class="coord-value">
-                    {{ longitude() }}°
-                  </span>
-                </div>
-              </div>
-            } @else {
-              <p class="no-location">
-                Kein Standort verfügbar
-              </p>
-            }
-          </div>
-
-          <div class="eta-section">
-            <h3>
-              <mat-icon>schedule</mat-icon>
-              Eintreffen Einsatzkräfte
-            </h3>
-
-            <div class="rescue-card">
-              <div class="rescue-header">
-                <mat-icon>medical_services</mat-icon>
-                <span>Rettungsdienst</span>
-              </div>
-
-                <div class="info-row">
-                  <mat-icon>directions_car</mat-icon>
-                  <span class="label">Fahrzeuge: </span>
-                  <span class="value">RTW 1, NEF 12</span>
-                </div>
-              <mat-progress-bar
-                mode="determinate"
-                value="60"
-                color="primary"
-                class="eta-bar">
-              </mat-progress-bar>
+          <div class="controls-section">
+            <div class="action-buttons">
+              <button mat-icon-button aria-label="Blitzlicht">
+                <mat-icon>flash_on</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Mikrofon">
+                <mat-icon>mic</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Kamera">
+                <mat-icon>camera_alt</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Rückgängig">
+                <mat-icon>undo</mat-icon>
+              </button>
             </div>
           </div>
-
         </mat-card-content>
       </mat-card>
+    </div>
 
-      <!-- 📋 ANWEISUNGEN -->
-      <mat-card class="instructions-card">
+    <div class="map-section" style="margin-top: 0;">
+      <mat-card class="map-card" appearance="outlined">
+        <mat-card-content>
+          <mat-card-title style="margin-bottom: 1rem">
+           <strong style="color: black; margin-top: 0;">Standort</strong>
+           </mat-card-title>
+          <ng-container *ngIf="mapUrl() !== null; else noLocation">
+            <div class="google-maps">
+              <iframe
+                [src]="mapUrl()!"
+                width="100%"
+                height="300"
+                style="border:0;"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+
+            </div>
+            <div class="address-section">
+              <section class="address-label"><strong>Adresse:</strong></section>
+              <span class="address-value">{{ address() }}</span>
+            </div>
+          </ng-container>
+          <ng-template #noLocation>
+            <p class="no-location">Kein Standort verfügbar</p>
+          </ng-template>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div style="margin-top: 1rem; margin-bottom: 1rem;">
+      <mat-card class="eta-card" appearance="outlined">
+        <mat-card-content>
+          <mat-card-title style="color: black; margin-bottom: 0.8rem; margin-top: 0;"><strong>Eintreffen Einsatzkräfte</strong></mat-card-title>
+          <div class="rescue-card">
+            <div class="rescue-header">
+              <span>Rettungsdienst</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Fahrzeuge: </span>
+              <span class="value">RTW 1, NEF 12</span>
+            </div>
+
+            <mat-progress-bar style="margin-top: 1rem;"
+              mode="determinate"
+              value="60"
+              class="eta-bar">
+            </mat-progress-bar>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+      <mat-card class="instructions-card" appearance="outlined">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon class="card-icon">assignment</mat-icon>
-            Anweisungen
+          <strong>Anweisungen</strong>
           </mat-card-title>
         </mat-card-header>
 
         <mat-card-content>
           <mat-list class="instructions-list">
-
             <mat-list-item>
-              <mat-icon matListItemIcon>folder</mat-icon>
               <div matListItemTitle>Pläne</div>
               <div matListItemLine>
                 Einsatzpläne einsehen und bearbeiten
@@ -117,7 +112,6 @@
             <mat-divider></mat-divider>
 
             <mat-list-item>
-              <mat-icon matListItemIcon>assignment</mat-icon>
               <div matListItemTitle>Maßnahmen</div>
               <div matListItemLine>
                 Einsatzmaßnahmen koordinieren
@@ -136,5 +130,3 @@
       </mat-card>
 
     </div>
-  </div>
-</div>
