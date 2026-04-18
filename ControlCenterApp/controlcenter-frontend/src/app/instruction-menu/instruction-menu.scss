@@ -87,24 +87,9 @@
   margin-top: 2px;
 }
 
-.plan-card .actions {
-  display: flex;
-  gap: 8px;
-}
-
 .add-measure-btn {
   margin-top: 20px;
   align-self: flex-start;
-}
-
-.clickable-name {
-  cursor: pointer;
-  color: #1976d2;
-  text-decoration: underline;
-}
-
-.clickable-name:hover {
-  color: #0d47a1;
 }
 
 mat-list-item {
@@ -125,18 +110,6 @@ mat-list-item:hover {
 
 .plan-card:hover, .status-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.actions button {
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.actions button:hover {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.actions button:active {
-  transform: scale(0.95);
 }
 
 .measure-item {
@@ -181,3 +154,92 @@ mat-list-item:hover {
   }
 }
 
+.actions {
+  display: flex;
+  gap: 8px;
+
+  /* Spezifischer Selektor, um Material-Defaults zu schlagen */
+  button.btn-icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Reset der Standard-Styles */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 6px;
+    min-width: 40px; /* Quadratische Form erzwingen */
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+
+    mat-icon {
+      color: #a31d58; /* Deine Primärfarbe */
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:hover {
+      background-color: #fdf2f7;
+      border-color: #a31d58;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Spezialfall Löschen */
+    &.btn-icon-delete:hover {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+      
+      mat-icon {
+        color: #dc3545;
+      }
+    }
+  }
+}
+
+/* Wir nutzen 'button' im Selektor, um die Priorität zu erhöhen */
+button.btn-dropdown-simple {
+  /* 1. Browser-Standard-Look komplett entfernen */
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important; /* !important als Brechstange, falls nötig */
+  border: none !important;
+  box-shadow: none !important;
+  
+  /* 2. Layout & Ausrichtung */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+  
+  /* 3. Icon-Styling */
+  mat-icon {
+    color: #666; /* Dezentes Grau */
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    transition: color 0.2s ease;
+  }
+
+  /* 4. Interaktion */
+  &:hover {
+    mat-icon {
+      color: #a31d58; /* Färbt sich beim Hover in deine Primärfarbe */
+    }
+    background-color: rgba(163, 29, 88, 0.05); /* Minimaler pinker Schimmer */
+    border-radius: 4px;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}

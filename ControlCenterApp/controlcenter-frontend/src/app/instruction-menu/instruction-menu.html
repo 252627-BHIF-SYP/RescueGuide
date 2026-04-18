@@ -20,13 +20,13 @@
                     }
                   </div>
                   <div class="actions">
-                    <button mat-icon-button (click)="previewPlan(plan)" aria-label="Plan anzeigen">
+                    <button (click)="previewPlan(plan)" class="btn-icon-action">
                       <mat-icon>visibility</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="editPlan(plan)" aria-label="Plan bearbeiten">
+                    <button (click)="editPlan(plan)" class="btn-icon-action">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="deletePlan(plan)" aria-label="Plan löschen">
+                    <button (click)="deletePlan(plan)" class="btn-icon-action btn-icon-delete">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
@@ -61,7 +61,7 @@
                 <div class="measure-item">
                   <div class="measure-header">
                     <span>{{ measure.name }}</span>
-                    <button mat-icon-button (click)="toggleDescription(measure.id)" class="expand-icon" [attr.aria-label]="expandedDescriptions[measure.id] ? 'Beschreibung zuklappen' : 'Beschreibung aufklappen'">
+                    <button (click)="toggleDescription(measure.id)" class="btn-dropdown-simple">
                       <mat-icon>{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
                     </button>
                   </div>
@@ -74,10 +74,10 @@
                     </div>
                   }
                   <div class="actions">
-                    <button mat-icon-button (click)="editMeasure(measure)" aria-label="Maßnahme bearbeiten">
+                    <button (click)="editMeasure(measure)" class="btn-icon-action">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="deleteMeasure(measure)" aria-label="Maßnahme löschen">
+                    <button (click)="deleteMeasure(measure)" class="btn-icon-action btn-icon-delete">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
