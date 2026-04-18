@@ -15,6 +15,8 @@ export interface Plan {
   id: number;
   name: string;
   measures: Measure[];
+  createdAt?: Date;
+  author?: string;
 }
 
 @Injectable({
@@ -94,7 +96,9 @@ export class InstructionMenuService {
     const newPlan: Plan = {
       id: this._plans.length + 1,
       name,
-      measures: selectedMeasures
+      measures: selectedMeasures,
+      createdAt: new Date(),
+      author: this.auth.userName() || 'Unbekannt'
     };
     this._plans.push(newPlan);
     return newPlan;

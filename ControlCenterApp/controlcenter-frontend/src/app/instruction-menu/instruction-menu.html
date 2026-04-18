@@ -12,14 +12,24 @@
           <mat-list>
             @for (plan of plans; track plan.id) {
               <mat-list-item>
-                <span>{{ plan.name }}</span>
-                <div class="actions">
-                  <button mat-icon-button (click)="editPlan(plan)" aria-label="Plan bearbeiten">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button (click)="deletePlan(plan)" aria-label="Plan löschen">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                <div class="plan-item">
+                  <div class="plan-header">
+                    <span>{{ plan.name }}</span>
+                    @if (plan.author && plan.createdAt) {
+                      <span class="plan-meta">von {{ plan.author }} am {{ plan.createdAt | date:'short' }}</span>
+                    }
+                  </div>
+                  <div class="actions">
+                    <button mat-icon-button (click)="previewPlan(plan)" aria-label="Plan anzeigen">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="editPlan(plan)" aria-label="Plan bearbeiten">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="deletePlan(plan)" aria-label="Plan löschen">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
               </mat-list-item>
             }

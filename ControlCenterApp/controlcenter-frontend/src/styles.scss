@@ -37,3 +37,28 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.preview-plan-dialog .mat-mdc-dialog-container,
+.preview-plan-dialog .mat-dialog-container {
+  max-height: 85vh;
+  width: min(90vw, 650px);
+}
+
+.preview-plan-dialog .mat-mdc-dialog-content,
+.preview-plan-dialog .mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(85vh - 96px);
+  overflow: hidden;
+}
+
+.preview-plan-dialog .preview-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.preview-plan-dialog .mat-dialog-actions {
+  flex-shrink: 0;
+}

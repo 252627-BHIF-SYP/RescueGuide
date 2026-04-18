@@ -155,6 +155,13 @@ export class InstructionMenu {
     this.service.deletePlan(plan);
     this.cdr.markForCheck();
   }
+
+  previewPlan(plan: Plan): void {
+    this.dialog.open(PreviewPlanDialog, {
+      width: '600px',
+      data: { plan }
+    });
+  }
 }
 
 // Dialog Components
@@ -244,9 +251,21 @@ export class CreateMeasureDialog {
 @Component({
   selector: 'create-plan-dialog',
   template: `
-    <h2 mat-dialog-title>Neuen Plan erstellen</h2>
+    <h2 mat-dialog-title>
+      @if (data?.plan) { Plan bearbeiten } @else { Neuen Plan erstellen }
+    </h2>
     <mat-dialog-content>
       <form [formGroup]="planForm">
+        @if (data?.plan) {
+          <mat-form-field appearance="fill" class="full-width read-only-field">
+            <mat-label>Author</mat-label>
+            <input matInput [value]="data.plan.author" disabled>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="full-width read-only-field">
+            <mat-label>Erstellt am</mat-label>
+            <input matInput [value]="data.plan.createdAt | date:'short'" disabled>
+          </mat-form-field>
+        }
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Plan Name</mat-label>
           <input matInput formControlName="name" required>
@@ -264,10 +283,12 @@ export class CreateMeasureDialog {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Abbrechen</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="getPlanData()" [disabled]="!planForm.valid">Erstellen</button>
+      <button mat-raised-button color="primary" [mat-dialog-close]="getPlanData()" [disabled]="!planForm.valid">
+        @if (data?.plan) { Speichern } @else { Erstellen }
+      </button>
     </mat-dialog-actions>
   `,
-  styles: ['.full-width { width: 100%; }'],
+  styles: ['.full-width { width: 100%; }', '.read-only-field .mat-input-element { color: rgba(0, 0, 0, 0.6); }'],
   imports: [MatDialogModule, ReactiveFormsModule, MatButton, MatFormFieldModule, MatInputModule, MatListModule, CommonModule]
 })
 export class CreatePlanDialog {
@@ -302,4 +323,113 @@ export class CreatePlanDialog {
       selectedMeasures: this.planForm.get('selectedMeasures')?.value
     };
   }
+}
+
+@Component({
+  selector: 'preview-plan-dialog',
+  template: `
+    <h2 mat-dialog-title>{{ data.plan.name }}</h2>
+    <mat-dialog-content>
+      @if (data.plan.author && data.plan.createdAt) {
+        <p class="plan-meta">
+          <strong>Erstellt von:</strong> {{ data.plan.author }}<br>
+          <strong>Erstellt am:</strong> {{ data.plan.createdAt | date:'medium' }}
+        </p>
+        <mat-divider class="divider"></mat-divider>
+      }
+      <h3>Enthaltene Maßnahmen:</h3>
+      @if (data.plan.measures.length > 0) {
+        <div class="plan-measures">
+          @for (measure of data.plan.measures; track measure.id) {
+            <div class="measure-item">
+              <div class="measure-content">
+                <h4>{{ measure.name }}</h4>
+                <p class="measure-description">{{ measure.description }}</p>
+                @if (measure.imageUrl) {
+                  <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
+                }
+                @if (measure.author && measure.createdAt) {
+                  <p class="measure-meta">
+                    Erstellt von {{ measure.author }} am {{ measure.createdAt | date:'short' }}
+                  </p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="no-measures">Dieser Plan enthält keine Maßnahmen.</p>
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Schließen</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .plan-meta {
+      margin-bottom: 16px;
+      color: rgba(0, 0, 0, 0.7);
+    }
+    .divider {
+      margin: 16px 0;
+    }
+    mat-dialog-content {
+      max-height: 70vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .plan-measures {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .measure-item {
+      width: 100%;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 16px 0;
+    }
+    .measure-item:last-child {
+      border-bottom: none;
+    }
+    .measure-content {
+      width: 100%;
+      display: block;
+    }
+    .measure-content h4 {
+      margin: 0 0 8px 0;
+      color: #1976d2;
+    }
+    .measure-description {
+      margin: 0 0 12px 0;
+      color: rgba(0, 0, 0, 0.87);
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .measure-image {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      border: 1px solid #e0e0e0;
+    }
+    .measure-meta {
+      font-size: 0.85em;
+      color: rgba(0, 0, 0, 0.6);
+      margin: 8px 0 0 0;
+    }
+    .no-measures {
+      text-align: center;
+      color: rgba(0, 0, 0, 0.6);
+      font-style: italic;
+      padding: 20px;
+    }
+  `],
+  imports: [MatDialogModule, MatButton, MatListModule, MatDivider, CommonModule]
+})
+export class PreviewPlanDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 }
