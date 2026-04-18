@@ -1,0 +1,32 @@
+@if (activeAlarm) {
+  <div class="alarm-overlay">
+    <div class="alarm-card">
+      <div class="alarm-header">
+        <span class="pulse-icon">🚨</span>
+        <h2>DRINGENDER ALARM</h2>
+      </div>
+
+      <div class="alarm-content">
+        <div class="data-row">
+          <span class="label">Einsatzart:</span>
+          <span class="value"><strong>{{ activeAlarm.type }}</strong></span>
+        </div>
+        <hr>
+        <div class="data-row">
+          <span class="label">Standort:</span>
+          <span class="value">{{ activeAlarm.location }}</span>
+        </div>
+        <div class="data-row">
+          <span class="label">Anrufer:</span>
+          <span class="value">{{ activeAlarm.caller }}</span>
+        </div>
+      </div>
+
+      <div class="alarm-actions">
+        <button class="btn-accept" (click)="onAccept()">
+          Einsatz annehmen
+        </button>
+      </div>
+    </div>
+  </div>
+}

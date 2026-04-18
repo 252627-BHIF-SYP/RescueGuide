@@ -1,0 +1,125 @@
+/* Das Overlay legt sich über den gesamten Bildschirm */
+.alarm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); /* Abgedunkelter Hintergrund für Fokus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(8px); /* Moderner Blur-Effekt */
+}
+
+/* Die Alarm-Karte im Stil deines Screenshots */
+.alarm-card {
+  background-color: #fcf3f4; /* Hellrosa Ton aus deinem Screenshot */
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 2px solid #a11f53;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Header-Bereich mit pulsierendem Effekt */
+.alarm-header {
+  margin-bottom: 24px;
+}
+
+.alarm-header h2 {
+  color: #a11f53;
+  margin: 12px 0 0 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.pulse-icon {
+  font-size: 3.5rem;
+  display: inline-block;
+  animation: pulse 1s infinite;
+}
+
+/* Container für die Grunddaten (Standort, Anrufer) */
+.alarm-content {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: left;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.data-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.data-row:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 12px 0;
+}
+
+/* Der markante "Annehmen"-Button */
+.btn-accept {
+  background-color: #a11f53; /* Weinrot aus deinem Screenshot */
+  color: #ffffff;
+  border: none;
+  padding: 20px 40px;
+  border-radius: 100px; /* Voll abgerundet wie deine Buttons im Screenshot */
+  font-size: 1.3rem;
+  font-weight: 700;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 8px 20px rgba(161, 31, 83, 0.4);
+  text-transform: uppercase;
+}
+
+.btn-accept:hover {
+  background-color: #8a1a47;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(161, 31, 83, 0.5);
+}
+
+.btn-accept:active {
+  transform: translateY(-1px);
+}
+
+/* Animationen */
+@keyframes pulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 0px red); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 15px red); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 0px red); }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

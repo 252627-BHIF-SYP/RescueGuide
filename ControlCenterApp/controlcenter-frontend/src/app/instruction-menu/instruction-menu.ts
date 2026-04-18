@@ -14,6 +14,7 @@ import {Router} from '@angular/router';
 import {InstructionMenuService, Measure, Plan} from '../services/instruction-menu.service';
 import { AuthService } from '../services/auth.service';
 
+
 @Component({
   selector: 'app-instruction-menu',
   imports: [
