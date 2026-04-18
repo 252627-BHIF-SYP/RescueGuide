@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
   standalone: true, // Moderne Angular-Komponenten sind meist standalone
   imports: [], // Hier keine CommonModule/NgIf mehr nötig!
   templateUrl: './alarm-notification.html',
-  styleUrls: ['./alarm-notification.css']
+  styleUrls: ['./alarm-notification.scss']
 })
 export class AlarmNotificationComponent implements OnInit, OnDestroy {
   // Dependency Injection via inject() (moderner Stil)

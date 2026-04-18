@@ -1,19 +1,18 @@
-import { Component, Inject, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
-import {MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
-import {MatIcon} from '@angular/material/icon';
-import {MatDivider} from '@angular/material/divider';
-import {MatList, MatListItem} from '@angular/material/list';
-import {MatButton} from '@angular/material/button';
-import {MatDialog, MatDialogModule, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatListModule} from '@angular/material/list';
-import {Router} from '@angular/router';
-import {InstructionMenuService, Measure, Plan} from '../services/instruction-menu.service';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatList, MatListItem } from '@angular/material/list';
+import { MatButton } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { InstructionMenuService, Measure, Plan } from '../services/instruction-menu.service';
 import { AuthService } from '../services/auth.service';
 
+// Import Dialogs
+import { CreateMeasureDialog } from './dialogs/create-measure-dialog/create-measure-dialog';
+import { CreatePlanDialog } from './dialogs/create-plan-dialog/create-plan-dialog';
+import { PreviewPlanDialog } from './dialogs/preview-plan-dialog/preview-plan-dialog';
 
 @Component({
   selector: 'app-instruction-menu',
@@ -23,13 +22,11 @@ import { AuthService } from '../services/auth.service';
     MatCardContent,
     MatCardActions,
     MatIcon,
-    MatDivider,
     MatList,
     MatListItem,
     MatButton,
     MatCardTitle,
     MatDialogModule,
-    ReactiveFormsModule,
     CommonModule
   ],
   templateUrl: './instruction-menu.html',
@@ -40,7 +37,6 @@ export class InstructionMenu {
 
   constructor(
     private dialog: MatDialog,
-    private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private service: InstructionMenuService,
     private auth: AuthService,
@@ -146,274 +142,4 @@ export class InstructionMenu {
       data: { plan }
     });
   }
-}
-
-// Dialog Components
-@Component({
-  selector: 'create-measure-dialog',
-  template: `
-    <h2 mat-dialog-title>
-      @if (data?.measure) { Maßnahme bearbeiten } @else { Neue Maßnahme erstellen }
-    </h2>
-    <mat-dialog-content>
-      <form [formGroup]="measureForm">
-        @if (data?.measure) {
-          <mat-form-field appearance="fill" class="full-width read-only-field">
-            <mat-label>Author</mat-label>
-            <input matInput [value]="data.measure.author" disabled>
-          </mat-form-field>
-          <mat-form-field appearance="fill" class="full-width read-only-field">
-            <mat-label>Erstellt am</mat-label>
-            <input matInput [value]="data.measure.createdAt | date:'short'" disabled>
-          </mat-form-field>
-        }
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Name</mat-label>
-          <input matInput formControlName="name" required>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Beschreibung</mat-label>
-          <textarea matInput formControlName="description"></textarea>
-        </mat-form-field>
-        <div class="file-upload-row">
-          <button mat-stroked-button type="button" (click)="triggerFileSelect()">
-            Bild/GIF auswählen
-          </button>
-          <input type="file" #fileInput accept="image/*,.svg,.webp,.bmp,.ico,.avif" style="display:none" (change)="onImageSelected($event)">
-        </div>
-        @if (imagePreview) {
-          <img class="preview-image" [src]="imagePreview" alt="Vorschau der Maßnahme">
-        }
-      </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Abbrechen</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="measureForm.value" [disabled]="!measureForm.valid">
-        @if (data?.measure) { Speichern } @else { Erstellen }
-      </button>
-    </mat-dialog-actions>
-  `,
-  styles: ['.full-width { width: 100%; }', '.read-only-field .mat-input-element { color: rgba(0, 0, 0, 0.6); }', '.preview-image { max-width: 100%; max-height: 220px; margin-top: 12px; border-radius: 4px; }', '.file-upload-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }'],
-  imports: [CommonModule, MatDialogModule, ReactiveFormsModule, MatButton, MatFormFieldModule, MatInputModule]
-})
-export class CreateMeasureDialog {
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  measureForm: FormGroup;
-  imagePreview?: string;
-
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.measureForm = this.fb.group({
-      name: [data?.measure?.name || '', Validators.required],
-      description: [data?.measure?.description || ''],
-      imageUrl: [data?.measure?.imageUrl || '']
-    });
-    this.imagePreview = data?.measure?.imageUrl;
-  }
-
-  triggerFileSelect() {
-    this.fileInput.nativeElement.click();
-  }
-
-  onImageSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) {
-      return;
-    }
-
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      this.imagePreview = result;
-      this.measureForm.get('imageUrl')?.setValue(result);
-      this.cdr.markForCheck();
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-@Component({
-  selector: 'create-plan-dialog',
-  template: `
-    <h2 mat-dialog-title>
-      @if (data?.plan) { Plan bearbeiten } @else { Neuen Plan erstellen }
-    </h2>
-    <mat-dialog-content>
-      <form [formGroup]="planForm">
-        @if (data?.plan) {
-          <mat-form-field appearance="fill" class="full-width read-only-field">
-            <mat-label>Author</mat-label>
-            <input matInput [value]="data.plan.author" disabled>
-          </mat-form-field>
-          <mat-form-field appearance="fill" class="full-width read-only-field">
-            <mat-label>Erstellt am</mat-label>
-            <input matInput [value]="data.plan.createdAt | date:'short'" disabled>
-          </mat-form-field>
-        }
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Plan Name</mat-label>
-          <input matInput formControlName="name" required>
-        </mat-form-field>
-        <h3>Maßnahmen auswählen</h3>
-        <mat-selection-list formControlName="selectedMeasures">
-          @for (measure of data.availableMeasures; track measure.id) {
-            <mat-list-option [value]="measure">
-              {{ measure.name }}
-            </mat-list-option>
-          }
-        </mat-selection-list>
-        <button mat-stroked-button (click)="createNewMeasure()">Neue Maßnahme erstellen</button>
-      </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Abbrechen</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="getPlanData()" [disabled]="!planForm.valid">
-        @if (data?.plan) { Speichern } @else { Erstellen }
-      </button>
-    </mat-dialog-actions>
-  `,
-  styles: ['.full-width { width: 100%; }', '.read-only-field .mat-input-element { color: rgba(0, 0, 0, 0.6); }'],
-  imports: [MatDialogModule, ReactiveFormsModule, MatButton, MatFormFieldModule, MatInputModule, MatListModule, CommonModule]
-})
-export class CreatePlanDialog {
-  planForm: FormGroup;
-
-  constructor(private fb: FormBuilder, private dialog: MatDialog, private cdr: ChangeDetectorRef, private service: InstructionMenuService, @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.planForm = this.fb.group({
-      name: [data?.plan?.name || '', Validators.required],
-      selectedMeasures: [data?.plan?.measures || []]
-    });
-  }
-
-  createNewMeasure() {
-    const dialogRef = this.dialog.open(CreateMeasureDialog, {
-      width: '400px'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newMeasure = this.service.createMeasure(result.name, result.description);
-        // Add to selected
-        const current = this.planForm.get('selectedMeasures')?.value || [];
-        this.planForm.get('selectedMeasures')?.setValue([...current, newMeasure]);
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
-  getPlanData() {
-    return {
-      name: this.planForm.get('name')?.value,
-      selectedMeasures: this.planForm.get('selectedMeasures')?.value
-    };
-  }
-}
-
-@Component({
-  selector: 'preview-plan-dialog',
-  template: `
-    <h2 mat-dialog-title>{{ data.plan.name }}</h2>
-    <mat-dialog-content>
-      @if (data.plan.author && data.plan.createdAt) {
-        <p class="plan-meta">
-          <strong>Erstellt von:</strong> {{ data.plan.author }}<br>
-          <strong>Erstellt am:</strong> {{ data.plan.createdAt | date:'medium' }}
-        </p>
-        <mat-divider class="divider"></mat-divider>
-      }
-      <h3>Enthaltene Maßnahmen:</h3>
-      @if (data.plan.measures.length > 0) {
-        <div class="plan-measures">
-          @for (measure of data.plan.measures; track measure.id) {
-            <div class="measure-item">
-              <div class="measure-content">
-                <h4>{{ measure.name }}</h4>
-                <p class="measure-description">{{ measure.description }}</p>
-                @if (measure.imageUrl) {
-                  <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
-                }
-                @if (measure.author && measure.createdAt) {
-                  <p class="measure-meta">
-                    Erstellt von {{ measure.author }} am {{ measure.createdAt | date:'short' }}
-                  </p>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      } @else {
-        <p class="no-measures">Dieser Plan enthält keine Maßnahmen.</p>
-      }
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Schließen</button>
-    </mat-dialog-actions>
-  `,
-  styles: [`
-    .plan-meta {
-      margin-bottom: 16px;
-      color: rgba(0, 0, 0, 0.7);
-    }
-    .divider {
-      margin: 16px 0;
-    }
-    mat-dialog-content {
-      max-height: 70vh;
-      overflow-y: auto;
-      padding-right: 8px;
-    }
-    .plan-measures {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .measure-item {
-      width: 100%;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 16px 0;
-    }
-    .measure-item:last-child {
-      border-bottom: none;
-    }
-    .measure-content {
-      width: 100%;
-      display: block;
-    }
-    .measure-content h4 {
-      margin: 0 0 8px 0;
-      color: #1976d2;
-    }
-    .measure-description {
-      margin: 0 0 12px 0;
-      color: rgba(0, 0, 0, 0.87);
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
-    .measure-image {
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-      max-height: 180px;
-      object-fit: contain;
-      border-radius: 4px;
-      margin-bottom: 12px;
-      border: 1px solid #e0e0e0;
-    }
-    .measure-meta {
-      font-size: 0.85em;
-      color: rgba(0, 0, 0, 0.6);
-      margin: 8px 0 0 0;
-    }
-    .no-measures {
-      text-align: center;
-      color: rgba(0, 0, 0, 0.6);
-      font-style: italic;
-      padding: 20px;
-    }
-  `],
-  imports: [MatDialogModule, MatButton, MatListModule, MatDivider, CommonModule]
-})
-export class PreviewPlanDialog {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 }
