@@ -50,39 +50,29 @@
 
     <div class="right-column">
 
-      <mat-card class="status-card">
+      <mat-card class="measures-card">
         <mat-card-header>
-          <mat-card-title>Status</mat-card-title>
+          <mat-card-title>Vorhandene Maßnahmen</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <button mat-stroked-button [color]="statusColor" class="status-badge" (click)="toggleStatus()">
-            <mat-icon>{{ statusIcon }}</mat-icon>
-            {{ status }}
-          </button>
-
-          <mat-divider class="divider"></mat-divider>
-
-          <div class="measures-section">
-            <h3>Vorhandene Maßnahmen</h3>
-            <mat-list>
-              @for (measure of availableMeasures; track measure.id) {
-                <mat-list-item>
-                  <div class="measure-item">
-                    <div class="measure-header">
-                      <span>{{ measure.name }}</span>
-                      <button mat-icon-button (click)="toggleDescription(measure.id)" class="expand-icon" [attr.aria-label]="expandedDescriptions[measure.id] ? 'Beschreibung zuklappen' : 'Beschreibung aufklappen'">
-                        <mat-icon>{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
-                      </button>
-                    </div>
-                    @if (expandedDescriptions[measure.id]) {
-                      <div class="measure-description">
-                        <div class="description-text">{{ measure.description }}</div>
-                        @if (measure.imageUrl) {
-                          <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
-                        }
-                      </div>
-                    }
+          <mat-list>
+            @for (measure of availableMeasures; track measure.id) {
+              <mat-list-item>
+                <div class="measure-item">
+                  <div class="measure-header">
+                    <span>{{ measure.name }}</span>
+                    <button mat-icon-button (click)="toggleDescription(measure.id)" class="expand-icon" [attr.aria-label]="expandedDescriptions[measure.id] ? 'Beschreibung zuklappen' : 'Beschreibung aufklappen'">
+                      <mat-icon>{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </button>
                   </div>
+                  @if (expandedDescriptions[measure.id]) {
+                    <div class="measure-description">
+                      <div class="description-text">{{ measure.description }}</div>
+                      @if (measure.imageUrl) {
+                        <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
+                      }
+                    </div>
+                  }
                   <div class="actions">
                     <button mat-icon-button (click)="editMeasure(measure)" aria-label="Maßnahme bearbeiten">
                       <mat-icon>edit</mat-icon>
@@ -91,16 +81,18 @@
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
-                </mat-list-item>
-              }
-            </mat-list>
+                </div>
+              </mat-list-item>
+            }
+          </mat-list>
+        </mat-card-content>
+          <mat-card-actions>
             <button mat-stroked-button color="primary" (click)="createMeasure()">
               <mat-icon>add</mat-icon>
               Neue Maßnahme erstellen
             </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
+          </mat-card-actions>
+        </mat-card>
     </div>
   </div>
 </div>

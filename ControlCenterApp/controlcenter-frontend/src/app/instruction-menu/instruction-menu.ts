@@ -46,23 +46,6 @@ export class InstructionMenu {
     private router: Router
   ) {}
 
-  get status(): string {
-    return this.auth.available() ? 'Verfügbar' : 'Abwesend';
-  }
-
-  get statusColor(): string {
-    return this.auth.available() ? 'primary' : 'warn';
-  }
-
-  get statusIcon(): string {
-    return this.auth.available() ? 'person' : 'person_off';
-  }
-
-  toggleStatus(): void {
-    this.auth.toggleAvailability();
-    this.cdr.markForCheck();
-  }
-
   get availableMeasures(): Measure[] {
     return this.service.availableMeasures;
   }
