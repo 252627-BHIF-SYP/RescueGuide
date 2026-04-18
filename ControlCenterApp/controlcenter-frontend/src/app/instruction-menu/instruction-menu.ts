@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import {MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
@@ -10,7 +10,9 @@ import {CommonModule} from '@angular/common';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
+import {Router} from '@angular/router';
 import {InstructionMenuService, Measure, Plan} from '../services/instruction-menu.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-instruction-menu',
@@ -39,8 +41,27 @@ export class InstructionMenu {
     private dialog: MatDialog,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private service: InstructionMenuService
+    private service: InstructionMenuService,
+    private auth: AuthService,
+    private router: Router
   ) {}
+
+  get status(): string {
+    return this.auth.available() ? 'Verfügbar' : 'Abwesend';
+  }
+
+  get statusColor(): string {
+    return this.auth.available() ? 'primary' : 'warn';
+  }
+
+  get statusIcon(): string {
+    return this.auth.available() ? 'person' : 'person_off';
+  }
+
+  toggleStatus(): void {
+    this.auth.toggleAvailability();
+    this.cdr.markForCheck();
+  }
 
   get availableMeasures(): Measure[] {
     return this.service.availableMeasures;
@@ -77,7 +98,7 @@ export class InstructionMenu {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newMeasure = this.service.createMeasure(result.name, result.description);
+        const newMeasure = this.service.createMeasure(result.name, result.description, result.imageUrl);
         this.addMeasure(newMeasure);
       }
     });
@@ -91,7 +112,7 @@ export class InstructionMenu {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.editMeasure(measure, result.name, result.description);
+        this.service.editMeasure(measure, result.name, result.description, result.imageUrl);
         this.cdr.markForCheck();
       }
     });
@@ -140,9 +161,21 @@ export class InstructionMenu {
 @Component({
   selector: 'create-measure-dialog',
   template: `
-    <h2 mat-dialog-title>Neue Maßnahme erstellen</h2>
+    <h2 mat-dialog-title>
+      @if (data?.measure) { Maßnahme bearbeiten } @else { Neue Maßnahme erstellen }
+    </h2>
     <mat-dialog-content>
       <form [formGroup]="measureForm">
+        @if (data?.measure) {
+          <mat-form-field appearance="fill" class="full-width read-only-field">
+            <mat-label>Author</mat-label>
+            <input matInput [value]="data.measure.author" disabled>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="full-width read-only-field">
+            <mat-label>Erstellt am</mat-label>
+            <input matInput [value]="data.measure.createdAt | date:'short'" disabled>
+          </mat-form-field>
+        }
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" required>
@@ -151,24 +184,60 @@ export class InstructionMenu {
           <mat-label>Beschreibung</mat-label>
           <textarea matInput formControlName="description"></textarea>
         </mat-form-field>
+        <div class="file-upload-row">
+          <button mat-stroked-button type="button" (click)="triggerFileSelect()">
+            Bild/GIF auswählen
+          </button>
+          <input type="file" #fileInput accept="image/*,.svg,.webp,.bmp,.ico,.avif" style="display:none" (change)="onImageSelected($event)">
+        </div>
+        @if (imagePreview) {
+          <img class="preview-image" [src]="imagePreview" alt="Vorschau der Maßnahme">
+        }
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Abbrechen</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="measureForm.value" [disabled]="!measureForm.valid">Erstellen</button>
+      <button mat-raised-button color="primary" [mat-dialog-close]="measureForm.value" [disabled]="!measureForm.valid">
+        @if (data?.measure) { Speichern } @else { Erstellen }
+      </button>
     </mat-dialog-actions>
   `,
-  styles: ['.full-width { width: 100%; }'],
-  imports: [MatDialogModule, ReactiveFormsModule, MatButton, MatFormFieldModule, MatInputModule]
+  styles: ['.full-width { width: 100%; }', '.read-only-field .mat-input-element { color: rgba(0, 0, 0, 0.6); }', '.preview-image { max-width: 100%; max-height: 220px; margin-top: 12px; border-radius: 4px; }', '.file-upload-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }'],
+  imports: [CommonModule, MatDialogModule, ReactiveFormsModule, MatButton, MatFormFieldModule, MatInputModule]
 })
 export class CreateMeasureDialog {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   measureForm: FormGroup;
+  imagePreview?: string;
 
-  constructor(private fb: FormBuilder, @Inject(MAT_DIALOG_DATA) public data: any) {
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.measureForm = this.fb.group({
       name: [data?.measure?.name || '', Validators.required],
-      description: [data?.measure?.description || '']
+      description: [data?.measure?.description || ''],
+      imageUrl: [data?.measure?.imageUrl || '']
     });
+    this.imagePreview = data?.measure?.imageUrl;
+  }
+
+  triggerFileSelect() {
+    this.fileInput.nativeElement.click();
+  }
+
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      this.imagePreview = result;
+      this.measureForm.get('imageUrl')?.setValue(result);
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
   }
 }
 
@@ -184,9 +253,11 @@ export class CreateMeasureDialog {
         </mat-form-field>
         <h3>Maßnahmen auswählen</h3>
         <mat-selection-list formControlName="selectedMeasures">
-          <mat-list-option *ngFor="let measure of data.availableMeasures" [value]="measure">
-            {{ measure.name }}
-          </mat-list-option>
+          @for (measure of data.availableMeasures; track measure.id) {
+            <mat-list-option [value]="measure">
+              {{ measure.name }}
+            </mat-list-option>
+          }
         </mat-selection-list>
         <button mat-stroked-button (click)="createNewMeasure()">Neue Maßnahme erstellen</button>
       </form>

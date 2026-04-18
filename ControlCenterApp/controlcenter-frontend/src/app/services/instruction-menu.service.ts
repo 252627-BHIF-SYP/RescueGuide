@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
+import { AuthService } from './auth.service';
 
 export interface Measure {
   id: number;
   name: string;
   description: string;
   isUserCreated?: boolean;
+  createdAt?: Date;
+  author?: string;
+  imageUrl?: string;
 }
 
 export interface Plan {
@@ -17,6 +21,8 @@ export interface Plan {
   providedIn: 'root'
 })
 export class InstructionMenuService {
+  constructor(private auth: AuthService) {}
+
   private _availableMeasures: Measure[] = [
     { id: 1, name: 'Erste Hilfe leisten', description: 'Grundlegende Erste Hilfe Maßnahmen', isUserCreated: false },
     { id: 2, name: 'Feuer löschen', description: 'Feuer mit geeigneten Mitteln löschen', isUserCreated: false },
@@ -52,20 +58,24 @@ export class InstructionMenuService {
     }
   }
 
-  createMeasure(name: string, description: string): Measure {
+  createMeasure(name: string, description: string, imageUrl?: string): Measure {
     const newMeasure: Measure = {
       id: this._availableMeasures.length + 1,
       name,
       description,
-      isUserCreated: true
+      isUserCreated: true,
+      createdAt: new Date(),
+      author: this.auth.userName() || 'Unbekannt',
+      imageUrl
     };
     this._availableMeasures.push(newMeasure);
     return newMeasure;
   }
 
-  editMeasure(measure: Measure, name: string, description: string): void {
+  editMeasure(measure: Measure, name: string, description: string, imageUrl?: string): void {
     measure.name = name;
     measure.description = description;
+    measure.imageUrl = imageUrl;
   }
 
   deleteMeasure(measure: Measure): void {
