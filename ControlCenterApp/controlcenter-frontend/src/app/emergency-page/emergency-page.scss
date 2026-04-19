@@ -23,17 +23,83 @@
 
 /* Main Content Layout */
 .main-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 24px;
-  height: 50vh;
+  height: calc(93vh - 100px); /* Nutzt verfügbare Höhe unter dem Header */
+  overflow: hidden; /* Verhindert Scrollen der gesamten Seite */
 }
 
-.camera-column,
 .info-column {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow-y: auto; /* Erlaubt Scrollen nur in der Info-Spalte */
+  padding-right: 8px; /* Platz für Scrollbar */
+}
+
+.checklist-column {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Checklist Styles */
+.checklist-card {
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.checklist-items, .checklist-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.tracking-section {
+  h4 {
+    margin: 8px 0 12px 0;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checklist-item {
+  ::ng-deep .mat-mdc-checkbox {
+    width: 100%;
+  }
+
+  ::ng-deep .mdc-label {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: normal;
+    line-height: 1.4;
+  }
 }
 
 /* Kamera Column */
@@ -342,10 +408,23 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1400px) {
+  .main-content {
+    grid-template-columns: 1fr 1fr;
+  }
+  .checklist-column {
+    grid-column: span 2;
+  }
+}
+
 @media (max-width: 1200px) {
   .main-content {
     grid-template-columns: 1fr;
     height: auto;
+  }
+
+  .checklist-column {
+    grid-column: span 1;
   }
 
   .eta-grid {

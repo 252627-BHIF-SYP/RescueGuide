@@ -6,8 +6,13 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatDivider, MatList, MatListItem } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import {MatIconButton} from '@angular/material/button';
-import {VideoCall} from '../video-call/video-call';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { VideoCall } from '../video-call/video-call';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { AuthService } from '../services/auth.service';
 
 interface Notruf {
   userId: string;
@@ -31,7 +36,13 @@ interface Notruf {
     RouterLink,
     RouterLinkActive,
     MatIconButton,
-    VideoCall
+    MatButton,
+    VideoCall,
+    MatCheckboxModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
@@ -43,18 +54,47 @@ export class EmergencyPage implements OnInit {
   status = signal('Standort wird geladen…');
   durationSeconds = signal(0);
 
+  emergencyData = signal({
+    type: '',
+    callerName: '',
+    callerType: '',
+    callbackNumber: '',
+    address: '',
+    injuredCount: '',
+    description: '',
+    dispatcherName: '',
+    date: '',
+    time: '',
+    alarmedRD: false,
+    alarmedNA: false,
+    alarmedPol: false,
+    alarmedFW: false
+  });
+
   private backendUrl = 'http://localhost:5062/api/leitstelle/all';
 
   constructor(
     private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
     this.fetchLatestLocation();
     this.startTimers();
+    this.initializeDefaultData();
 
     setInterval(() => this.fetchLatestLocation(), 5000);
+  }
+
+  initializeDefaultData() {
+    const now = new Date();
+    this.emergencyData.update(data => ({
+      ...data,
+      dispatcherName: this.auth.userName() || '',
+      date: now.toISOString().split('T')[0],
+      time: now.toTimeString().split(' ')[0].substring(0, 5)
+    }));
   }
 
   startTimers() {
