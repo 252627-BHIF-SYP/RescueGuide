@@ -9,11 +9,37 @@
           <mat-card-title>Pläne</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <!-- Hier könnten Pläne aufgelistet werden -->
-          <p>Keine Pläne vorhanden</p>
+          <mat-list>
+            @for (plan of plans; track plan.id) {
+              <mat-list-item>
+                <div class="plan-item">
+                  <div class="plan-header">
+                    <span>{{ plan.name }}</span>
+                    @if (plan.author && plan.createdAt) {
+                      <span class="plan-meta">von {{ plan.author }} am {{ plan.createdAt | date:'short' }}</span>
+                    }
+                  </div>
+                  <div class="actions">
+                    <button (click)="previewPlan(plan)" class="btn-icon-action">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button (click)="editPlan(plan)" class="btn-icon-action">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button (click)="deletePlan(plan)" class="btn-icon-action btn-icon-delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-list-item>
+            }
+            @if (plans.length === 0) {
+              <mat-list-item>Keine Pläne vorhanden</mat-list-item>
+            }
+          </mat-list>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="primary">
+          <button mat-raised-button color="primary" (click)="createPlan()">
             <mat-icon>add</mat-icon>
             Plan erstellen
           </button>
@@ -24,33 +50,49 @@
 
     <div class="right-column">
 
-      <mat-card class="status-card">
+      <mat-card class="measures-card">
         <mat-card-header>
-          <mat-card-title>Status</mat-card-title>
+          <mat-card-title>Vorhandene Maßnahmen</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <button mat-stroked-button color="warn" class="status-badge">
-            <mat-icon>person_off</mat-icon>
-            Abwesend
-          </button>
-
-          <mat-divider class="divider"></mat-divider>
-
-          <div class="measures-section">
-            <h3>Maßnahmen</h3>
-            <!-- Maßnahmen Liste -->
-            <mat-list>
-              <!-- Hier könnten Maßnahmen dynamisch geladen werden -->
-              <mat-list-item>Noch keine Maßnahmen</mat-list-item>
-            </mat-list>
-
-            <button mat-stroked-button color="primary" class="add-measure-btn">
-              <mat-icon>add</mat-icon>
-              Maßnahmen hinzufügen
-            </button>
-          </div>
+          <mat-list>
+            @for (measure of availableMeasures; track measure.id) {
+              <mat-list-item>
+                <div class="measure-item">
+                  <div class="measure-header">
+                    <span>{{ measure.name }}</span>
+                    <button (click)="toggleDescription(measure.id)" class="btn-dropdown-simple">
+                      <mat-icon>{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </button>
+                  </div>
+                  @if (expandedDescriptions[measure.id]) {
+                    <div class="measure-description">
+                      <div class="description-text">{{ measure.description }}</div>
+                      @if (measure.imageUrl) {
+                        <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
+                      }
+                    </div>
+                  }
+                  <div class="actions">
+                    <button (click)="editMeasure(measure)" class="btn-icon-action">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button (click)="deleteMeasure(measure)" class="btn-icon-action btn-icon-delete">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-list-item>
+            }
+          </mat-list>
         </mat-card-content>
-      </mat-card>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="createMeasure()">
+              <mat-icon>add</mat-icon>
+              Neue Maßnahme erstellen
+            </button>
+          </mat-card-actions>
+        </mat-card>
     </div>
   </div>
 </div>

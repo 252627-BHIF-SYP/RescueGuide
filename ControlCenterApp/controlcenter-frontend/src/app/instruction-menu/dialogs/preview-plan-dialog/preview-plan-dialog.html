@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>{{ data.plan.name }}</h2>
+<mat-dialog-content>
+  @if (data.plan.author && data.plan.createdAt) {
+    <p class="plan-meta">
+      <strong>Erstellt von:</strong> {{ data.plan.author }}<br>
+      <strong>Erstellt am:</strong> {{ data.plan.createdAt | date:'medium' }}
+    </p>
+    <mat-divider class="divider"></mat-divider>
+  }
+  <h3>Enthaltene Maßnahmen:</h3>
+  @if (data.plan.measures.length > 0) {
+    <div class="plan-measures">
+      @for (measure of data.plan.measures; track measure.id) {
+        <div class="measure-item">
+          <div class="measure-content">
+            <h4>{{ measure.name }}</h4>
+            <p class="measure-description">{{ measure.description }}</p>
+            @if (measure.imageUrl) {
+              <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
+            }
+            @if (measure.author && measure.createdAt) {
+              <p class="measure-meta">
+                Erstellt von {{ measure.author }} am {{ measure.createdAt | date:'short' }}
+              </p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="no-measures">Dieser Plan enthält keine Maßnahmen.</p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Schließen</button>
+</mat-dialog-actions>

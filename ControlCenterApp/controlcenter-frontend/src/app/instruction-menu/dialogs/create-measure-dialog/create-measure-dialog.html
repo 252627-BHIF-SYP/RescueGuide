@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>
+  @if (data?.measure) { Maßnahme bearbeiten } @else { Neue Maßnahme erstellen }
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="measureForm">
+    @if (data?.measure) {
+      <mat-form-field appearance="fill" class="full-width read-only-field">
+        <mat-label>Author</mat-label>
+        <input matInput [value]="data.measure.author" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="full-width read-only-field">
+        <mat-label>Erstellt am</mat-label>
+        <input matInput [value]="data.measure.createdAt | date:'short'" disabled>
+      </mat-form-field>
+    }
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Beschreibung</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    <div class="file-upload-row">
+      <button mat-stroked-button type="button" (click)="triggerFileSelect()">
+        Bild/GIF auswählen
+      </button>
+      <input type="file" #fileInput accept="image/*,.svg,.webp,.bmp,.ico,.avif" style="display:none" (change)="onImageSelected($event)">
+    </div>
+    @if (imagePreview) {
+      <img class="preview-image" [src]="imagePreview" alt="Vorschau der Maßnahme">
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Abbrechen</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="measureForm.value" [disabled]="!measureForm.valid">
+    @if (data?.measure) { Speichern } @else { Erstellen }
+  </button>
+</mat-dialog-actions>

@@ -20,19 +20,8 @@
   flex: 1;
 }
 
-.plan-card, .status-card {
+.plan-card, .measures-card {
   height: 100%;
-}
-
-.status-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.status-card mat-card-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .divider {
@@ -58,9 +47,100 @@
   padding: 10px 0;
 }
 
+.add-measures {
+  margin-top: 20px;
+}
+
+.add-measures h4 {
+  margin-bottom: 10px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.add-measures mat-list {
+  background-color: #fafafa;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.plan-card mat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.plan-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.plan-meta {
+  font-size: 0.8em;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 2px;
+}
+
 .add-measure-btn {
   margin-top: 20px;
   align-self: flex-start;
+}
+
+mat-list-item {
+  height: auto !important;
+  min-height: 48px;
+  transition: background-color 0.2s ease;
+}
+
+mat-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.plan-card, .status-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.plan-card:hover, .status-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.measure-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.measure-description {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: rgba(0, 0, 0, 0.7);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background-color: #f9f9f9;
+  padding: 8px;
+  border-radius: 4px;
+  border-left: 4px solid #1976d2;
+}
+
+.description-text {
+  margin-bottom: 8px;
+}
+
+.measure-image {
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  border: 1px solid #e0e0e0;
 }
 
 /* Responsive Design */
@@ -74,3 +154,92 @@
   }
 }
 
+.actions {
+  display: flex;
+  gap: 8px;
+
+  /* Spezifischer Selektor, um Material-Defaults zu schlagen */
+  button.btn-icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Reset der Standard-Styles */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 6px;
+    min-width: 40px; /* Quadratische Form erzwingen */
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+
+    mat-icon {
+      color: #a31d58; /* Deine Primärfarbe */
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:hover {
+      background-color: #fdf2f7;
+      border-color: #a31d58;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Spezialfall Löschen */
+    &.btn-icon-delete:hover {
+      border-color: #dc3545;
+      background-color: #fff5f5;
+      
+      mat-icon {
+        color: #dc3545;
+      }
+    }
+  }
+}
+
+/* Wir nutzen 'button' im Selektor, um die Priorität zu erhöhen */
+button.btn-dropdown-simple {
+  /* 1. Browser-Standard-Look komplett entfernen */
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important; /* !important als Brechstange, falls nötig */
+  border: none !important;
+  box-shadow: none !important;
+  
+  /* 2. Layout & Ausrichtung */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+  
+  /* 3. Icon-Styling */
+  mat-icon {
+    color: #666; /* Dezentes Grau */
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    transition: color 0.2s ease;
+  }
+
+  /* 4. Interaktion */
+  &:hover {
+    mat-icon {
+      color: #a31d58; /* Färbt sich beim Hover in deine Primärfarbe */
+    }
+    background-color: rgba(163, 29, 88, 0.05); /* Minimaler pinker Schimmer */
+    border-radius: 4px;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}

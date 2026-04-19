@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>
+  @if (data?.plan) { Plan bearbeiten } @else { Neuen Plan erstellen }
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="planForm">
+    @if (data?.plan) {
+      <mat-form-field appearance="fill" class="full-width read-only-field">
+        <mat-label>Author</mat-label>
+        <input matInput [value]="data.plan.author" disabled>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="full-width read-only-field">
+        <mat-label>Erstellt am</mat-label>
+        <input matInput [value]="data.plan.createdAt | date:'short'" disabled>
+      </mat-form-field>
+    }
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Plan Name</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+    <h3>Maßnahmen auswählen</h3>
+    <mat-selection-list formControlName="selectedMeasures">
+      @for (measure of data.availableMeasures; track measure.id) {
+        <mat-list-option [value]="measure">
+          {{ measure.name }}
+        </mat-list-option>
+      }
+    </mat-selection-list>
+    <button mat-stroked-button (click)="createNewMeasure()">Neue Maßnahme erstellen</button>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Abbrechen</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="getPlanData()" [disabled]="!planForm.valid">
+    @if (data?.plan) { Speichern } @else { Erstellen }
+  </button>
+</mat-dialog-actions>

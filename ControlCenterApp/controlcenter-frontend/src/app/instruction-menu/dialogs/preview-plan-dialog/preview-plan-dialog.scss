@@ -1,0 +1,72 @@
+.plan-meta {
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.divider {
+  margin: 16px 0;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.plan-measures {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.measure-item {
+  width: 100%;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 0;
+}
+
+.measure-item:last-child {
+  border-bottom: none;
+}
+
+.measure-content {
+  width: 100%;
+  display: block;
+}
+
+.measure-content h4 {
+  margin: 0 0 8px 0;
+  color: #1976d2;
+}
+
+.measure-description {
+  margin: 0 0 12px 0;
+  color: rgba(0, 0, 0, 0.87);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.measure-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.measure-meta {
+  font-size: 0.85em;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 8px 0 0 0;
+}
+
+.no-measures {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+  padding: 20px;
+}
