@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface Measure {
@@ -23,46 +25,63 @@ export interface Plan {
   providedIn: 'root'
 })
 export class InstructionMenuService {
-  constructor(private auth: AuthService) {}
-
-  private _availableMeasures: Measure[] = [
+  private readonly _availableMeasures$ = new BehaviorSubject<Measure[]>([
     { id: 1, name: 'Erste Hilfe leisten', description: 'Grundlegende Erste Hilfe Maßnahmen', isUserCreated: false },
     { id: 2, name: 'Feuer löschen', description: 'Feuer mit geeigneten Mitteln löschen', isUserCreated: false },
     { id: 3, name: 'Rettung rufen', description: 'Notruf absetzen', isUserCreated: false }
-  ];
+  ]);
 
-  private _plans: Plan[] = [];
+  private readonly _plans$ = new BehaviorSubject<Plan[]>([]);
+  private readonly _currentMeasures$ = new BehaviorSubject<Measure[]>([]);
 
-  private _currentMeasures: Measure[] = [];
+  constructor(
+    private auth: AuthService,
+    private http: HttpClient
+  ) {}
 
+  // Observables for components to subscribe to
+  get availableMeasures$(): Observable<Measure[]> {
+    return this._availableMeasures$.asObservable();
+  }
+
+  get plans$(): Observable<Plan[]> {
+    return this._plans$.asObservable();
+  }
+
+  get currentMeasures$(): Observable<Measure[]> {
+    return this._currentMeasures$.asObservable();
+  }
+
+  // Synchronous getters for immediate access (compatibility)
   get availableMeasures(): Measure[] {
-    return this._availableMeasures;
+    return this._availableMeasures$.getValue();
   }
 
   get plans(): Plan[] {
-    return this._plans;
+    return this._plans$.getValue();
   }
 
   get currentMeasures(): Measure[] {
-    return this._currentMeasures;
+    return this._currentMeasures$.getValue();
   }
 
   addMeasure(measure: Measure): void {
-    if (!this._currentMeasures.find(m => m.id === measure.id)) {
-      this._currentMeasures.push(measure);
+    const current = this._currentMeasures$.getValue();
+    if (!current.find(m => m.id === measure.id)) {
+      this._currentMeasures$.next([...current, measure]);
     }
   }
 
   removeMeasure(measure: Measure): void {
-    const index = this._currentMeasures.indexOf(measure);
-    if (index > -1) {
-      this._currentMeasures.splice(index, 1);
-    }
+    const current = this._currentMeasures$.getValue();
+    const updated = current.filter(m => m.id !== measure.id);
+    this._currentMeasures$.next(updated);
   }
 
   createMeasure(name: string, description: string, imageUrl?: string): Measure {
+    const current = this._availableMeasures$.getValue();
     const newMeasure: Measure = {
-      id: this._availableMeasures.length + 1,
+      id: current.length > 0 ? Math.max(...current.map(m => m.id)) + 1 : 1,
       name,
       description,
       isUserCreated: true,
@@ -70,49 +89,65 @@ export class InstructionMenuService {
       author: this.auth.userName() || 'Unbekannt',
       imageUrl
     };
-    this._availableMeasures.push(newMeasure);
+    this._availableMeasures$.next([...current, newMeasure]);
     return newMeasure;
   }
 
   editMeasure(measure: Measure, name: string, description: string, imageUrl?: string): void {
-    measure.name = name;
-    measure.description = description;
-    measure.imageUrl = imageUrl;
+    const current = this._availableMeasures$.getValue();
+    const updated = current.map(m => {
+      if (m.id === measure.id) {
+        return { ...m, name, description, imageUrl };
+      }
+      return m;
+    });
+    this._availableMeasures$.next(updated);
+
+    // Update in currentMeasures as well
+    const currentActive = this._currentMeasures$.getValue();
+    const updatedActive = currentActive.map(m => {
+      if (m.id === measure.id) {
+        return { ...m, name, description, imageUrl };
+      }
+      return m;
+    });
+    this._currentMeasures$.next(updatedActive);
   }
 
   deleteMeasure(measure: Measure): void {
-    const index = this._availableMeasures.indexOf(measure);
-    if (index > -1) {
-      this._availableMeasures.splice(index, 1);
-    }
-    // Also remove from currentMeasures if present
-    const currentIndex = this._currentMeasures.indexOf(measure);
-    if (currentIndex > -1) {
-      this._currentMeasures.splice(currentIndex, 1);
-    }
+    const current = this._availableMeasures$.getValue();
+    this._availableMeasures$.next(current.filter(m => m.id !== measure.id));
+    
+    const active = this._currentMeasures$.getValue();
+    this._currentMeasures$.next(active.filter(m => m.id !== measure.id));
   }
 
   createPlan(name: string, selectedMeasures: Measure[]): Plan {
+    const current = this._plans$.getValue();
     const newPlan: Plan = {
-      id: this._plans.length + 1,
+      id: current.length > 0 ? Math.max(...current.map(p => p.id)) + 1 : 1,
       name,
       measures: selectedMeasures,
       createdAt: new Date(),
       author: this.auth.userName() || 'Unbekannt'
     };
-    this._plans.push(newPlan);
+    this._plans$.next([...current, newPlan]);
     return newPlan;
   }
 
   editPlan(plan: Plan, name: string, measures: Measure[]): void {
-    plan.name = name;
-    plan.measures = measures;
+    const current = this._plans$.getValue();
+    const updated = current.map(p => {
+      if (p.id === plan.id) {
+        return { ...p, name, measures };
+      }
+      return p;
+    });
+    this._plans$.next(updated);
   }
 
   deletePlan(plan: Plan): void {
-    const index = this._plans.indexOf(plan);
-    if (index > -1) {
-      this._plans.splice(index, 1);
-    }
+    const current = this._plans$.getValue();
+    this._plans$.next(current.filter(p => p.id !== plan.id));
   }
 }
