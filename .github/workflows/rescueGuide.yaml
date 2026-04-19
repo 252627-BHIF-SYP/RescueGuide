@@ -21,7 +21,7 @@ jobs:
         include:
           - image_name: rescueguide-backend
             context: .
-            dockerfile: ./RescueGuideDB.WebApp/Dockerfile
+            dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
           - image_name: cc-frontend
             context: ./ControlCenterApp/controlcenter-frontend
             dockerfile: ./ControlCenterApp/controlcenter-frontend/Dockerfile

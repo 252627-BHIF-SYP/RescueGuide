@@ -1,120 +1,127 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit, signal, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
-import {VideoCall} from '../video-call/video-call';
-import {Navbar} from '../navbar/navbar';
-import { ViewChild, AfterViewInit } from '@angular/core';
-
-interface Notruf {
-  userId: string;
-  latitude: number;
-  longitude: number;
-}
-
-interface NominatimResponse {
-  address: {
-    house_number?: string;
-    road?: string;
-    postcode?: string;
-    city?: string;
-    town?: string;
-    village?: string;
-    state?: string;
-    country?: string;
-  };
-}
+import { VideoCall } from '../video-call/video-call';
+import { Navbar } from '../navbar/navbar';
+import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-emergency-page',
   templateUrl: './emergency-page.html',
   styleUrls: ['./emergency-page.scss'],
+  standalone: true,
   imports: [
+    CommonModule,
     MatCard,
     MatCardContent,
     MatIcon,
     MatIconButton,
     VideoCall,
     Navbar
-  ],
-  standalone: true
+  ]
 })
 export class EmergencyPage implements OnInit, AfterViewInit {
   @ViewChild(VideoCall) videoCallComponent!: VideoCall;
 
+  private locationService = inject(LocationService);
+
+  // Status-Signale für die UI
   address = signal<string>('Standort wird geladen…');
-  etaSeconds = signal(3 * 60 + 15);
+  etaSeconds = signal(195); // Beispiel: 3:15 Min
   durationSeconds = signal(0);
 
-  private backendUrl = 'http://localhost:5062/api/leitstelle/all';
-  private http = inject(HttpClient);
-
   ngOnInit() {
+    this.sendCurrentLocation();
     this.fetchLatestLocation();
     this.startTimers();
+    // Poll alle 10 Sekunden für neuen Standort
+    setInterval(() => this.fetchLatestLocation(), 10000);
+  }
+  /** Holt aktuelle Location vom Browser und sendet sie ans Backend */
+  sendCurrentLocation() {
+    if (!navigator.geolocation) {
+      this.address.set('Geolocation nicht unterstützt');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        // Sende an Backend
+        this.locationService.sendLocation({
+          latitude: lat,
+          longitude: lon
+        }).subscribe({
+          next: () => {
+            // Optional: Feedback
+          },
+          error: (err) => {
+            console.error('Fehler beim Senden der Location:', err);
+          }
+        });
+      },
+      (err) => {
+        this.address.set('Standort konnte nicht ermittelt werden');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
+    );
   }
 
   ngAfterViewInit() {
+    // Startet das Video-Element verzögert, um sicherzugehen, dass ViewChild bereit ist
     setTimeout(() => {
-      this.videoCallComponent.startCall();
+      if (this.videoCallComponent) {
+        this.videoCallComponent.startCall();
+      }
     }, 500);
   }
 
+  /** Ruft den letzten Standort vom Backend ab */
   fetchLatestLocation() {
-    this.http.get<Notruf[]>(this.backendUrl).subscribe({
+    this.locationService.getLocations().subscribe({
       next: (notrufe) => {
-        if (!notrufe || notrufe.length === 0) {
-          this.address.set('Kein Standort verfügbar');
-          return;
-        }
-
-        const last = notrufe[notrufe.length - 1];
-
-        this.fetchAddress(last.latitude, last.longitude);
-      },
-      error: () => {
-        this.address.set('Backend nicht erreichbar');
-      }
-    });
-  }
-
-  fetchAddress(lat: number, lon: number) {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
-
-    this.http.get<NominatimResponse>(url).subscribe({
-      next: (res) => {
-        if (!res.address) {
-          this.address.set('Adresse nicht gefunden');
-          return;
-        }
-
-        const road = res.address.road || '';
-        const houseNumber = res.address.house_number || '';
-        const postcode = res.address.postcode || '';
-        const city = res.address.city || res.address.town || res.address.village || '';
-
-        let fullAddress = '';
-        if (road && houseNumber) {
-          fullAddress = `${road} ${houseNumber}`;
-        } else if (road) {
-          fullAddress = road;
+        if (notrufe && notrufe.length > 0) {
+          const last = notrufe[notrufe.length - 1];
+          this.updateAddress(last.latitude, last.longitude);
         } else {
-          fullAddress = 'Straße unbekannt';
+          this.address.set('Kein Standort verfügbar');
         }
-
-        if (postcode || city) {
-          fullAddress += `, ${postcode} ${city}`;
-        }
-
-        this.address.set(fullAddress);
       },
-      error: () => {
-        this.address.set('Adresse nicht abrufbar');
+      error: (err) => {
+        console.error('API Fehler:', err);
+        this.address.set('Verbindung zum Leitstellen-Backend fehlgeschlagen');
       }
     });
   }
 
+  /** Wandelt die Koordinaten in Text um */
+  private updateAddress(lat: number, lon: number) {
+    this.locationService.getAddressFromCoords(lat, lon).subscribe({
+      next: (res) => {
+        const addr = res.address;
+        if (!addr) {
+          this.address.set(`Position: ${lat.toFixed(4)}, ${lon.toFixed(4)}`);
+          return;
+        }
+
+        const road = addr.road || 'Unbekannte Straße';
+        const houseNumber = addr.house_number || '';
+        const postcode = addr.postcode || '';
+        const city = addr.city || addr.town || addr.village || '';
+
+        const fullAddress = `${road} ${houseNumber}${postcode || city ? ', ' + postcode + ' ' + city : ''}`;
+        this.address.set(fullAddress.trim());
+      },
+      error: () => {
+        this.address.set('Standort bekannt, Adresse konnte nicht geladen werden');
+      }
+    });
+  }
+
+  /** Timer-Logik für Einsatzdauer und Ankunftszeit */
   startTimers() {
     setInterval(() => {
       this.durationSeconds.update(v => v + 1);
@@ -122,6 +129,7 @@ export class EmergencyPage implements OnInit, AfterViewInit {
     }, 1000);
   }
 
+  /** Hilfsfunktion zur Zeitformatierung in der HTML */
   formatTime(seconds: number): string {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;

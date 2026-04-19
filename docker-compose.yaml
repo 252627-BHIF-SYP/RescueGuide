@@ -1,3 +1,5 @@
+name: rescueguide
+
 services:
   # --- WebRTC Signaling Server ---
   webrtclogic:
@@ -9,19 +11,17 @@ services:
       - "3000:3000"
     restart: unless-stopped
 
-  # --- Backend ---
+  # --- Backend (ASP.NET WebApp) ---
   rescueguide-backend:
     build:
-      context: .  
-      dockerfile: RescueGuideDB.WebApp/Dockerfile
+      context: .
+      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
     container_name: rescueguide-backend
     ports:
-      - "8081:8080" 
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
+      - "5238:80"
+    restart: unless-stopped
 
-  # --- Control Center App ---
+  # --- Control Center Frontend ---
   cc-frontend:
     build: ./ControlCenterApp/controlcenter-frontend
     container_name: cc-frontend
@@ -30,7 +30,7 @@ services:
     depends_on:
       - rescueguide-backend
 
-  # --- Client App ---
+  # --- Client Frontend ---
   client-frontend:
     build: ./ClientApp/clientapp-frontend
     container_name: client-frontend
@@ -38,7 +38,3 @@ services:
       - "4201:80"
     depends_on:
       - rescueguide-backend
-
-networks:
-  default:
-    name: rescueguide-network
