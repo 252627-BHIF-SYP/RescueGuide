@@ -2,7 +2,6 @@
   <div class="alarm-overlay">
     <div class="alarm-card">
       <div class="alarm-header">
-        <span class="pulse-icon">🚨</span>
         <h2>DRINGENDER ALARM</h2>
       </div>
 
@@ -23,6 +22,9 @@
       </div>
 
       <div class="alarm-actions">
+        <button class="btn-reject" (click)="onReject()">
+          Ablehnen
+        </button>
         <button class="btn-accept" (click)="onAccept()">
           Einsatz annehmen
         </button>

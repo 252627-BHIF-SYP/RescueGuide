@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { InstructionMenuService, Measure, Plan } from '../services/instruction-menu.service';
 import { AuthService } from '../services/auth.service';
+import { AlarmService } from '../services/alarm.service';
 
 // Import Dialogs
 import { CreateMeasureDialog } from './dialogs/create-measure-dialog/create-measure-dialog';
@@ -40,6 +41,7 @@ export class InstructionMenu {
     private cdr: ChangeDetectorRef,
     private service: InstructionMenuService,
     private auth: AuthService,
+    private alarmService: AlarmService,
     private router: Router
   ) {}
 
@@ -141,5 +143,9 @@ export class InstructionMenu {
       width: '600px',
       data: { plan }
     });
+  }
+
+  triggerAlarm(): void {
+    this.alarmService.triggerMockAlarm();
   }
 }
