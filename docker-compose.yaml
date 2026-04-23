@@ -1,40 +1,44 @@
-name: rescueguide
-
 services:
-  # --- WebRTC Signaling Server ---
-  webrtclogic:
-    build:
-      context: ./webrtclogic
-      dockerfile: Dockerfile
-    container_name: webrtc-logic
+  db:
+    image: postgres:15-alpine
+    container_name: RescueGuide-DB
+    environment:
+      POSTGRES_USER: rescue_admin
+      POSTGRES_PASSWORD: secret_password # Dieses Passwort muss unten im ConnectionString stehen
+      POSTGRES_DB: RescueGuideDB
     ports:
-      - "3000:3000"
-    restart: unless-stopped
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
-  # --- Backend (ASP.NET WebApp) ---
-  rescueguide-backend:
+  backend:
     build:
       context: .
-      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
-    container_name: rescueguide-backend
-    ports:
-      - "5238:80"
-    restart: unless-stopped
-
-  # --- Control Center Frontend ---
-  cc-frontend:
-    build: ./ControlCenterApp/controlcenter-frontend
-    container_name: cc-frontend
-    ports:
-      - "4200:80"
+      dockerfile: src/RescueGuideDB.WebApp/Dockerfile
+    container_name: RescueGuide-Backend
     depends_on:
-      - rescueguide-backend
-
-  # --- Client Frontend ---
-  client-frontend:
-    build: ./ClientApp/clientapp-frontend
-    container_name: client-frontend
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      # Hier überschreiben wir deinen localhost Connection-String aus der Program.cs!
+      # WICHTIG: Host=db (Name des Services oben)
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=RescueGuideDB;Username=rescue_admin;Password=secret_password
     ports:
-      - "4201:80"
-    depends_on:
-      - rescueguide-backend
+      - "5001:80"
+
+  client-app:
+    build:
+      context: ./clientapp/clientapp-frontend
+    container_name: rescue-client
+    ports:
+      - "80:80"
+
+  control-center:
+    build:
+      context: ./controlcenterapp/controlcenter-frontend
+    container_name: rescue-control
+    ports:
+      - "81:80"
+
+volumes:
+  db_data:
