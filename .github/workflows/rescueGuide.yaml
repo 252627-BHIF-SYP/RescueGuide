@@ -1,9 +1,8 @@
-name: Build and Push Docker Images to GHCR
+name: Build and Push Images
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
@@ -14,23 +13,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - image_name: rescueguide-backend
-            context: .
-            dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
-          - image_name: cc-frontend
-            context: ./ControlCenterApp/controlcenter-frontend
-            dockerfile: ./ControlCenterApp/controlcenter-frontend/Dockerfile
-          - image_name: client-frontend
-            context: ./ClientApp/clientapp-frontend
-            dockerfile: ./ClientApp/clientapp-frontend/Dockerfile
-          - image_name: webrtc-logic
-            context: ./webrtclogic
-            dockerfile: ./webrtclogic/Dockerfile
 
     steps:
       - name: Checkout repository
@@ -43,17 +25,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.rescueGuideGhcrLogin }}
 
-      - name: Lowercase Registry Path
-        id: prep
-        run: |
-          REPO_LOWER="${GITHUB_REPOSITORY,,}"
-          echo "image_base=ghcr.io/${REPO_LOWER}" >> $GITHUB_OUTPUT
-
-      - name: Build and push Docker image
+      # Build & Push Client App
+      - name: Build and push Client App
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
+          context: ./clientapp/frontend
           push: true
-          tags: |
-            ${{ steps.prep.outputs.image_base }}/${{ matrix.image_name }}:latest
+          # Kleinschreibung erzwingen (Namen manuell getippt um Fehler zu vermeiden)
+          tags: ghcr.io/${{ github.repository_owner }}/rescueguide-client:latest
+
+      # Build & Push Backend
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: src/RescueGuideDB.WebApp/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/rescueguide-backend:latest
+      
+      # Build & Push Control Center
+      - name: Build and push Control Center
+        uses: docker/build-push-action@v5
+        with:
+          context: ./controlcenter/frontend
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/rescueguide-controlcenter:latest
