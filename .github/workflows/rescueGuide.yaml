@@ -6,7 +6,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
@@ -32,13 +31,22 @@ jobs:
         with:
           context: ./clientapp/frontend
           push: true
-          tags: ghcr.io/${{ github.repository }}/client-app:latest
+          # Kleinschreibung erzwingen (Namen manuell getippt um Fehler zu vermeiden)
+          tags: ghcr.io/${{ github.repository_owner }}/rescueguide-client:latest
 
       # Build & Push Backend
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: src/Dockerfile
+          file: src/RescueGuideDB.WebApp/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/backend:latest
+          tags: ghcr.io/${{ github.repository_owner }}/rescueguide-backend:latest
+      
+      # Build & Push Control Center
+      - name: Build and push Control Center
+        uses: docker/build-push-action@v5
+        with:
+          context: ./controlcenter/frontend
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/rescueguide-controlcenter:latest
