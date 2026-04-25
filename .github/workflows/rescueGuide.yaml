@@ -49,3 +49,11 @@ jobs:
           context: ./ControlCenterApp/controlcenter-frontend
           push: true
           tags: ghcr.io/252627-bhif-syp/rescueguide-controlcenter:latest
+
+      # Build & Push Signaling Server
+      - name: Build and push Signaling Server
+        uses: docker/build-push-action@v5
+        with:
+          context: ./webrtclogic
+          push: true
+          tags: ghcr.io/252627-bhif-syp/rescueguide-signaling:latest
