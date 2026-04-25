@@ -12,6 +12,9 @@ services:
       - db_data:/var/lib/postgresql/data
 
   backend:
+    build:
+        context: .
+        dockerfile: src/RescueGuideDB.WebApp/Dockerfile
     container_name: RescueGuide-Backend
     depends_on:
       - db
