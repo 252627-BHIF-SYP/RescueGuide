@@ -12,17 +12,12 @@ services:
       - db_data:/var/lib/postgresql/data
 
   backend:
-    build:
-      context: .
-      dockerfile: src/RescueGuideDB.WebApp/Dockerfile
     container_name: RescueGuide-Backend
     depends_on:
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      # Hier überschreiben wir deinen localhost Connection-String aus der Program.cs!
-      # WICHTIG: Host=db (Name des Services oben)
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=RescueGuideDB;Username=rescue_admin;Password=secret_password
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=RescueGuideDB;Username=rescue_admin;Password=secret_password;Pooling=false
     ports:
       - "5001:80"
 
