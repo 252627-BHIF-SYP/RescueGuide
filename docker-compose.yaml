@@ -40,5 +40,12 @@ services:
     ports:
       - "81:80"
 
+  signaling-server:
+    build:
+      context: ./webrtclogic
+    container_name: rescue-signaling
+    ports:
+      - "3000:3000"
+
 volumes:
   db_data:
