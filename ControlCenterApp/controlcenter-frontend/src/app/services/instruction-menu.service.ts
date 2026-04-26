@@ -91,6 +91,11 @@ export class InstructionMenuService {
     return newMeasure;
   }
 
+  rollbackMeasure(measureId: number): void {
+    const current = this._availableMeasures$.getValue();
+    this._availableMeasures$.next(current.filter(m => m.id !== measureId));
+  }
+
   editMeasure(measure: Measure, name: string, description: string, imageUrl?: string): void {
     const current = this._availableMeasures$.getValue();
     const updated = current.map(m => {
