@@ -1,7 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, timer, Subscription } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 export interface Notruf {
@@ -16,7 +14,7 @@ export interface EmergencyProtocol {
   callerType: string;
   callbackNumber: string;
   address: string;
-  injuredCount: string;
+  injuredCount: string | number;
   description: string;
   dispatcherName: string;
   date: string;
@@ -30,27 +28,25 @@ export interface EmergencyProtocol {
 @Injectable({
   providedIn: 'root'
 })
-export class EmergencyService {
+export class EmergencyService implements OnDestroy {
+  private http = inject(HttpClient);
+  private auth = inject(AuthService);
+
   private readonly backendUrl = 'http://localhost:5062/api/leitstelle/all';
   
-  // Einsatzprotokoll Status
-  private readonly _protocol$ = new BehaviorSubject<EmergencyProtocol>(this.getDefaultProtocol());
-  public readonly protocol$ = this._protocol$.asObservable();
+  // State Signals
+  protocol = signal<EmergencyProtocol>(this.getDefaultProtocol());
+  durationSeconds = signal<number>(0);
+  currentLocation = signal<Notruf | null>(null);
 
-  // Einsatzdauer Status
-  private readonly _durationSeconds$ = new BehaviorSubject<number>(0);
-  public readonly durationSeconds$ = this._durationSeconds$.asObservable();
-  private timerSubscription?: Subscription;
+  private timerInterval: any;
 
-  // Standort Status
-  private readonly _currentLocation$ = new BehaviorSubject<Notruf | null>(null);
-  public readonly currentLocation$ = this._currentLocation$.asObservable();
-
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService
-  ) {
+  constructor() {
     this.startTimer();
+  }
+
+  ngOnDestroy() {
+    this.stopTimer();
   }
 
   private getDefaultProtocol(): EmergencyProtocol {
@@ -73,40 +69,40 @@ export class EmergencyService {
     };
   }
 
-  // Protokoll aktualisieren
   updateProtocol(data: Partial<EmergencyProtocol>) {
-    this._protocol$.next({ ...this._protocol$.getValue(), ...data });
+    this.protocol.update(p => ({ ...p, ...data }));
   }
 
-  get currentProtocol(): EmergencyProtocol {
-    return this._protocol$.getValue();
+  startTimer() {
+    if (this.timerInterval) return;
+    this.timerInterval = setInterval(() => {
+      this.durationSeconds.update(s => s + 1);
+    }, 1000);
   }
 
-  // Timer Logik
-  private startTimer() {
-    this.timerSubscription = timer(0, 1000).subscribe(() => {
-      this._durationSeconds$.next(this._durationSeconds$.getValue() + 1);
-    });
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = undefined;
+    }
   }
 
   resetTimer() {
-    this._durationSeconds$.next(0);
+    this.durationSeconds.set(0);
   }
 
-  // Standort Abfrage (Polling)
-  fetchLocation(): Observable<Notruf | null> {
-    return this.http.get<Notruf[]>(this.backendUrl).pipe(
-      map(notrufe => (notrufe && notrufe.length > 0) ? notrufe[notrufe.length - 1] : null),
-      tap(location => this._currentLocation$.next(location))
-    );
-  }
-
-  /**
-   * Startet ein automatisches Polling für den Standort
-   */
-  startLocationPolling(intervalMs: number = 5000): Observable<Notruf | null> {
-    return timer(0, intervalMs).pipe(
-      switchMap(() => this.fetchLocation())
-    );
+  fetchLocation() {
+    this.http.get<Notruf[]>(this.backendUrl).subscribe({
+      next: (notrufe) => {
+        if (notrufe && notrufe.length > 0) {
+          this.currentLocation.set(notrufe[notrufe.length - 1]);
+        } else {
+          this.currentLocation.set(null);
+        }
+      },
+      error: (err) => {
+        console.error('Fehler beim Laden der Notrufe', err);
+      }
+    });
   }
 }

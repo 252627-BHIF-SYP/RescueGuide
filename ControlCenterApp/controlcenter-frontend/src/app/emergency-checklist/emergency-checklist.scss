@@ -1,0 +1,61 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.checklist-card {
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.checklist-items, .checklist-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.tracking-section {
+  h4 {
+    margin: 8px 0 12px 0;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checklist-item {
+  ::ng-deep .mat-mdc-checkbox {
+    width: 100%;
+  }
+
+  ::ng-deep .mdc-label {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: normal;
+    line-height: 1.4;
+  }
+}

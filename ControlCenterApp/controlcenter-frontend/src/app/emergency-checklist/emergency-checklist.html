@@ -1,0 +1,77 @@
+<mat-card class="checklist-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon class="card-icon">fact_check</mat-icon>
+      Einsatzprotokoll
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="checklist-form">
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Datum</mat-label>
+          <input matInput type="date" [(ngModel)]="emergencyData().date">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Uhrzeit</mat-label>
+          <input matInput type="time" [(ngModel)]="emergencyData().time">
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Art des Notrufs</mat-label>
+        <input matInput [(ngModel)]="emergencyData().type" placeholder="z.B. Herzinfarkt, Brand...">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name des Anrufers</mat-label>
+        <input matInput [(ngModel)]="emergencyData().callerName">
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Anrufer-Typ</mat-label>
+          <input matInput [(ngModel)]="emergencyData().callerType" placeholder="z.B. Zeuge">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Rückrufnummer</mat-label>
+          <input matInput type="tel" [(ngModel)]="emergencyData().callbackNumber">
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Adresse</mat-label>
+        <input matInput [(ngModel)]="emergencyData().address">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Wie viele Verletzte</mat-label>
+        <input matInput type="number" [(ngModel)]="emergencyData().injuredCount">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Was ist passiert</mat-label>
+        <textarea matInput rows="4" [(ngModel)]="emergencyData().description"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name des Disponenten</mat-label>
+        <input matInput [(ngModel)]="emergencyData().dispatcherName">
+      </mat-form-field>
+
+      <mat-divider></mat-divider>
+      
+      <div class="tracking-section">
+        <h4>Prozess-Tracking</h4>
+        <div class="tracking-grid">
+          <mat-checkbox [(ngModel)]="emergencyData().alarmedRD" color="primary">RD alarmiert</mat-checkbox>
+          <mat-checkbox [(ngModel)]="emergencyData().alarmedNA" color="primary">NA alarmiert</mat-checkbox>
+          <mat-checkbox [(ngModel)]="emergencyData().alarmedPol" color="primary">Pol alarmiert</mat-checkbox>
+          <mat-checkbox [(ngModel)]="emergencyData().alarmedFW" color="primary">FW alarmiert</mat-checkbox>
+        </div>
+      </div>
+
+    </div>
+  </mat-card-content>
+</mat-card>
