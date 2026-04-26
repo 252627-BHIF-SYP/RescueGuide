@@ -1,40 +1,49 @@
-name: rescueguide
-
 services:
-  # --- WebRTC Signaling Server ---
-  webrtclogic:
+  db:
+    image: postgres:15-alpine
+    container_name: RescueGuide-DB
+    environment:
+      POSTGRES_USER: rescue_admin
+      POSTGRES_PASSWORD: secret_password # Dieses Passwort muss unten im ConnectionString stehen
+      POSTGRES_DB: RescueGuideDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+        context: .
+        dockerfile: src/RescueGuideDB.WebApp/Dockerfile
+    container_name: RescueGuide-Backend
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=RescueGuideDB;Username=rescue_admin;Password=secret_password;Pooling=false
+    ports:
+      - "5001:80"
+
+  client-app:
+    build:
+      context: ./clientapp/clientapp-frontend
+    container_name: rescue-client
+    ports:
+      - "80:80"
+
+  control-center:
+    build:
+      context: ./controlcenterapp/controlcenter-frontend
+    container_name: rescue-control
+    ports:
+      - "81:80"
+
+  signaling-server:
     build:
       context: ./webrtclogic
-      dockerfile: Dockerfile
-    container_name: webrtc-logic
+    container_name: rescue-signaling
     ports:
       - "3000:3000"
-    restart: unless-stopped
 
-  # --- Backend (ASP.NET WebApp) ---
-  rescueguide-backend:
-    build:
-      context: .
-      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
-    container_name: rescueguide-backend
-    ports:
-      - "5238:80"
-    restart: unless-stopped
-
-  # --- Control Center Frontend ---
-  cc-frontend:
-    build: ./ControlCenterApp/controlcenter-frontend
-    container_name: cc-frontend
-    ports:
-      - "4200:80"
-    depends_on:
-      - rescueguide-backend
-
-  # --- Client Frontend ---
-  client-frontend:
-    build: ./ClientApp/clientapp-frontend
-    container_name: client-frontend
-    ports:
-      - "4201:80"
-    depends_on:
-      - rescueguide-backend
+volumes:
+  db_data:
