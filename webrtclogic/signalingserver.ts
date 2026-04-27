@@ -6,16 +6,20 @@ const app = express();
 const server = http.createServer(app);
 
 const SERVER_IP = '192.168.6.10'; 
+const LAPTOP_IP = '192.168.178.73';
 
 const io = new Server(server, {
     cors: {
-        origin: [
-            'http://localhost:4200', 
-            'http://localhost:4201', 
-            `http://${SERVER_IP}:4200`, 
-            `http://${SERVER_IP}:4201`,
-            `http://${SERVER_IP}:3000`, 
-            `http://${SERVER_IP}:3001`
+origin: [
+            'http://localhost:4200',
+            'http://localhost:4201',
+            'http://localhost:81',
+            `http://${SERVER_IP}:80`,
+            `http://${SERVER_IP}:81`,
+            `http://${SERVER_IP}:3000`,
+            `http://${LAPTOP_IP}:4200`,
+            `http://${LAPTOP_IP}:4201`,
+            `http://${LAPTOP_IP}:81` 
         ],
         methods: ['GET', 'POST'],
         credentials: true
