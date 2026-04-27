@@ -84,7 +84,7 @@ export class InstructionMenuService {
       description,
       isUserCreated: true,
       createdAt: new Date(),
-      author: this.auth.userName() || 'Unbekannt',
+      author: 'Unbekannt',
       imageUrl
     };
     this._availableMeasures$.next([...current, newMeasure]);
@@ -131,7 +131,7 @@ export class InstructionMenuService {
       name,
       measures: selectedMeasures,
       createdAt: new Date(),
-      author: this.auth.userName() || 'Unbekannt'
+      author: 'Unbekannt'
     };
     this._plans$.next([...current, newPlan]);
     return newPlan;

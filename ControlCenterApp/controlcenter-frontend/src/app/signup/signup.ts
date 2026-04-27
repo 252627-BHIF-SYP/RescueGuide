@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-signup',
   standalone: true,
   imports: [
     FormsModule,
@@ -17,10 +17,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatButtonModule
   ],
-  templateUrl: './login.html',
-  styleUrl: './login.scss'
+  templateUrl: './signup.html',
 })
-export class Login {
+export class Signup {
   username = '';
   password = '';
   error = signal('');
@@ -28,14 +27,14 @@ export class Login {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  onLogin() {
-    this.auth.login(this.username, this.password).subscribe({
-      next: () => this.router.navigate(['/emergency-page']),
-      error: () => this.error.set('Login fehlgeschlagen')
+  onSignup() {
+    this.auth.register(this.username, this.password).subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: err => this.error.set(err.error || 'Registrierung fehlgeschlagen')
     });
   }
 
-  goToSignup() {
-    this.router.navigate(['/signup']);
+  goToLogin() {
+    this.router.navigate(['/login']);
   }
 }

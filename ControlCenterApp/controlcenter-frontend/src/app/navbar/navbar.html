@@ -6,10 +6,6 @@
 
   @if (auth.userName()) {
     <div style="display: flex; align-items: center; gap: 8px;">
-      <button mat-stroked-button [color]="statusColor" class="status-badge" (click)="toggleStatus()">
-        <mat-icon>{{ statusIcon }}</mat-icon>
-        {{ status }}
-      </button>
       <mat-icon>person</mat-icon>
       <span>{{ auth.userName() }}</span>
       <button mat-icon-button (click)="logout()">

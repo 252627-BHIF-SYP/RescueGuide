@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
         <ProjectReference Include="..\RescueGuideDB.Core\RescueGuideDB.Core.csproj" />
         <ProjectReference Include="..\RescueGuideDB.Persistence\RescueGuideDB.Persistence.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />

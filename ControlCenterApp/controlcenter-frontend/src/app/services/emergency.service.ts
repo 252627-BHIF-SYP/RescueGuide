@@ -59,7 +59,7 @@ export class EmergencyService implements OnDestroy {
       address: '',
       injuredCount: '',
       description: '',
-      dispatcherName: this.auth.userName() || '',
+      dispatcherName: '',
       date: now.toISOString().split('T')[0],
       time: now.toTimeString().split(' ')[0].substring(0, 5),
       alarmedRD: false,
