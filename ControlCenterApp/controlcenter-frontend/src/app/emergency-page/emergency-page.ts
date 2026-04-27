@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, signal, inject, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
@@ -6,9 +6,10 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatDivider, MatList, MatListItem } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIconButton } from '@angular/material/button';
+import { MatIconButton, MatButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
-import { LocationService, Notruf } from '../services/location.service';
+import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
+import { EmergencyService } from '../services/emergency.service';
 
 @Component({
   selector: 'app-emergency-page',
@@ -27,79 +28,45 @@ import { LocationService, Notruf } from '../services/location.service';
     RouterLink,
     RouterLinkActive,
     MatIconButton,
-    VideoCall
+    MatButton,
+    VideoCall,
+    EmergencyChecklist
   ],
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
 })
 export class EmergencyPage implements OnInit, OnDestroy {
-  // Signale
-  latitude = signal<number | null>(null);
-  longitude = signal<number | null>(null);
-  address = signal<string>('Adresse wird geladen…');
-  status = signal('Standort wird geladen…');
-  durationSeconds = signal(0);
-  mapUrl = signal<SafeResourceUrl | null>(null);
-
-  // Injections
-  private locationService = inject(LocationService);
   private sanitizer = inject(DomSanitizer);
+  public emergencyService = inject(EmergencyService);
+
+  latitude = computed(() => this.emergencyService.currentLocation()?.latitude ?? null);
+  longitude = computed(() => this.emergencyService.currentLocation()?.longitude ?? null);
+  
+  status = computed(() => {
+    const loc = this.emergencyService.currentLocation();
+    return loc ? 'Aktueller Notruf' : 'Kein Notruf vorhanden';
+  });
+
+  durationSeconds = this.emergencyService.durationSeconds;
+  emergencyData = this.emergencyService.protocol;
+
+  private pollingInterval: any;
 
   ngOnInit() {
-    this.fetchLatestLocation();
-    this.startTimers();
+    this.emergencyService.fetchLocation();
+    this.pollingInterval = setInterval(() => this.emergencyService.fetchLocation(), 5000);
   }
 
-  ngOnDestroy() {}
-
-  startTimers() {
-    setInterval(() => {
-      this.durationSeconds.update(v => v + 1);
-    }, 1000);
+  ngOnDestroy() {
+    if (this.pollingInterval) clearInterval(this.pollingInterval);
   }
 
-  fetchLatestLocation() {
-    this.locationService.getLocations().subscribe({
-      next: (notrufe) => {
-        if (!notrufe || notrufe.length === 0) {
-          this.status.set('Kein Notruf vorhanden');
-          this.latitude.set(null);
-          this.longitude.set(null);
-          this.address.set('Kein Standort verfügbar');
-          this.mapUrl.set(null);
-          return;
-        }
-
-        const last = notrufe[notrufe.length - 1];
-        this.latitude.set(last.latitude);
-        this.longitude.set(last.longitude);
-        this.status.set('Aktueller Notruf');
-        this.fetchAddress(last.latitude, last.longitude);
-        // Setze mapUrl nur einmalig beim Standort-Fetch
-        const url = `https://maps.google.com/maps?q=${last.latitude},${last.longitude}&z=15&output=embed`;
-        this.mapUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
-      },
-      error: (err) => {
-        console.error('Fehler beim Laden der Notrufe', err);
-        this.status.set('Backend nicht erreichbar');
-        this.address.set('Backend nicht erreichbar');
-        this.mapUrl.set(null);
-      }
-    });
-  }
-
-  /** Holt die Adresse zu den Koordinaten (Reverse Geocoding via Nominatim) */
-  fetchAddress(lat: number, lon: number) {
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=de`)
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.display_name) {
-          this.address.set(data.display_name);
-        } else {
-          this.address.set('Adresse nicht gefunden');
-        }
-      })
-      .catch(() => this.address.set('Adresse nicht gefunden'));
+  get mapUrl(): SafeResourceUrl | null {
+    const lat = this.latitude();
+    const lng = this.longitude();
+    if (lat === null || lng === null) return null;
+    const url = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
   formatTime(seconds: number): string {

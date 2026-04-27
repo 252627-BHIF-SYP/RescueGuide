@@ -1,305 +1,56 @@
+.realtime-container {
+  padding: 0;
+  max-width: 1600px;
+  margin: 0 auto;
+}
 
-.emergency-container {
-  min-height: 100dvh;
-  padding: 1rem 1rem 8rem 1rem;
-  background: radial-gradient(circle at center, #ffffff 0%, #f4f4f4 100%);
-  overflow: auto;
+/* Header */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.87);
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 1rem;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: flex;
+  gap: 24px;
+  height: calc(93vh - 100px); /* Nutzt verfügbare Höhe unter dem Header */
+  overflow: hidden; /* Verhindert Scrollen der gesamten Seite */
+}
+
+.info-column {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  font-family: 'Roboto', sans-serif;
-  
+  gap: 20px;
+  overflow-y: auto; /* Erlaubt Scrollen nur in der Info-Spalte */
+  padding-right: 8px; /* Platz für Scrollbar */
+}
 
-  .emergency-content {
+.checklist-column {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+
+  app-emergency-checklist {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-
-    header {
-      text-align: center;
-
-      h1 {
-        color: #1976d2;
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 1rem;
-        text-transform: uppercase;
-      }
-
-      .emergency-info {
-        p {
-          margin: 0.5rem 0;
-          color: #333;
-          font-size: 1rem;
-
-          strong {
-            color: #555;
-          }
-        }
-
-        .location {
-          font-size: 0.9rem;
-          color: #666;
-        }
-      }
-    }
-
-    .video-section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      .video-card {
-        width: 100%;
-        max-width: 400px;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-
-        mat-card-content {
-          padding: 0.5rem;
-        }
-      }
-
-      .controls-section {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: center;
-
-        .action-buttons {
-          display: flex;
-          gap: 1rem;
-
-          button[mat-icon-button] {
-            background: #f5f5f5;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: background 0.2s;
-            &:hover {
-              background: #e3e3e3;
-            }
-          }
-        }
-      }
-    }
-
-    .map-section {
-      margin-top: 2rem;
-      display: flex;
-      justify-content: center;
-
-      .map-card {
-        width: 100%;
-        max-width: 400px;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-
-        mat-card-content {
-          padding: 1rem;
-        }
-
-        h3 {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 1.2rem;
-          color: #1976d2;
-          margin-bottom: 0.5rem;
-        }
-
-        .google-maps {
-          position: relative;
-          margin-bottom: 1rem;
-
-          iframe {
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-          }
-
-          .map-marker {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-            padding: 4px;
-          }
-        }
-
-        .coordinates {
-          display: flex;
-          gap: 1rem;
-          justify-content: center;
-          .coord-item {
-            display: flex;
-            gap: 0.5rem;
-            .coord-value {
-              font-size: 1rem;
-              color: #333;
-            }
-          }
-        }
-
-        .no-location {
-          color: #b71c1c;
-          text-align: center;
-        }
-      }
-    }
+    min-height: 0;
   }
 }
 
-.camera-feed {
-  flex: 1;
-  background-color: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-}
-
-.camera-placeholder {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: linear-gradient(45deg, #1a1a1a 0%, #333 100%);
-}
-
-.camera-overlay {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: space-between;
-  z-index: 2;
-}
-
-.recording-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #f44336;
-  font-weight: 500;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-
-.recording-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #f44336;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
-}
-
-.timestamp {
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-family: monospace;
-}
-
-/* Simuliertes Kamerabild */
-.camera-image {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.grid-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image:
-    linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-.crosshair {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-}
-
-.crosshair::before,
-.crosshair::after {
-  content: '';
-  position: absolute;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.crosshair::before {
-  width: 2px;
-  height: 60px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.crosshair::after {
-  width: 60px;
-  height: 2px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.camera-info {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: space-between;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Kamera Auswahl */
-.camera-selection h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.camera-toggle-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.camera-toggle-group mat-button-toggle {
-  flex: 1;
-  min-width: 120px;
-}
-
-/* Info Column */
+/* Info Column Cards */
 .info-card, .instructions-card {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -355,11 +106,6 @@
   flex-direction: column;
 }
 
-.coord-label {
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.6);
-}
-
 .coord-value {
   font-family: monospace;
   font-weight: 500;
@@ -375,59 +121,25 @@
   color: rgba(0, 0, 0, 0.87);
 }
 
-.eta-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.eta-card {
+.rescue-card {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 16px;
 }
 
-.eta-header {
+.rescue-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px;
-  color: white;
+  margin-bottom: 12px;
   font-weight: 500;
 }
 
-.eta-header.fire {
-  background-color: #f44336;
-}
-
-.eta-header.police {
-  background-color: #2196f3;
-}
-
-.eta-header.medical {
-  background-color: #4caf50;
-}
-
-.eta-content {
-  padding: 12px;
-}
-
-.eta-item {
+.info-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-}
-
-.eta-label {
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.eta-value {
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.87);
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 /* Instructions Card */
@@ -438,18 +150,19 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .main-content {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     height: auto;
+    overflow: visible;
   }
 
-  .eta-grid {
-    grid-template-columns: 1fr;
+  .info-column {
+    overflow-y: visible;
+  }
+
+  .checklist-column {
+    width: 100%;
   }
 }
-
-span {
-      color: #888;
-    }
 
 @media (max-width: 768px) {
   .realtime-container {
@@ -458,13 +171,5 @@ span {
 
   .page-header h1 {
     font-size: 1.8rem;
-  }
-
-  .coordinates {
-    grid-template-columns: 1fr;
-  }
-
-  .camera-toggle-group {
-    flex-direction: column;
   }
 }

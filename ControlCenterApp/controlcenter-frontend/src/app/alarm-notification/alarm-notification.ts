@@ -1,18 +1,19 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlarmService, AlarmData } from '../services/alarm.service';
+import { AuthService } from '../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-alarm-notification',
-  standalone: true, // Moderne Angular-Komponenten sind meist standalone
-  imports: [], // Hier keine CommonModule/NgIf mehr nötig!
+  standalone: true, 
+  imports: [], 
   templateUrl: './alarm-notification.html',
   styleUrls: ['./alarm-notification.scss']
 })
 export class AlarmNotificationComponent implements OnInit, OnDestroy {
-  // Dependency Injection via inject() (moderner Stil)
   private alarmService = inject(AlarmService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   activeAlarm: AlarmData | null = null;
@@ -21,8 +22,12 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.alarmSub = this.alarmService.alarmStream$.subscribe(data => {
-      this.activeAlarm = data;
-      this.playAlarm();
+      if (this.authService.available()) {
+        this.activeAlarm = data;
+        this.playAlarm();
+      } else {
+        console.log('Alarm ignoriert, da Status auf "Abwesend" steht.');
+      }
     });
   }
 
@@ -35,20 +40,22 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     if (this.activeAlarm) {
       this.audio.pause();
       
-      // Hier findet die Navigation statt. 
-      // Da die Zielseite noch nicht definiert ist, nutzen wir einen Platzhalter-Pfad.
-      // Die ID des Alarms wird als URL-Parameter übergeben.
-      this.router.navigate(['/dispatch', this.activeAlarm.id])
+      this.router.navigate(['/emergency-page'])
         .then(success => {
           if (success) {
-            this.activeAlarm = null; // Alarm ausblenden nach erfolgreichem Wechsel
+            this.activeAlarm = null; 
           }
         })
         .catch(() => {
-          console.warn('Zielseite /dispatch noch nicht konfiguriert.');
-          this.activeAlarm = null; // Fallback: Overlay trotzdem schließen
+          console.warn('Zielseite /emergency-page konnte nicht geladen werden.');
+          this.activeAlarm = null; 
         });
     }
+  }
+
+  onReject() {
+    this.audio.pause();
+    this.activeAlarm = null;
   }
 
   ngOnDestroy() {

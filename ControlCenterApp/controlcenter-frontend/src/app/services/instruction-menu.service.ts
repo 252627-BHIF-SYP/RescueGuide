@@ -39,7 +39,6 @@ export class InstructionMenuService {
     private http: HttpClient
   ) {}
 
-  // Observables for components to subscribe to
   get availableMeasures$(): Observable<Measure[]> {
     return this._availableMeasures$.asObservable();
   }
@@ -52,7 +51,6 @@ export class InstructionMenuService {
     return this._currentMeasures$.asObservable();
   }
 
-  // Synchronous getters for immediate access (compatibility)
   get availableMeasures(): Measure[] {
     return this._availableMeasures$.getValue();
   }
@@ -93,6 +91,11 @@ export class InstructionMenuService {
     return newMeasure;
   }
 
+  rollbackMeasure(measureId: number): void {
+    const current = this._availableMeasures$.getValue();
+    this._availableMeasures$.next(current.filter(m => m.id !== measureId));
+  }
+
   editMeasure(measure: Measure, name: string, description: string, imageUrl?: string): void {
     const current = this._availableMeasures$.getValue();
     const updated = current.map(m => {
@@ -103,7 +106,6 @@ export class InstructionMenuService {
     });
     this._availableMeasures$.next(updated);
 
-    // Update in currentMeasures as well
     const currentActive = this._currentMeasures$.getValue();
     const updatedActive = currentActive.map(m => {
       if (m.id === measure.id) {

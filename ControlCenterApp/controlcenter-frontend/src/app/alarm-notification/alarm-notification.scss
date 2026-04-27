@@ -13,9 +13,9 @@
   backdrop-filter: blur(8px); /* Moderner Blur-Effekt */
 }
 
-/* Die Alarm-Karte im Stil deines Screenshots */
+/* Die Alarm-Karte */
 .alarm-card {
-  background-color: #fcf3f4; /* Hellrosa Ton aus deinem Screenshot */
+  background-color: #fcf3f4;
   border-radius: 24px;
   padding: 32px;
   width: 100%;
@@ -26,23 +26,17 @@
   animation: slideIn 0.3s ease-out;
 }
 
-/* Header-Bereich mit pulsierendem Effekt */
+/* Header-Bereich */
 .alarm-header {
   margin-bottom: 24px;
 }
 
 .alarm-header h2 {
   color: #a11f53;
-  margin: 12px 0 0 0;
+  margin: 0;
   font-size: 1.8rem;
   font-weight: 800;
   letter-spacing: 1px;
-}
-
-.pulse-icon {
-  font-size: 3.5rem;
-  display: inline-block;
-  animation: pulse 1s infinite;
 }
 
 /* Container für die Grunddaten (Standort, Anrufer) */
@@ -86,13 +80,19 @@ hr {
   margin: 12px 0;
 }
 
-/* Der markante "Annehmen"-Button */
+/* Action Buttons */
+.alarm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .btn-accept {
-  background-color: #a11f53; /* Weinrot aus deinem Screenshot */
+  background-color: #a11f53;
   color: #ffffff;
   border: none;
-  padding: 20px 40px;
-  border-radius: 100px; /* Voll abgerundet wie deine Buttons im Screenshot */
+  padding: 18px 40px;
+  border-radius: 100px;
   font-size: 1.3rem;
   font-weight: 700;
   width: 100%;
@@ -100,6 +100,7 @@ hr {
   transition: all 0.2s ease-in-out;
   box-shadow: 0 8px 20px rgba(161, 31, 83, 0.4);
   text-transform: uppercase;
+  order: 1; /* Annehmen oben */
 }
 
 .btn-accept:hover {
@@ -108,17 +109,27 @@ hr {
   box-shadow: 0 12px 25px rgba(161, 31, 83, 0.5);
 }
 
-.btn-accept:active {
-  transform: translateY(-1px);
+.btn-reject {
+  background: transparent;
+  color: #a11f53;
+  border: 2px solid transparent;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-size: 1rem;
+  font-weight: 600;
+  width: fit-content;
+  align-self: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  order: 2; /* Ablehnen darunter */
+}
+
+.btn-reject:hover {
+  background: rgba(161, 31, 83, 0.05);
+  border-color: #a11f53;
 }
 
 /* Animationen */
-@keyframes pulse {
-  0% { transform: scale(1); filter: drop-shadow(0 0 0px red); }
-  50% { transform: scale(1.15); filter: drop-shadow(0 0 15px red); }
-  100% { transform: scale(1); filter: drop-shadow(0 0 0px red); }
-}
-
 @keyframes slideIn {
   from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
