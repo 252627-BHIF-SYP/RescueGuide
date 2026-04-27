@@ -14,12 +14,12 @@ origin: [
             'http://localhost:4200',
             'http://localhost:4201',
             'http://localhost:81',
-            `http://${SERVER_IP}:80`,
-            `http://${SERVER_IP}:81`,
-            `http://${SERVER_IP}:3000`,
-            `http://${LAPTOP_IP}:4200`,
-            `http://${LAPTOP_IP}:4201`,
-            `http://${LAPTOP_IP}:81` 
+            'http://192.168.6.10:80',
+            'http://192.168.6.10:81',
+            'http://192.168.6.10:3000',
+            'http://192.168.178.73:4200',
+            'http://192.168.178.73:81',
+            'http://localhost' 
         ],
         methods: ['GET', 'POST'],
         credentials: true
