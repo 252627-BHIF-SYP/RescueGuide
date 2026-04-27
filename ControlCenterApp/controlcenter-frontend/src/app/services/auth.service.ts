@@ -1,50 +1,43 @@
-import {Injectable, signal} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly STORAGE_KEY = 'user_name';
-  private readonly AVAILABILITY_KEY = 'user_available';
+  private apiUrl = environment.apiUrl + '/auth'; 
 
-  // Signal mit Namen - prüft bei Start LocalStorage
   userName = signal<string | null>(localStorage.getItem(this.STORAGE_KEY));
 
-  // Signal für Verfügbarkeit - standardmäßig verfügbar wenn eingeloggt
-  available = signal<boolean>(localStorage.getItem(this.AVAILABILITY_KEY) !== 'false' && this.isLoggedIn());
+  constructor(private http: HttpClient, private router: Router) {}
 
-  login(name: string) {
-    localStorage.setItem(this.STORAGE_KEY, name);
-    this.userName.set(name);
-    // Bei Login automatisch verfügbar setzen
-    this.setAvailable(true);
+  login(name: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, { name, password }).pipe(
+      tap((res: any) => {
+        localStorage.setItem('token', res.token);
+        // Username aus JWT extrahieren
+        const payload = JSON.parse(atob(res.token.split('.')[1]));
+        const username = payload['unique_name'] || payload['name'] || name;
+        localStorage.setItem(this.STORAGE_KEY, username);
+        this.userName.set(username);
+      })
+    );
+  }
+
+  register(name: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, { name, password });
   }
 
   logout() {
+    localStorage.removeItem('token');
     localStorage.removeItem(this.STORAGE_KEY);
     this.userName.set(null);
-    // Bei Logout Verfügbarkeit zurücksetzen
-    this.setAvailable(false);
-  }
-
-  toggleAvailability() {
-    this.setAvailable(!this.available());
-  }
-
-  private setAvailable(isAvailable: boolean) {
-    localStorage.setItem(this.AVAILABILITY_KEY, isAvailable.toString());
-    this.available.set(isAvailable);
-  }
-
-  toggleLogin(defaultName = 'Leitstelle') {
-    if (this.isLoggedIn()) {
-      this.logout();
-    } else {
-      this.login(defaultName);
-    }
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return this.userName() !== null;
+    return !!localStorage.getItem('token');
   }
 }

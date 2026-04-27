@@ -22,12 +22,8 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.alarmSub = this.alarmService.alarmStream$.subscribe(data => {
-      if (this.authService.available()) {
-        this.activeAlarm = data;
-        this.playAlarm();
-      } else {
-        console.log('Alarm ignoriert, da Status auf "Abwesend" steht.');
-      }
+      this.activeAlarm = data;
+      this.playAlarm();
     });
   }
 

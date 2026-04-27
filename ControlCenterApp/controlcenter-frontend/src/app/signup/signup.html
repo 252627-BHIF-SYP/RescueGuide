@@ -1,7 +1,7 @@
 <div class="login-wrapper">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>Leitstellen-Login</mat-card-title>
+      <mat-card-title>Registrieren</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
@@ -13,7 +13,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Passwort</mat-label>
-          <input matInput type="password" [(ngModel)]="password" (keyup.enter)="onLogin()">
+          <input matInput type="password" [(ngModel)]="password" (keyup.enter)="onSignup()">
         </mat-form-field>
 
         @if (error()) {
@@ -23,10 +23,10 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-raised-button color="primary" (click)="onLogin()">
-        Anmelden
+      <button mat-raised-button color="primary" (click)="onSignup()">
+        Registrieren
       </button>
-      <button mat-button color="accent" (click)="goToSignup()">Noch kein Account? Registrieren</button>
+      <button mat-button color="accent" (click)="goToLogin()">Schon Account? Login</button>
     </mat-card-actions>
   </mat-card>
 </div>
