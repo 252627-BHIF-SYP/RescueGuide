@@ -5,40 +5,46 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
+const SERVER_IP = '192.168.6.10'; 
+
 const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:4200', 'http://localhost:4201', 'http://192.168.6.10:3000', 'http://192.168.6.10:3001'],
+        origin: [
+            'http://localhost:4200', 
+            'http://localhost:4201', 
+            `http://${SERVER_IP}:4200`, 
+            `http://${SERVER_IP}:4201`,
+            `http://${SERVER_IP}:3000`, 
+            `http://${SERVER_IP}:3001`
+        ],
         methods: ['GET', 'POST'],
-        credentials: false
+        credentials: true
     }
 });
 
-// Simple registry: userId -> socket.id
 const registry = new Map();
 
 io.on('connection', (socket) => {
-  console.log('Client connected', socket.id);
+  console.log('Client verbunden:', socket.id);
 
   socket.on('register', (userId) => {
-    console.log(`Register ${userId} -> ${socket.id}`);
+    console.log(`Registrierung: ${userId} -> ${socket.id}`);
     registry.set(userId, socket.id);
     socket.data.userId = userId;
   });
 
   socket.on('call-request', (payload) => {
-    // payload: { to, from, metadata }
     const targetSocketId = registry.get(payload.to);
     if (targetSocketId) {
       io.to(targetSocketId).emit('incoming-call', { from: payload.from, metadata: payload.metadata });
-      console.log(`Call request from ${payload.from} to ${payload.to}`);
+      console.log(`Anrufanfrage von ${payload.from} an ${payload.to}`);
     } else {
       io.to(socket.id).emit('call-failed', { reason: 'target-unreachable' });
-      console.log(`Call failed: target ${payload.to} unreachable`);
+      console.log(`Anruf fehlgeschlagen: Ziel ${payload.to} nicht erreichbar`);
     }
   });
 
   socket.on('call-offer', (payload) => {
-    // payload: { to, from, sdp }
     const target = registry.get(payload.to);
     if (target) io.to(target).emit('call-offer', { from: payload.from, sdp: payload.sdp });
   });
@@ -67,13 +73,16 @@ io.on('connection', (socket) => {
     const userId = socket.data.userId;
     if (userId) {
       registry.delete(userId);
-      console.log(`User ${userId} disconnected`);
+      console.log(`User ${userId} getrennt`);
     } else {
-      console.log(`Socket ${socket.id} disconnected`);
+      console.log(`Socket ${socket.id} getrennt`);
     }
   });
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Signaling server listening on ${PORT}`));
-
+const PORT = 3000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Signaling server läuft auf:`);
+    console.log(`- Local:   http://localhost:${PORT}`);
+    console.log(`- Network: http://${SERVER_IP}:${PORT}`);
+});
