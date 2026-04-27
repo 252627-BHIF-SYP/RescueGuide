@@ -1,5 +1,4 @@
 services:
-  # 🗄️ PostgreSQL Datenbank
   db:
     image: postgres:15-alpine
     container_name: rescueguide-db
@@ -12,13 +11,10 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-  # ⚙️ .NET Backend
+
   backend:
-    build:
-      context: .
-      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
-    container_name: rescueguide-backend
-    restart: unless-stopped
+    image: ghcr.io/252627-bhif-syp/rescueguide-backend:latest
+    container_name: RescueGuide-Backend
     depends_on:
       - db
     environment:
@@ -26,28 +22,28 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
     ports:
       - "5238:80"
-
-
-  client-app:
-    build:
-      context: ./clientapp/clientapp-frontend
-    container_name: rescue-client
-    ports:
-      - "80:80"
-
-  control-center:
-    build:
-      context: ./controlcenterapp/controlcenter-frontend
-    container_name: rescue-control
-    ports:
-      - "81:80"
+    restart: always
 
   signaling-server:
-    build:
-      context: ./webrtclogic
+    image: ghcr.io/252627-bhif-syp/rescueguide-signaling:latest
     container_name: rescue-signaling
     ports:
       - "3000:3000"
+    restart: always
+
+  client-app:
+    image: ghcr.io/252627-bhif-syp/rescueguide-client:latest
+    container_name: rescue-client
+    ports:
+      - "80:80"
+    restart: always
+
+  control-center:
+    image: ghcr.io/252627-bhif-syp/rescueguide-controlcenter:latest
+    container_name: rescue-control
+    ports:
+      - "81:80"
+    restart: always
 
 volumes:
   db_data:
