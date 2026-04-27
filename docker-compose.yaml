@@ -1,28 +1,32 @@
 services:
+  # 🗄️ PostgreSQL Datenbank
   db:
     image: postgres:15-alpine
-    container_name: RescueGuide-DB
+    container_name: rescueguide-db
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: rescue_admin
-      POSTGRES_PASSWORD: secret_password # Dieses Passwort muss unten im ConnectionString stehen
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: RescueGuideDB
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-
+  # ⚙️ .NET Backend
   backend:
     build:
-        context: .
-        dockerfile: src/RescueGuideDB.WebApp/Dockerfile
-    container_name: RescueGuide-Backend
+      context: .
+      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
+    container_name: rescueguide-backend
+    restart: unless-stopped
     depends_on:
       - db
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=RescueGuideDB;Username=rescue_admin;Password=secret_password;Pooling=false
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
     ports:
-      - "5001:80"
+      - "5238:80"
+
 
   client-app:
     build:
