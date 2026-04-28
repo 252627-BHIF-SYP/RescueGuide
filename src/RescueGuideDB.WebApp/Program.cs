@@ -11,14 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("AllowAll", builder =>
     {
-        policy.WithOrigins(
-                "http://192.168.6.10:81",
-                "http://192.168.6.10"
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
 
@@ -50,7 +47,7 @@ app.MapOpenApi();
 
 //app.UseHttpsRedirection();
 
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

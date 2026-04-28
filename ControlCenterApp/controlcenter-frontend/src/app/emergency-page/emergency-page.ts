@@ -9,6 +9,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
+import { LocationService, Notruf } from '../services/location.service';
 import { EmergencyService } from '../services/emergency.service';
 
 @Component({
@@ -35,36 +36,62 @@ import { EmergencyService } from '../services/emergency.service';
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
 })
-export class EmergencyPage implements OnInit, OnDestroy {
+export class EmergencyPage implements OnInit {
   private sanitizer = inject(DomSanitizer);
+  public locationService = inject(LocationService);
   public emergencyService = inject(EmergencyService);
 
-  latitude = computed(() => this.emergencyService.currentLocation()?.latitude ?? null);
-  longitude = computed(() => this.emergencyService.currentLocation()?.longitude ?? null);
-  
-  status = computed(() => {
-    const loc = this.emergencyService.currentLocation();
-    return loc ? 'Aktueller Notruf' : 'Kein Notruf vorhanden';
-  });
+  lastLocation = signal<Notruf | null>(null);
+  status = computed(() => this.lastLocation() ? 'Aktueller Notruf' : 'Kein Standort verfügbar');
+  latitude = computed(() => this.lastLocation()?.latitude ?? null);
+  longitude = computed(() => this.lastLocation()?.longitude ?? null);
 
   durationSeconds = this.emergencyService.durationSeconds;
   emergencyData = this.emergencyService.protocol;
 
   private pollingInterval: any;
+  private lastLat: number | null = null;
+  private lastLng: number | null = null;
+  private _mapUrl: SafeResourceUrl | null = null;
 
   ngOnInit() {
-    this.emergencyService.fetchLocation();
-    this.pollingInterval = setInterval(() => this.emergencyService.fetchLocation(), 5000);
+    this.fetchLatestLocation();
+    this.pollingInterval = setInterval(() => this.fetchLatestLocation(), 5000);
   }
 
-  ngOnDestroy() {
-    if (this.pollingInterval) clearInterval(this.pollingInterval);
+  fetchLatestLocation() {
+    this.locationService.getLocations().subscribe({
+      next: (locations) => {
+        if (locations && locations.length > 0) {
+          const loc = locations[locations.length - 1];
+          this.lastLocation.set(loc);
+          // Nur wenn sich die Koordinaten ändern, mapUrl neu setzen
+          if (loc.latitude !== this.lastLat || loc.longitude !== this.lastLng) {
+            this.lastLat = loc.latitude;
+            this.lastLng = loc.longitude;
+            this._mapUrl = this.createMapUrl(loc.latitude, loc.longitude);
+          }
+        } else {
+          this.lastLocation.set(null);
+          this._mapUrl = null;
+          this.lastLat = null;
+          this.lastLng = null;
+        }
+      },
+      error: () => {
+        this.lastLocation.set(null);
+        this._mapUrl = null;
+        this.lastLat = null;
+        this.lastLng = null;
+      }
+    });
   }
 
   get mapUrl(): SafeResourceUrl | null {
-    const lat = this.latitude();
-    const lng = this.longitude();
-    if (lat === null || lng === null) return null;
+    return this._mapUrl;
+  }
+
+  private createMapUrl(lat: number, lng: number): SafeResourceUrl {
     const url = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }

@@ -32,12 +32,10 @@ export class EmergencyService implements OnDestroy {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
 
-  private readonly backendUrl = 'http://localhost:5062/api/leitstelle/all';
   
   // State Signals
   protocol = signal<EmergencyProtocol>(this.getDefaultProtocol());
   durationSeconds = signal<number>(0);
-  currentLocation = signal<Notruf | null>(null);
 
   private timerInterval: any;
 
@@ -89,20 +87,5 @@ export class EmergencyService implements OnDestroy {
 
   resetTimer() {
     this.durationSeconds.set(0);
-  }
-
-  fetchLocation() {
-    this.http.get<Notruf[]>(this.backendUrl).subscribe({
-      next: (notrufe) => {
-        if (notrufe && notrufe.length > 0) {
-          this.currentLocation.set(notrufe[notrufe.length - 1]);
-        } else {
-          this.currentLocation.set(null);
-        }
-      },
-      error: (err) => {
-        console.error('Fehler beim Laden der Notrufe', err);
-      }
-    });
   }
 }
