@@ -12,6 +12,7 @@
         <ProjectReference Include="..\RescueGuideDB.Core\RescueGuideDB.Core.csproj" />
         <ProjectReference Include="..\RescueGuideDB.Persistence\RescueGuideDB.Persistence.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+        <PackageReference Include="Scalar.AspNetCore" Version="1.2.46" />
     </ItemGroup>
 
 </Project>
