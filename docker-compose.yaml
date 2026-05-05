@@ -11,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - rescueguide-network
 
   backend:
     build:
@@ -21,10 +23,13 @@ services:
       - db
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:80
       ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
     ports:
-      - "5238:80"
+      - "5001:80"
     restart: always
+    networks:
+      - rescueguide-network
 
   signaling-server:
     build:
@@ -33,22 +38,38 @@ services:
     ports:
       - "3000:3000"
     restart: always
+    networks:
+      - rescueguide-network
 
   client-app:
     build:
-      context: ./clientapp/clientapp-frontend
+      context: ./ClientApp/clientapp-frontend
     container_name: rescue-client
     ports:
       - "80:80"
+    depends_on:
+      - backend
+      - signaling-server
     restart: always
+    networks:
+      - rescueguide-network
 
   control-center:
     build:
-      context: ./controlcenterapp/controlcenter-frontend
+      context: ./ControlCenterApp/controlcenter-frontend
     container_name: rescue-control
     ports:
       - "81:80"
+    depends_on:
+      - backend
+      - signaling-server
     restart: always
+    networks:
+      - rescueguide-network
 
 volumes:
   db_data:
+
+networks:
+  rescueguide-network:
+    driver: bridge

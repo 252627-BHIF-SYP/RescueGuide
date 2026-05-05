@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .WithExposedHeaders("*");
+              .WithExposedHeaders("Authorization", "Content-Type", "X-Total-Count");
     });
 });
 
@@ -44,17 +44,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Configure the HTTP request pipeline - EXACT ORDER MATTERS!
+app.UseCors("AllowAll");
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseRouting();
-app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapOpenApi();
+app.MapScalarApiReference();
 app.MapControllers();
 
 app.Run();
