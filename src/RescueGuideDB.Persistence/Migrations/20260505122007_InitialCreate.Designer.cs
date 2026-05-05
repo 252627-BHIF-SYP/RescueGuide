@@ -12,8 +12,8 @@ using RescueGuideDB.Persistence;
 namespace RescueGuideDB.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260309161307_Required fields deleted")]
-    partial class Requiredfieldsdeleted
+    [Migration("20260505122007_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

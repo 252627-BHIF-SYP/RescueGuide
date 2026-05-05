@@ -40,7 +40,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add Database Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? "Host=localhost;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
+        ?? "Host=192.168.6.10;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
 
 var app = builder.Build();
 

@@ -13,7 +13,7 @@ public class Program
             var services = new ServiceCollection();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql("Host=localhost; Port=5432; Database=RescueGuideDB; Username=postgres; Password=postgres"));
+                options.UseNpgsql("Host=192.168.6.10;;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
 
             services.AddScoped<CsvImportService>();
 

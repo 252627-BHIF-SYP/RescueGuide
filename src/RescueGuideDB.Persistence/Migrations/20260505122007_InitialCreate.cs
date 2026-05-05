@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RescueGuideDB.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,13 +20,13 @@ namespace RescueGuideDB.Persistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: true),
                     DateOfBirth = table.Column<string>(type: "text", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    Allergies = table.Column<string>(type: "text", nullable: false),
-                    PreExistingConditions = table.Column<string>(type: "text", nullable: false),
-                    Medikaments = table.Column<string>(type: "text", nullable: false),
-                    BloodGroups = table.Column<string>(type: "text", nullable: false)
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    Allergies = table.Column<string>(type: "text", nullable: true),
+                    PreExistingConditions = table.Column<string>(type: "text", nullable: true),
+                    Medikaments = table.Column<string>(type: "text", nullable: true),
+                    BloodGroup = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -118,9 +118,8 @@ namespace RescueGuideDB.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "integer", nullable: false),
-                    UserControlCenterId = table.Column<int>(type: "integer", nullable: false),
+                    UserControlCenterId = table.Column<int>(type: "integer", nullable: true),
                     ClientId = table.Column<int>(type: "integer", nullable: false),
-                    InstructionCategoryId = table.Column<int>(type: "integer", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
@@ -136,12 +135,6 @@ namespace RescueGuideDB.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Emergencies_InstructionCategories_InstructionCategoryId",
-                        column: x => x.InstructionCategoryId,
-                        principalTable: "InstructionCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Emergencies_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
@@ -151,19 +144,13 @@ namespace RescueGuideDB.Persistence.Migrations
                         name: "FK_Emergencies_UserControlCenters_UserControlCenterId",
                         column: x => x.UserControlCenterId,
                         principalTable: "UserControlCenters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Emergencies_ClientId",
                 table: "Emergencies",
                 column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Emergencies_InstructionCategoryId",
-                table: "Emergencies",
-                column: "InstructionCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Emergencies_LocationId",
