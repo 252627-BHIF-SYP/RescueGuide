@@ -1,36 +1,22 @@
-# RescueGuide
-## 1. Ausgangslage
+# 🚑 RescueGuide
 
-### 1.1 Ist-Situation
-Was haben Autounfälle, akute Verletzungen, Erkrankungen oder Brandunfälle gemeinsam?  
-Genau: Im Notfall geraten viele Menschen unter Stress und handeln unsicher, wenn sie Erste-Hilfe-Maßnahmen durchführen müssen.  
+**RescueGuide** ist eine mobile Anwendung, die die kritische Lücke zwischen einem Notfall und dem Eintreffen der Profis schließt. Unsere Vision ist es, Ersthelfern die Angst zu nehmen und Unsicherheit durch geführte Kompetenz zu ersetzen!
 
-Fehlendes Wissen, Angst vor Fehlern oder Überforderung führen oft dazu, dass gar nicht oder falsch reagiert wird.  
+## 💡 Die Idee
 
-Zwar gibt es Erste-Hilfe-Kurse und teilweise auch Apps mit Informationen, jedoch sind diese meist entweder zu allgemein gehalten oder bieten im entscheidenden Moment keine klare Schritt-für-Schritt-Anleitung.  
-Erste-Hilfe-Wissen wird zudem oft nur selten aufgefrischt, wodurch Unsicherheiten mit der Zeit zunehmen.  
+In Stresssituationen entscheiden Sekunden über Leben und Tod. RescueGuide setzt genau hier an:
 
-Diese Zeit kann über **Leben** und **Tod** entscheiden!
+- **Vom Zuschauer zum Helfer:** Durch digitale Begleitung wird die Hemmschwelle zur Ersten Hilfe gesenkt
+- **Führung statt Planlosigkeit:** Die App fungiert als interaktives Bindeglied zwischen Laien und der Rettungsleitstelle
+- **Wissen, wenn es zählt:** Expertenanweisungen werden in Echtzeit visualisiert und direkt am Unfallort nutzbar gemacht
 
-### 1.2 Die Idee
-An diesem Punkt kommt **RescueGuide** ins Spiel: **RescueGuide** ist eine mobile App, die Ersthelfer in Echtzeit unterstützt und sie Schritt für Schritt durch die jeweilige Notfallsituation führt.  
+## 🚀 Kern-Features
 
-Die App vereint ein klares Design mit interaktiven Funktionen, die sowohl im Akutfall helfen als auch langfristig das Erste-Hilfe-Wissen auffrischen.
+- **Echtzeit-Coaching:** Interaktive Schritt-für-Schritt-Anleitungen synchron zur Leitstelle
+- **Sofort-Präzision:** Automatischer Datenabgleich (Standort & Lage) zur Zeitersparnis
+- **Nachhaltigkeit:** Spielerisches Auffrischen von Lebensretter-Skills im Alltag
 
 ---
 
-## 2. Zielsetzung
-
-#### Hauptziel
-Die App soll Ersthelfern in Notfallsituationen eine **praktische, leicht verständliche Unterstützung** bieten und gleichzeitig helfen, Erste-Hilfe-Wissen regelmäßig aufzufrischen.
-
-#### Kernfunktionen
-- **Notfallmodus:**
-- Sprechverbindung bzw. Videoverbindung wird hergestellt
-- Leitstelle kann Situation einschätzen und gibt auf der App Anweisungen aus (Audioanleitung, Animierte Bilder, ...)
-- Foto / Video aufnehmen -> KI schätzt Situation ein und gibt Anweisungen aus (Audioanleitung, Animierte Bilder, ...)
-- **Offline Notfall / Hilfemodus:**
-- Eingabe von Eckdaten zur Situation (Durch Menüs drücken)
-- Ausgabe einer Schritt-für-Schritt-Anleitung (Audioanleitung, Animierte Bilder, ...)
-- **Quiz- und Lernmodus:**
-- Spielerisches Auffrischen von Erste-Hilfe-Wissen
+**Team:** Kilian, Erik, Omar, Rabbi  
+_RescueGuide – Weil keine Sekunde ungenutzt bleiben darf_
