@@ -29,7 +29,7 @@ jobs:
       - name: Build and push Client App
         uses: docker/build-push-action@v5
         with:
-          context: ./ClientApp/clientapp-frontend
+          context: ./apps/web-ca/clientapp-frontend
           push: true
           tags: ghcr.io/252627-bhif-syp/rescueguide-client:latest
 
@@ -37,8 +37,8 @@ jobs:
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: src/RescueGuideDB.WebApp/Dockerfile
+          context: ./apps/backend
+          file: RescueGuideDB.WebApp/Dockerfile
           push: true
           tags: ghcr.io/252627-bhif-syp/rescueguide-backend:latest
       
@@ -46,7 +46,7 @@ jobs:
       - name: Build and push Control Center
         uses: docker/build-push-action@v5
         with:
-          context: ./ControlCenterApp/controlcenter-frontend
+          context: ./apps/web-cc/controlcenter-frontend
           push: true
           tags: ghcr.io/252627-bhif-syp/rescueguide-controlcenter:latest
 
@@ -54,6 +54,6 @@ jobs:
       - name: Build and push Signaling Server
         uses: docker/build-push-action@v5
         with:
-          context: ./webrtclogic
+          context: ./apps/signaling
           push: true
           tags: ghcr.io/252627-bhif-syp/rescueguide-signaling:latest
