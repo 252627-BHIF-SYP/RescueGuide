@@ -1,0 +1,53 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vs
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+*.user
+*.suo
+.idea
+
+# Build & Runtime
+bin/
+obj/
+.vs/
+.vscode/
+dist/
+build/
+
+# Tests
+**/Tests/
+**/test/
+
+# Package Managers
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Documentation
+**/*.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# Misc
+.env.local
+.env.*.local
+*.log
+*.tmp

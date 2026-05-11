@@ -1,4 +1,5 @@
 services:
+  # PostgreSQL Database
   db:
     image: postgres:15-alpine
     container_name: rescueguide-db
@@ -14,11 +15,12 @@ services:
     networks:
       - rescueguide-network
 
+  # ASP.NET Core Backend API
   backend:
     build:
-      context: .
-      dockerfile: ./src/RescueGuideDB.WebApp/Dockerfile
-    container_name: RescueGuide-Backend
+      context: ../../apps/backend
+      dockerfile: RescueGuideDB.WebApp/Dockerfile
+    container_name: rescueguide-backend
     depends_on:
       - db
     environment:
@@ -27,48 +29,63 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
     ports:
       - "5001:80"
-    restart: always
+    restart: unless-stopped
     networks:
       - rescueguide-network
 
+  # WebRTC Signaling Server
   signaling-server:
     build:
-      context: ./webrtclogic
-    container_name: rescue-signaling
+      context: ../../apps/signaling
+      dockerfile: Dockerfile
+    container_name: rescueguide-signaling
     ports:
       - "3000:3000"
-    restart: always
+    restart: unless-stopped
     networks:
       - rescueguide-network
+    environment:
+      NODE_ENV: production
 
+  # Client App Frontend
   client-app:
     build:
-      context: ./ClientApp/clientapp-frontend
-    container_name: rescue-client
+      context: ../../apps/web-ca/clientapp-frontend
+      dockerfile: Dockerfile
+    container_name: rescueguide-client
     ports:
       - "80:80"
     depends_on:
       - backend
       - signaling-server
-    restart: always
+    restart: unless-stopped
     networks:
       - rescueguide-network
+    environment:
+      NGINX_HOST: localhost
+      NGINX_PORT: 80
 
+  # Control Center Frontend
   control-center:
     build:
-      context: ./ControlCenterApp/controlcenter-frontend
-    container_name: rescue-control
+      context: ../../apps/web-cc/controlcenter-frontend
+      dockerfile: Dockerfile
+    container_name: rescueguide-control-center
     ports:
       - "81:80"
     depends_on:
       - backend
       - signaling-server
-    restart: always
+    restart: unless-stopped
     networks:
       - rescueguide-network
+    environment:
+      NGINX_HOST: localhost
+      NGINX_PORT: 80
 
 volumes:
   db_data:
+    driver: local
 
 networks:
   rescueguide-network:
