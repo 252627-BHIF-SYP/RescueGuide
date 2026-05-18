@@ -12,9 +12,8 @@ RUN dotnet restore "RescueGuideDB.WebApp/RescueGuideDB.WebApp.csproj"
 # Kopiere den gesamten Quellcode
 COPY . .
 
-# Kopiere appsettings Dateien explizit (falls vorhanden)
-COPY RescueGuideDB.Persistence/appsettings*.json RescueGuideDB.Persistence/
-COPY RescueGuideDB.WebApp/appsettings*.json RescueGuideDB.WebApp/
+# Lösche appsettings aus Persistence (um Konflikt zu vermeiden)
+RUN rm -f RescueGuideDB.Persistence/appsettings*.json
 
 WORKDIR "/src/RescueGuideDB.WebApp"
 RUN dotnet publish "RescueGuideDB.WebApp.csproj" -c Release -o /app/publish /p:UseAppHost=false
