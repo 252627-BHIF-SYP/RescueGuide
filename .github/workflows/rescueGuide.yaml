@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./apps/backend
-          file: RescueGuideDB.WebApp/Dockerfile
+          file: ./apps/backend/RescueGuideDB.WebApp/Dockerfile
           push: true
           tags: ghcr.io/252627-bhif-syp/rescueguide-backend:latest
       
