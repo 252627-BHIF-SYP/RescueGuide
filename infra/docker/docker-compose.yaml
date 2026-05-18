@@ -28,7 +28,7 @@ services:
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
     ports:
-      - "5001:80"
+      - "5001:5238"
     restart: unless-stopped
     networks:
       - rescueguide-network

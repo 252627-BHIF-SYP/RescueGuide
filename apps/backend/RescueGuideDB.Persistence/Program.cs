@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using RescueGuideDB.Persistence.Services;
 
@@ -10,10 +13,15 @@ public class Program
     {
         try
         {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
             var services = new ServiceCollection();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql("Host=192.168.6.10;;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection") ?? "Host=localhost;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
 
             services.AddScoped<CsvImportService>();
 
