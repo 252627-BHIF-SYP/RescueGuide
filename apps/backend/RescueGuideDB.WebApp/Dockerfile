@@ -7,6 +7,12 @@ COPY ["RescueGuideDB.Core/RescueGuideDB.Core.csproj", "RescueGuideDB.Core/"]
 COPY ["RescueGuideDB.Persistence/RescueGuideDB.Persistence.csproj", "RescueGuideDB.Persistence/"]
 COPY ["RescueGuideDB.WebApp/RescueGuideDB.WebApp.csproj", "RescueGuideDB.WebApp/"]
 
+# Kopiere appsettings Dateien
+COPY ["RescueGuideDB.Persistence/appsettings.json", "RescueGuideDB.Persistence/"]
+COPY ["RescueGuideDB.Persistence/appsettings.Development.json", "RescueGuideDB.Persistence/"]
+COPY ["RescueGuideDB.WebApp/appsettings.json", "RescueGuideDB.WebApp/"]
+COPY ["RescueGuideDB.WebApp/appsettings.Development.json", "RescueGuideDB.WebApp/"]
+
 RUN dotnet restore "RescueGuideDB.WebApp/RescueGuideDB.WebApp.csproj"
 
 COPY . .
