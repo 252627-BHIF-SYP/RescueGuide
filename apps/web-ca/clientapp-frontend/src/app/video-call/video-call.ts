@@ -1,4 +1,6 @@
 import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { EmergencyStateService } from '../emergency-state-service';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 
@@ -22,6 +24,8 @@ export class VideoCall implements OnInit, OnDestroy {
   private targetId = 'controlcenter';
 
   private signaling = inject(SignalingService);
+  private router = inject(Router);
+  private state = inject(EmergencyStateService);
 
   ngOnInit() {
     this.initSignaling();
@@ -57,7 +61,10 @@ export class VideoCall implements OnInit, OnDestroy {
     });
 
     this.signaling.on('call-end', () => {
+      console.log('Call ended by dispatcher, closing connection and returning to startscreen.');
       this.closeConnection();
+      this.state.reset();
+      this.router.navigate(['/startscreen']);
     });
   }
 

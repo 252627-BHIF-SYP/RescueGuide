@@ -39,9 +39,7 @@ export class EmergencyService implements OnDestroy {
 
   private timerInterval: any;
 
-  constructor() {
-    this.startTimer();
-  }
+  constructor() {}
 
   ngOnDestroy() {
     this.stopTimer();

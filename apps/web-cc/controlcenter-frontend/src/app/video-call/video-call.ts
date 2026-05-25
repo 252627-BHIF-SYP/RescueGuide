@@ -1,12 +1,15 @@
 import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })
@@ -22,10 +25,10 @@ export class VideoCall implements OnInit, OnDestroy {
   private myId = 'controlcenter';
   private targetId = 'clientapp';
 
-  incomingFrom: string | null = null;
 
   // Signal Service injecten
   private signaling = inject(SignalingService);
+  private router = inject(Router);
 
   ngOnInit() {
     this.initSignaling();
@@ -38,11 +41,6 @@ export class VideoCall implements OnInit, OnDestroy {
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
 
-    // Wenn ein Anruf reinkommt, speichern wir, von wem er kommt (für das UI)
-    this.signaling.on('incoming-call', (p: any) => {
-      console.log('Eingehender Anruf von:', p.from);
-      this.incomingFrom = p.from;
-    });
 
     // WebRTC: Der Client schickt sein Angebot (Offer)
     this.signaling.on('call-offer', async (p: any) => {
@@ -63,16 +61,18 @@ export class VideoCall implements OnInit, OnDestroy {
     });
 
     this.signaling.on('call-end', () => {
+      console.log('Call ended by signaling event, returning to instruction menu.');
       this.closeConnection();
+      this.router.navigate(['/instruction-menu']);
     });
   }
 
   // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
   async handleOffer(from: string, sdp: any) {
     try {
-      // Leitstelle sendet meistens nur Audio zurück (oder Video optional)
+      // Leitstelle sendet nur Audio zurück (um Ressourcen-Konflikte bei lokaler Kamera zu vermeiden)
       this.localStream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, // Ändern auf 'false', wenn die Leitstelle nicht gesehen werden soll
+        video: false, 
         audio: true 
       });
 
@@ -115,8 +115,7 @@ export class VideoCall implements OnInit, OnDestroy {
         from: this.myId, 
         sdp: this.pc.localDescription 
       });
-      
-      this.incomingFrom = null;
+
     } catch (err) {
       console.error('Fehler bei der Anrufannahme:', err);
     }
@@ -125,6 +124,7 @@ export class VideoCall implements OnInit, OnDestroy {
   endCall() {
     this.signaling.emit('call-end', { to: this.targetId, from: this.myId });
     this.closeConnection();
+    this.router.navigate(['/instruction-menu']);
   }
 
   private closeConnection() {
@@ -136,14 +136,8 @@ export class VideoCall implements OnInit, OnDestroy {
       this.localStream.getTracks().forEach(t => t.stop());
       this.localStream = undefined;
     }
-    this.incomingFrom = null;
     console.log('Video-Call beendet');
   }
 
-  async acceptCall() {
-    console.log('Anruf-Button geklickt');
-    if (this.incomingFrom) {
-      this.incomingFrom = null; 
-    }
-  }
+
 }
