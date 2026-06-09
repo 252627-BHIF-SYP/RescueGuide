@@ -92,6 +92,21 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       ),
                     ],
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.timer_outlined, color: Colors.green, size: 18),
+                      SizedBox(width: 4),
+                      Text(
+                        'Eintreffen der Einsatzkräfte',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -122,11 +137,23 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         if (!_isConnecting)
                           RTCVideoView(
                             _webRTCService.localRenderer,
-                            mirror: true,
+                            mirror: _webRTCService.isFrontCamera,
                             objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
                           ),
                         if (_isConnecting)
-                          const Center(child: CircularProgressIndicator(color: Colors.red)),
+                          const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(color: Colors.red),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Kamera wird gestartet...',
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -136,27 +163,44 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
             const SizedBox(height: 30),
 
-            // Bottom Actions (Ohne Auflegen Button)
+            // Bottom Actions
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildActionButton(
-                    icon: Icons.flashlight_on_outlined,
-                    onPressed: () {},
+                    icon: _webRTCService.isTorchOn ? Icons.flashlight_on : Icons.flashlight_off,
+                    isActive: _webRTCService.isTorchOn,
+                    onPressed: () async {
+                      await _webRTCService.toggleTorch();
+                      setState(() {});
+                    },
+                    enabled: !_webRTCService.isFrontCamera,
                   ),
                   _buildActionButton(
-                    icon: Icons.mic_none_outlined,
-                    onPressed: () {},
+                    icon: _webRTCService.isMicOn ? Icons.mic : Icons.mic_off,
+                    isActive: _webRTCService.isMicOn,
+                    onPressed: () {
+                      _webRTCService.toggleMic();
+                      setState(() {});
+                    },
                   ),
                   _buildActionButton(
-                    icon: Icons.camera_alt_outlined,
-                    onPressed: () {},
+                    icon: _webRTCService.isCameraOn ? Icons.videocam : Icons.videocam_off,
+                    isActive: _webRTCService.isCameraOn,
+                    onPressed: () {
+                      _webRTCService.toggleCamera();
+                      setState(() {});
+                    },
                   ),
                   _buildActionButton(
-                    icon: Icons.refresh_outlined,
-                    onPressed: () {},
+                    icon: Icons.flip_camera_ios_outlined,
+                    isActive: false,
+                    onPressed: () async {
+                      await _webRTCService.switchCamera();
+                      setState(() {});
+                    },
                   ),
                 ],
               ),
@@ -167,19 +211,25 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     );
   }
 
-  Widget _buildActionButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isActive,
+    bool enabled = true,
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: enabled 
+          ? (isActive ? Colors.red.shade100 : Colors.grey.shade100)
+          : Colors.grey.shade300,
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        icon: Icon(icon, color: Colors.black87),
-        onPressed: onPressed,
+        icon: Icon(icon, color: enabled ? (isActive ? Colors.red : Colors.black87) : Colors.grey),
+        onPressed: enabled ? onPressed : null,
         iconSize: 28,
         padding: const EdgeInsets.all(12),
       ),
     );
   }
 }
-

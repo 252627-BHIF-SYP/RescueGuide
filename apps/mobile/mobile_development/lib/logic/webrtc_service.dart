@@ -9,8 +9,13 @@ class WebRTCService {
   RTCVideoRenderer localRenderer = RTCVideoRenderer();
   RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
 
+  bool isMicOn = true;
+  bool isCameraOn = true;
+  bool isFrontCamera = false;
+  bool isTorchOn = false;
+
   final String selfId = 'mobile-user-${DateTime.now().millisecondsSinceEpoch}';
-  final String targetId = 'dispatcher'; // Target to call
+  final String targetId = 'dispatcher';
 
   Function(String)? onCallFailed;
   Function()? onCallEnd;
@@ -18,6 +23,8 @@ class WebRTCService {
   Future<void> init(String serverUrl) async {
     await localRenderer.initialize();
     await remoteRenderer.initialize();
+
+    await _prepareLocalMedia();
 
     socket = IO.io(serverUrl, <String, dynamic>{
       'transports': ['websocket'],
@@ -27,22 +34,15 @@ class WebRTCService {
     socket!.onConnect((_) {
       log('Connected to signaling server');
       socket!.emit('register', selfId);
-      _startCall(); // Automatically start call when connected
-    });
-
-    socket!.on('incoming-call', (data) {
-      log('Incoming call from ${data['from']}');
-      // For now, we are the one initiating the call in an emergency.
+      _startCall();
     });
 
     socket!.on('call-answer', (data) async {
-      log('Received call-answer from ${data['from']}');
       var answer = RTCSessionDescription(data['sdp']['sdp'], data['sdp']['type']);
       await _peerConnection?.setRemoteDescription(answer);
     });
 
     socket!.on('ice-candidate', (data) {
-      log('Received ice-candidate');
       var candidate = RTCIceCandidate(
         data['candidate']['candidate'],
         data['candidate']['sdpMid'],
@@ -51,83 +51,97 @@ class WebRTCService {
       _peerConnection?.addCandidate(candidate);
     });
 
-    socket!.on('call-failed', (data) {
-      onCallFailed?.call(data['reason']);
-    });
-
-    socket!.on('call-end', (_) {
-      onCallEnd?.call();
-    });
+    socket!.on('call-failed', (data) => onCallFailed?.call(data['reason']));
+    socket!.on('call-end', (_) => onCallEnd?.call());
 
     socket!.connect();
   }
 
-  Future<void> _startCall() async {
+  Future<void> _prepareLocalMedia() async {
     try {
-      _peerConnection = await _createPeerConnection();
-      
       localStream = await navigator.mediaDevices.getUserMedia({
         'audio': true,
         'video': {
-          'facingMode': 'user',
+          'facingMode': isFrontCamera ? 'user' : 'environment',
         },
       });
-
       localRenderer.srcObject = localStream;
+    } catch (e) {
+      log('Error preparing local media: $e');
+    }
+  }
 
-      localStream!.getTracks().forEach((track) {
-        _peerConnection!.addTrack(track, localStream!);
+  void toggleMic() {
+    if (localStream != null) {
+      isMicOn = !isMicOn;
+      localStream!.getAudioTracks().forEach((track) {
+        track.enabled = isMicOn;
       });
+    }
+  }
 
+  void toggleCamera() {
+    if (localStream != null) {
+      isCameraOn = !isCameraOn;
+      localStream!.getVideoTracks().forEach((track) {
+        track.enabled = isCameraOn;
+      });
+    }
+  }
+
+  Future<void> switchCamera() async {
+    if (localStream != null) {
+      isFrontCamera = !isFrontCamera;
+      final videoTrack = localStream!.getVideoTracks().first;
+      await Helper.switchCamera(videoTrack);
+      // Note: torch is usually reset when switching camera
+      isTorchOn = false;
+    }
+  }
+
+  Future<void> toggleTorch() async {
+    if (localStream != null && !isFrontCamera) {
+      try {
+        isTorchOn = !isTorchOn;
+        final videoTrack = localStream!.getVideoTracks().first;
+        await videoTrack.setTorch(isTorchOn);
+      } catch (e) {
+        log('Error toggling torch: $e');
+      }
+    }
+  }
+
+  Future<void> _startCall() async {
+    try {
+      if (_peerConnection != null) return;
+      _peerConnection = await _createPeerConnection();
+      if (localStream != null) {
+        localStream!.getTracks().forEach((track) {
+          _peerConnection!.addTrack(track, localStream!);
+        });
+      }
       RTCSessionDescription offer = await _peerConnection!.createOffer();
       await _peerConnection!.setLocalDescription(offer);
-
-      socket!.emit('call-request', {
-        'from': selfId,
-        'to': targetId,
-        'metadata': {'type': 'emergency'}
-      });
-
-      socket!.emit('call-offer', {
-        'from': selfId,
-        'to': targetId,
-        'sdp': offer.toMap(),
-      });
+      socket!.emit('call-request', {'from': selfId, 'to': targetId});
+      socket!.emit('call-offer', {'from': selfId, 'to': targetId, 'sdp': offer.toMap()});
     } catch (e) {
-      log('Error starting call: $e');
       onCallFailed?.call(e.toString());
     }
   }
 
   Future<RTCPeerConnection> _createPeerConnection() async {
-    Map<String, dynamic> configuration = {
-      'iceServers': [
-        {'urls': 'stun:stun.l.google.com:19302'},
-      ]
-    };
-
-    RTCPeerConnection pc = await createPeerConnection(configuration);
-
+    RTCPeerConnection pc = await createPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
     pc.onIceCandidate = (candidate) {
-      socket!.emit('ice-candidate', {
-        'from': selfId,
-        'to': targetId,
-        'candidate': candidate.toMap(),
-      });
+      socket!.emit('ice-candidate', {'from': selfId, 'to': targetId, 'candidate': candidate.toMap()});
     };
-
     pc.onTrack = (event) {
-      if (event.streams.isNotEmpty) {
-        // Wir weisen den Stream dem remoteRenderer zu, damit Audio abgespielt wird.
-        // Da wir im UI keinen RTCVideoView für remote nutzen, wird kein Video angezeigt.
-        remoteRenderer.srcObject = event.streams[0];
-      }
+      if (event.streams.isNotEmpty) remoteRenderer.srcObject = event.streams[0];
     };
-
     return pc;
   }
 
   void dispose() {
+    localStream?.getTracks().forEach((track) => track.stop());
     localStream?.dispose();
     _peerConnection?.close();
     localRenderer.dispose();
