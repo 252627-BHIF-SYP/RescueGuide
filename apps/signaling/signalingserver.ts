@@ -1,73 +1,70 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 
-const SERVER_IP = '192.168.6.10'; 
-const LAPTOP_IP = '192.168.178.73';
+const SERVER_IP = "192.168.6.10";
+const LAPTOP_IP = "192.168.178.73";
 
 const io = new Server(server, {
     cors: {
-origin: [
-            'http://localhost:4200',
-            'http://localhost:4201',
-            'http://localhost:81',
-            'http://192.168.6.10:80',
-            'http://192.168.6.10:81',
-            'http://192.168.6.10:3000',
-            'http://192.168.178.73:4200',
-            'http://192.168.178.73:81',
-            'http://localhost' 
+        origin: [
+            "http://localhost:81",
+            "http://192.168.6.10:80",
+            "http://192.168.6.10:81",
+            "http://192.168.6.10:3000",
+            "http://192.168.178.73:81",
         ],
-        methods: ['GET', 'POST'],
-        credentials: true
-    }
+        methods: ["GET", "POST"],
+        credentials: true,
+    },
 });
 
 const registry = new Map();
 
-io.on('connection', (socket) => {
-  console.log('Client verbunden:', socket.id);
+io.on("connection", (socket) => {
+    console.log("Client verbunden:", socket.id);
 
-  socket.on('register', (userId) => {
-    console.log(`Registrierung: ${userId} -> ${socket.id}`);
-    registry.set(userId, socket.id);
-    socket.data.userId = userId;
-  });
+    socket.on("register", (userId) => {
+        console.log(`Registrierung: ${userId} -> ${socket.id}`);
+        registry.set(userId, socket.id);
+        socket.data.userId = userId;
+    });
 
-  socket.on('call-request', (payload) => {
-    const targetSocketId = registry.get(payload.to);
-    if (targetSocketId) {
-      io.to(targetSocketId).emit('incoming-call', { from: payload.from, metadata: payload.metadata });
-      console.log(`Anrufanfrage von ${payload.from} an ${payload.to}`);
-    } else {
-      io.to(socket.id).emit('call-failed', { reason: 'target-unreachable' });
-      console.log(`Anruf fehlgeschlagen: Ziel ${payload.to} nicht erreichbar`);
-    }
-  });
+    socket.on("call-request", (payload) => {
+        const targetSocketId = registry.get(payload.to);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("incoming-call", { from: payload.from, metadata: payload.metadata });
+            console.log(`Anrufanfrage von ${payload.from} an ${payload.to}`);
+        } else {
+            io.to(socket.id).emit("call-failed", { reason: "target-unreachable" });
+            console.log(`Anruf fehlgeschlagen: Ziel ${payload.to} nicht erreichbar`);
+        }
+    });
 
-  socket.on('call-offer', (payload) => {
-    const target = registry.get(payload.to);
-    if (target) io.to(target).emit('call-offer', { from: payload.from, sdp: payload.sdp });
-  });
+    socket.on("call-offer", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) io.to(target).emit("call-offer", { from: payload.from, sdp: payload.sdp });
+    });
 
-  socket.on('call-answer', (payload) => {
-    const target = registry.get(payload.to);
-    if (target) io.to(target).emit('call-answer', { from: payload.from, sdp: payload.sdp });
-  });
+    socket.on("call-answer", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) io.to(target).emit("call-answer", { from: payload.from, sdp: payload.sdp });
+    });
 
-  socket.on('ice-candidate', (payload) => {
-    const target = registry.get(payload.to);
-    if (target) io.to(target).emit('ice-candidate', { from: payload.from, candidate: payload.candidate });
-  });
+    socket.on("ice-candidate", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) io.to(target).emit("ice-candidate", { from: payload.from, candidate: payload.candidate });
+    });
 
-  socket.on('call-rejected', (payload) => {
-    const target = registry.get(payload.to);
-    if (target) io.to(target).emit('call-rejected', { from: payload.from, reason: payload.reason });
-  });
+    socket.on("call-rejected", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) io.to(target).emit("call-rejected", { from: payload.from, reason: payload.reason });
+    });
 
+<<<<<<< Updated upstream
   socket.on('call-accepted', (payload) => {
     const target = registry.get(payload.to);
     if (target) io.to(target).emit('call-accepted', { from: payload.from });
@@ -77,20 +74,26 @@ io.on('connection', (socket) => {
     const target = registry.get(payload.to);
     if (target) io.to(target).emit('call-end', { from: payload.from, reason: payload.reason });
   });
+=======
+    socket.on("call-end", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) io.to(target).emit("call-end", { from: payload.from, reason: payload.reason });
+    });
+>>>>>>> Stashed changes
 
-  socket.on('disconnect', () => {
-    const userId = socket.data.userId;
-    if (userId) {
-      registry.delete(userId);
-      console.log(`User ${userId} getrennt`);
-    } else {
-      console.log(`Socket ${socket.id} getrennt`);
-    }
-  });
+    socket.on("disconnect", () => {
+        const userId = socket.data.userId;
+        if (userId) {
+            registry.delete(userId);
+            console.log(`User ${userId} getrennt`);
+        } else {
+            console.log(`Socket ${socket.id} getrennt`);
+        }
+    });
 });
 
 const PORT = 3000;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, "0.0.0.0", () => {
     console.log(`Signaling server läuft auf:`);
     console.log(`- Local:   http://localhost:${PORT}`);
     console.log(`- Network: http://${SERVER_IP}:${PORT}`);
