@@ -41,18 +41,39 @@ class _PanicScreenState extends State<PanicScreen> {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTapDown: (_) => _controller.startHold(() {
-                  // Wir nutzen den speziellen Navigator des Pakets, um die Navbar auszublenden
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: const ConnectingScreen(),
-                    withNavBar: false, // NAVBAR AUSBLENDEN
-                    pageTransitionAnimation: PageTransitionAnimation.fade,
-                  );
-                }),
-                onTapUp: (_) => _controller.stopHold(),
-                onTapCancel: () => _controller.stopHold(),
+              Listener(
+                onPointerDown: (event) {
+                  const double radius = 125.0;
+                  final Offset center = const Offset(radius, radius);
+                  if ((event.localPosition - center).distance <= radius) {
+                    _controller.startHold(() {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: const ConnectingScreen(),
+                        withNavBar: false,
+                        pageTransitionAnimation: PageTransitionAnimation.fade,
+                      );
+                    });
+                  }
+                },
+                onPointerMove: (event) {
+                  if (!_controller.isHolding) return;
+                  const double radius = 125.0;
+                  final Offset center = const Offset(radius, radius);
+                  if ((event.localPosition - center).distance > radius) {
+                    _controller.stopHold();
+                  }
+                },
+                onPointerUp: (_) {
+                  if (_controller.isHolding) {
+                    _controller.stopHold();
+                  }
+                },
+                onPointerCancel: (_) {
+                  if (_controller.isHolding) {
+                    _controller.stopHold();
+                  }
+                },
                 child: EmergencyIcon(
                   isHolding: _controller.isHolding,
                   progress: _controller.progress,
