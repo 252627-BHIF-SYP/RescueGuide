@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
 import { SignalingService } from '../services/signaling.service';
 import { EmergencyService } from '../services/emergency.service';
 import { environment } from '../../environments/environment';
@@ -10,7 +11,7 @@ import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon],
+  imports: [CommonModule, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })
@@ -20,6 +21,7 @@ export class VideoCall implements OnInit, OnDestroy {
 
   private pc?: RTCPeerConnection;
   public localStream?: MediaStream;
+  public isMuted = false;
   
   // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
@@ -129,6 +131,16 @@ export class VideoCall implements OnInit, OnDestroy {
 
     } catch (err) {
       console.error('Fehler bei der Anrufannahme:', err);
+    }
+  }
+
+  toggleMute() {
+    if (this.localStream) {
+      const audioTrack = this.localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        this.isMuted = !audioTrack.enabled;
+      }
     }
   }
 
