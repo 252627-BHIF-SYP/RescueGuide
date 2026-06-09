@@ -8,10 +8,18 @@ import { InstructionMenu } from './instruction-menu/instruction-menu';
 import { EmergencyPage } from './emergency-page/emergency-page';
 import { Welcome } from './welcome/welcome';
 
+import { EmergencyService } from './services/emergency.service';
+
 const authGuard = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   return auth.isLoggedIn() ? true : router.parseUrl('/login');
+};
+
+const activeEmergencyGuard = () => {
+  const emergencyService = inject(EmergencyService);
+  const router = inject(Router);
+  return emergencyService.isActive() ? true : router.parseUrl('/instruction-menu');
 };
 
 export const routes: Routes = [
@@ -20,5 +28,5 @@ export const routes: Routes = [
   { path: 'signup', component: Signup },
   { path: 'logout', component: Logout },
   { path: 'instruction-menu', component: InstructionMenu, canActivate: [authGuard] },
-  { path: 'emergency-page', component: EmergencyPage, canActivate: [authGuard] }
+  { path: 'emergency-page', component: EmergencyPage, canActivate: [authGuard, activeEmergencyGuard] }
 ];

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { SignalingService } from '../services/signaling.service';
+import { EmergencyService } from '../services/emergency.service';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -29,6 +30,7 @@ export class VideoCall implements OnInit, OnDestroy {
   // Signal Service injecten
   private signaling = inject(SignalingService);
   private router = inject(Router);
+  private emergencyService = inject(EmergencyService);
 
   ngOnInit() {
     this.initSignaling();
@@ -60,6 +62,7 @@ export class VideoCall implements OnInit, OnDestroy {
   private onCallEnd = () => {
     console.log('Call ended by signaling event, returning to instruction menu.');
     this.closeConnection();
+    this.emergencyService.isActive.set(false);
     this.router.navigate(['/instruction-menu']);
   };
 
@@ -132,6 +135,7 @@ export class VideoCall implements OnInit, OnDestroy {
   endCall() {
     this.signaling.emit('call-end', { to: this.targetId, from: this.myId });
     this.closeConnection();
+    this.emergencyService.isActive.set(false);
     this.router.navigate(['/instruction-menu']);
   }
 
