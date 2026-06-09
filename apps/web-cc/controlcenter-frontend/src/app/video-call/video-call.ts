@@ -36,35 +36,43 @@ export class VideoCall implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.endCall();
+    this.signaling.off('call-offer', this.onCallOffer);
+    this.signaling.off('ice-candidate', this.onIceCandidate);
+    this.signaling.off('call-end', this.onCallEnd);
   }
+
+  private onCallOffer = async (p: any) => {
+    if (p.sdp) {
+      await this.handleOffer(p.from, p.sdp);
+    }
+  };
+
+  private onIceCandidate = async (p: any) => {
+    if (p.candidate && this.pc) {
+      try {
+        await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
+      } catch (e) {
+        console.warn('ICE Candidate Error:', e);
+      }
+    }
+  };
+
+  private onCallEnd = () => {
+    console.log('Call ended by signaling event, returning to instruction menu.');
+    this.closeConnection();
+    this.router.navigate(['/instruction-menu']);
+  };
 
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
 
-
     // WebRTC: Der Client schickt sein Angebot (Offer)
-    this.signaling.on('call-offer', async (p: any) => {
-      if (p.sdp) {
-        await this.handleOffer(p.from, p.sdp);
-      }
-    });
+    this.signaling.on('call-offer', this.onCallOffer);
 
     // WebRTC: ICE Candidates austauschen
-    this.signaling.on('ice-candidate', async (p: any) => {
-      if (p.candidate && this.pc) {
-        try {
-          await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
-        } catch (e) {
-          console.warn('ICE Candidate Error:', e);
-        }
-      }
-    });
+    this.signaling.on('ice-candidate', this.onIceCandidate);
 
-    this.signaling.on('call-end', () => {
-      console.log('Call ended by signaling event, returning to instruction menu.');
-      this.closeConnection();
-      this.router.navigate(['/instruction-menu']);
-    });
+    this.signaling.on('call-end', this.onCallEnd);
   }
 
   // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
