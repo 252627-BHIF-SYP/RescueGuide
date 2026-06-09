@@ -26,18 +26,27 @@ class WebRTCService {
 
     await _prepareLocalMedia();
 
+    log('--- WebRTC Service Info ---');
+    log('Device ID (Self): $selfId');
+    log('Target ID (Other): $targetId');
+    log('---------------------------');
+
     socket = IO.io(serverUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
 
     socket!.onConnect((_) {
-      log('Connected to signaling server');
+      log('SUCCESS: Connected to signaling server');
       socket!.emit('register', selfId);
       _startCall();
     });
 
+    socket!.onConnectError((data) => log('ERROR: Signaling connection failed: $data'));
+    socket!.onDisconnect((_) => log('INFO: Disconnected from signaling server'));
+
     socket!.on('call-answer', (data) async {
+      log('INFO: Received call-answer from ${data['from'] ?? 'unknown'}');
       var answer = RTCSessionDescription(data['sdp']['sdp'], data['sdp']['type']);
       await _peerConnection?.setRemoteDescription(answer);
     });
@@ -51,8 +60,15 @@ class WebRTCService {
       _peerConnection?.addCandidate(candidate);
     });
 
-    socket!.on('call-failed', (data) => onCallFailed?.call(data['reason']));
-    socket!.on('call-end', (_) => onCallEnd?.call());
+    socket!.on('call-failed', (data) {
+      log('ERROR: Call failed: ${data['reason']}');
+      onCallFailed?.call(data['reason']);
+    });
+
+    socket!.on('call-end', (_) {
+      log('INFO: Call ended by remote');
+      onCallEnd?.call();
+    });
 
     socket!.connect();
   }
@@ -67,7 +83,7 @@ class WebRTCService {
       });
       localRenderer.srcObject = localStream;
     } catch (e) {
-      log('Error preparing local media: $e');
+      log('ERROR preparing local media: $e');
     }
   }
 
@@ -94,8 +110,8 @@ class WebRTCService {
       isFrontCamera = !isFrontCamera;
       final videoTrack = localStream!.getVideoTracks().first;
       await Helper.switchCamera(videoTrack);
-      // Note: torch is usually reset when switching camera
       isTorchOn = false;
+      log('INFO: Switched to ${isFrontCamera ? 'Front' : 'Back'} Camera');
     }
   }
 
@@ -106,7 +122,7 @@ class WebRTCService {
         final videoTrack = localStream!.getVideoTracks().first;
         await videoTrack.setTorch(isTorchOn);
       } catch (e) {
-        log('Error toggling torch: $e');
+        log('ERROR toggling torch: $e');
       }
     }
   }
@@ -122,9 +138,12 @@ class WebRTCService {
       }
       RTCSessionDescription offer = await _peerConnection!.createOffer();
       await _peerConnection!.setLocalDescription(offer);
+      
+      log('INFO: Sending call-offer to $targetId');
       socket!.emit('call-request', {'from': selfId, 'to': targetId});
       socket!.emit('call-offer', {'from': selfId, 'to': targetId, 'sdp': offer.toMap()});
     } catch (e) {
+      log('ERROR starting call: $e');
       onCallFailed?.call(e.toString());
     }
   }
@@ -141,6 +160,7 @@ class WebRTCService {
   }
 
   void dispose() {
+    log('INFO: Disposing WebRTC Service');
     localStream?.getTracks().forEach((track) => track.stop());
     localStream?.dispose();
     _peerConnection?.close();
