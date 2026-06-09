@@ -29,9 +29,16 @@
       <!-- Standort- & GPS-Daten -->
       <mat-card class="status-card info-card-padding">
         <mat-card-header>
-          <mat-card-title>
-            <mat-icon class="card-icon">location_on</mat-icon>
-            Echtzeit-Standort & GPS
+          <mat-card-title style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div>
+              <mat-icon class="card-icon">location_on</mat-icon>
+              Echtzeit-Standort & GPS
+            </div>
+            @if (mapUrl !== null) {
+              <button mat-icon-button (click)="toggleMapFullscreen()" color="primary" aria-label="Karte als Vollbild" title="Karte als Vollbild">
+                <mat-icon>fullscreen</mat-icon>
+              </button>
+            }
           </mat-card-title>
         </mat-card-header>
         
@@ -44,7 +51,7 @@
 
             @if (mapUrl !== null) {
               <div class="google-maps-frame">
-                <iframe [src]="mapUrl!" width="100%" height="280" style="border:0; border-radius: 8px;" loading="lazy"></iframe>
+                <iframe #mapIframe [src]="mapUrl!" width="100%" height="280" style="border:0; border-radius: 8px;" loading="lazy"></iframe>
               </div>
               <div class="coordinates">
                 <div class="coord-item">

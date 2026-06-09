@@ -145,7 +145,5 @@ export class InstructionMenu {
     });
   }
 
-  triggerAlarm(): void {
-    this.alarmService.triggerMockAlarm();
-  }
+
 }

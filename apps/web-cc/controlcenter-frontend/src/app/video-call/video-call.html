@@ -1,8 +1,18 @@
 <mat-card class="status-card video-card">
   <mat-card-header>
-    <mat-card-title>
-      <mat-icon class="card-icon">videocam</mat-icon>
-      Live-Kamera-Übertragung (Ersthelfer)
+    <mat-card-title style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <div>
+        <mat-icon class="card-icon">videocam</mat-icon>
+        Live-Kamera-Übertragung (Ersthelfer)
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button mat-icon-button (click)="toggleMute()" [color]="isMuted ? 'warn' : 'primary'" aria-label="Mikrofon stummschalten" title="Mikrofon stummschalten">
+          <mat-icon>{{ isMuted ? 'mic_off' : 'mic' }}</mat-icon>
+        </button>
+        <button mat-icon-button (click)="toggleVideoFullscreen()" color="primary" aria-label="Video als Vollbild" title="Video als Vollbild">
+          <mat-icon>fullscreen</mat-icon>
+        </button>
+      </div>
     </mat-card-title>
   </mat-card-header>
   <mat-card-content class="video-card-content">

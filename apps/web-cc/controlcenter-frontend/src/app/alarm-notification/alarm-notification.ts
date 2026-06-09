@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlarmService, AlarmData } from '../services/alarm.service';
 import { AuthService } from '../services/auth.service';
 import { SignalingService } from '../services/signaling.service';
+import { EmergencyService } from '../services/emergency.service';
 import { environment } from '../../environments/environment';
 import { Subscription } from 'rxjs';
 
@@ -18,6 +19,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private signaling = inject(SignalingService);
+  private emergencyService = inject(EmergencyService);
   private cdr = inject(ChangeDetectorRef);
 
   activeAlarm = signal<AlarmData | null>(null);
@@ -65,6 +67,8 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
         from: 'controlcenter'
       });
       
+      this.emergencyService.isActive.set(true);
+
       this.activeAlarm.set(null); 
       this.cdr.detectChanges();
 
