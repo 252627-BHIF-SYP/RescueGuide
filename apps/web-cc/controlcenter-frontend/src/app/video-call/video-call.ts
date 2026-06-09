@@ -144,6 +144,19 @@ export class VideoCall implements OnInit, OnDestroy {
     }
   }
 
+  toggleVideoFullscreen() {
+    if (this.remoteVideo && this.remoteVideo.nativeElement) {
+      const elem = this.remoteVideo.nativeElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch((err: any) => {
+          console.error(`Error attempting to enable fullscreen mode: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  }
+
   endCall() {
     this.signaling.emit('call-end', { to: this.targetId, from: this.myId });
     this.closeConnection();
