@@ -1,12 +1,9 @@
-import { Component, OnInit, signal, inject, OnDestroy, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, OnDestroy, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatDivider, MatList, MatListItem } from '@angular/material/list';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
 import { LocationService, Notruf } from '../services/location.service';
@@ -22,13 +19,6 @@ import { EmergencyService } from '../services/emergency.service';
     MatCardHeader,
     MatCardTitle,
     MatCardContent,
-    MatProgressBar,
-    MatList,
-    MatListItem,
-    MatDivider,
-    RouterLink,
-    RouterLinkActive,
-    MatIconButton,
     MatButton,
     VideoCall,
     EmergencyChecklist
@@ -36,7 +26,9 @@ import { EmergencyService } from '../services/emergency.service';
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
 })
-export class EmergencyPage implements OnInit {
+export class EmergencyPage implements OnInit, OnDestroy {
+  @ViewChild(VideoCall) videoCallComponent!: VideoCall;
+
   private sanitizer = inject(DomSanitizer);
   public locationService = inject(LocationService);
   public emergencyService = inject(EmergencyService);
@@ -55,8 +47,23 @@ export class EmergencyPage implements OnInit {
   private _mapUrl: SafeResourceUrl | null = null;
 
   ngOnInit() {
+    this.emergencyService.resetTimer();
+    this.emergencyService.startTimer();
     this.fetchLatestLocation();
     this.pollingInterval = setInterval(() => this.fetchLatestLocation(), 5000);
+  }
+
+  ngOnDestroy() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+    }
+    this.emergencyService.stopTimer();
+  }
+
+  endCall() {
+    if (this.videoCallComponent) {
+      this.videoCallComponent.endCall();
+    }
   }
 
   fetchLatestLocation() {
