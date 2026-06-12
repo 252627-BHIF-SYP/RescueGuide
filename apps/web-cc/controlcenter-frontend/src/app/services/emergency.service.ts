@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 export interface Notruf {
   userId: string;
@@ -37,6 +38,7 @@ export class EmergencyService implements OnDestroy {
   isActive = signal<boolean>(false);
   protocol = signal<EmergencyProtocol>(this.getDefaultProtocol());
   durationSeconds = signal<number>(0);
+  activeEmergencyId = signal<number | null>(null);
 
   private timerInterval: any;
 
@@ -68,6 +70,57 @@ export class EmergencyService implements OnDestroy {
 
   updateProtocol(data: Partial<EmergencyProtocol>) {
     this.protocol.update(p => ({ ...p, ...data }));
+  }
+
+  createEmergency() {
+    // Create an empty emergency
+    const emergencyPayload = {
+      startedAt: new Date().toISOString(),
+      status: 0 // e.g. 0 = Active, adapt to your EmergencyStatus enum
+    };
+    this.http.post<any>(`${environment.apiUrl}/Emergency`, emergencyPayload)
+      .subscribe({
+        next: (res) => {
+          this.activeEmergencyId.set(res.id);
+          console.log('Emergency created with ID:', res.id);
+        },
+        error: (err) => console.error('Error creating emergency', err)
+      });
+  }
+
+  saveProtocol() {
+    const emergencyId = this.activeEmergencyId();
+    if (!emergencyId) {
+      console.error('Cannot save protocol: No active emergency ID');
+      return;
+    }
+
+    const payload = {
+      emergencyId: emergencyId,
+      ...this.protocol()
+    };
+
+    this.http.post(`${environment.apiUrl}/EmergencyProtocol`, payload)
+      .subscribe({
+        next: () => console.log('Protocol saved successfully'),
+        error: (err) => console.error('Error saving protocol', err)
+      });
+  }
+
+  endEmergency() {
+    const emergencyId = this.activeEmergencyId();
+    if (emergencyId) {
+      const emergencyPayload = {
+        id: emergencyId,
+        endedAt: new Date().toISOString(),
+        status: 1 // e.g. 1 = Ended
+      };
+      this.http.put(`${environment.apiUrl}/Emergency/${emergencyId}`, emergencyPayload)
+        .subscribe({
+          next: () => console.log('Emergency ended in backend'),
+          error: (err) => console.error('Error ending emergency', err)
+        });
+    }
   }
 
   startTimer() {

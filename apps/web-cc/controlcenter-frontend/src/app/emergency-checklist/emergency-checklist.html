@@ -21,7 +21,14 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Art des Notrufs</mat-label>
-        <input matInput [(ngModel)]="emergencyData().type" placeholder="z.B. Herzinfarkt, Brand...">
+        <mat-select [(ngModel)]="emergencyData().type">
+          <mat-option value="Medizinischer Notfall">Medizinischer Notfall</mat-option>
+          <mat-option value="Verkehrsunfall">Verkehrsunfall</mat-option>
+          <mat-option value="Brand">Brand</mat-option>
+          <mat-option value="Polizeilicher Notfall">Polizeilicher Notfall</mat-option>
+          <mat-option value="Technische Hilfeleistung">Technische Hilfeleistung</mat-option>
+          <mat-option value="Sonstiges">Sonstiges</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
