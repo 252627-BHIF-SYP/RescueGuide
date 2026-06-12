@@ -4,23 +4,46 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../logic/webrtc_service.dart';
 
 class EmergencyScreen extends StatefulWidget {
-  const EmergencyScreen({super.key});
+  final WebRTCService webRTCService;
+  const EmergencyScreen({super.key, required this.webRTCService});
 
   @override
   State<EmergencyScreen> createState() => _EmergencyScreenState();
 }
 
 class _EmergencyScreenState extends State<EmergencyScreen> {
-  final WebRTCService _webRTCService = WebRTCService();
-  bool _isConnecting = true;
   int _seconds = 0;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _initWebRTC();
     _startTimer();
+    _setupCallHandlers();
+  }
+
+  void _setupCallHandlers() {
+    widget.webRTCService.onCallEnd = () {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notruf wurde von der Leitstelle beendet'),
+            backgroundColor: Colors.blueGrey,
+          ),
+        );
+        // Zurück zum Hauptbildschirm (PanicScreen im Wrapper)
+        Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+      }
+    };
+    
+    widget.webRTCService.onCallFailed = (reason) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Verbindung unterbrochen: $reason')),
+        );
+        Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+      }
+    };
   }
 
   void _startTimer() {
@@ -33,19 +56,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     });
   }
 
-  Future<void> _initWebRTC() async {
-    await _webRTCService.init('http://10.0.2.2:3000');
-    if (mounted) {
-      setState(() {
-        _isConnecting = false;
-      });
-    }
-  }
-
   @override
   void dispose() {
     _timer?.cancel();
-    _webRTCService.dispose();
+    widget.webRTCService.dispose();
     super.dispose();
   }
 
@@ -132,29 +146,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Stack(
-                      children: [
-                        if (!_isConnecting)
-                          RTCVideoView(
-                            _webRTCService.localRenderer,
-                            mirror: _webRTCService.isFrontCamera,
-                            objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                          ),
-                        if (_isConnecting)
-                          const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(color: Colors.red),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Kamera wird gestartet...',
-                                  style: TextStyle(color: Colors.black54),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
+                    child: RTCVideoView(
+                      widget.webRTCService.localRenderer,
+                      mirror: widget.webRTCService.isFrontCamera,
+                      objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
                     ),
                   ),
                 ),
@@ -170,27 +165,27 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildActionButton(
-                    icon: _webRTCService.isTorchOn ? Icons.flashlight_on : Icons.flashlight_off,
-                    isActive: _webRTCService.isTorchOn,
+                    icon: widget.webRTCService.isTorchOn ? Icons.flashlight_on : Icons.flashlight_off,
+                    isActive: widget.webRTCService.isTorchOn,
                     onPressed: () async {
-                      await _webRTCService.toggleTorch();
+                      await widget.webRTCService.toggleTorch();
                       setState(() {});
                     },
-                    enabled: !_webRTCService.isFrontCamera,
+                    enabled: !widget.webRTCService.isFrontCamera,
                   ),
                   _buildActionButton(
-                    icon: _webRTCService.isMicOn ? Icons.mic : Icons.mic_off,
-                    isActive: _webRTCService.isMicOn,
+                    icon: widget.webRTCService.isMicOn ? Icons.mic : Icons.mic_off,
+                    isActive: widget.webRTCService.isMicOn,
                     onPressed: () {
-                      _webRTCService.toggleMic();
+                      widget.webRTCService.toggleMic();
                       setState(() {});
                     },
                   ),
                   _buildActionButton(
-                    icon: _webRTCService.isCameraOn ? Icons.videocam : Icons.videocam_off,
-                    isActive: _webRTCService.isCameraOn,
+                    icon: widget.webRTCService.isCameraOn ? Icons.videocam : Icons.videocam_off,
+                    isActive: widget.webRTCService.isCameraOn,
                     onPressed: () {
-                      _webRTCService.toggleCamera();
+                      widget.webRTCService.toggleCamera();
                       setState(() {});
                     },
                   ),
@@ -198,7 +193,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     icon: Icons.flip_camera_ios_outlined,
                     isActive: false,
                     onPressed: () async {
-                      await _webRTCService.switchCamera();
+                      await widget.webRTCService.switchCamera();
                       setState(() {});
                     },
                   ),

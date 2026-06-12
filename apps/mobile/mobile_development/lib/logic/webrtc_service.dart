@@ -15,10 +15,11 @@ class WebRTCService {
   bool isTorchOn = false;
 
   final String selfId = 'mobile-user-${DateTime.now().millisecondsSinceEpoch}';
-  final String targetId = 'dispatcher';
+  final String targetId = 'controlcenter';
 
   Function(String)? onCallFailed;
   Function()? onCallEnd;
+  Function()? onCallAccepted;
 
   Future<void> init(String serverUrl) async {
     await localRenderer.initialize();
@@ -26,49 +27,59 @@ class WebRTCService {
 
     await _prepareLocalMedia();
 
-    log('--- WebRTC Service Info ---');
-    log('Device ID (Self): $selfId');
-    log('Target ID (Other): $targetId');
-    log('---------------------------');
+    print('-----------------------------------------');
+    print('RESCUE GUIDE - WebRTC INFO');
+    print('MEINE ID: $selfId');
+    print('ZIEL  ID: $targetId');
+    print('-----------------------------------------');
 
     socket = IO.io(serverUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
 
+    socket!.onAny((event, data) {
+      log('SOCKET-DEBUG: Event [$event] empfangen');
+    });
+
     socket!.onConnect((_) {
-      log('SUCCESS: Connected to signaling server');
+      print('SUCCESS: Verbunden mit Signaling Server');
       socket!.emit('register', selfId);
       _startCall();
     });
 
-    socket!.onConnectError((data) => log('ERROR: Signaling connection failed: $data'));
-    socket!.onDisconnect((_) => log('INFO: Disconnected from signaling server'));
+    // WICHTIG: Das Controlcenter sendet "call-accepted"
+    socket!.on('call-accepted', (data) {
+      print('INFO: Event [call-accepted] erhalten -> Transition');
+      onCallAccepted?.call();
+    });
 
     socket!.on('call-answer', (data) async {
-      log('INFO: Received call-answer from ${data['from'] ?? 'unknown'}');
-      var answer = RTCSessionDescription(data['sdp']['sdp'], data['sdp']['type']);
-      await _peerConnection?.setRemoteDescription(answer);
+      print('INFO: Event [call-answer] (SDP) erhalten');
+      if (_peerConnection != null && data['sdp'] != null) {
+        var answer = RTCSessionDescription(data['sdp']['sdp'], data['sdp']['type']);
+        await _peerConnection!.setRemoteDescription(answer);
+      }
+      onCallAccepted?.call(); // Sicherheitshalber auch hier triggern
     });
 
     socket!.on('ice-candidate', (data) {
-      var candidate = RTCIceCandidate(
-        data['candidate']['candidate'],
-        data['candidate']['sdpMid'],
-        data['candidate']['sdpMLineIndex'],
-      );
-      _peerConnection?.addCandidate(candidate);
+      if (_peerConnection != null && data['candidate'] != null) {
+        var candidate = RTCIceCandidate(
+          data['candidate']['candidate'],
+          data['candidate']['sdpMid'],
+          data['candidate']['sdpMLineIndex'],
+        );
+        _peerConnection!.addCandidate(candidate);
+      }
     });
 
-    socket!.on('call-failed', (data) {
-      log('ERROR: Call failed: ${data['reason']}');
-      onCallFailed?.call(data['reason']);
-    });
-
+    socket!.on('call-failed', (data) => onCallFailed?.call(data['reason'] ?? 'Fehler'));
     socket!.on('call-end', (_) {
-      log('INFO: Call ended by remote');
+      print('INFO: Event [call-end] erhalten -> Beende Anruf');
       onCallEnd?.call();
     });
+    socket!.on('call-rejected', (data) => onCallFailed?.call(data['reason'] ?? 'Abgelehnt'));
 
     socket!.connect();
   }
@@ -77,31 +88,25 @@ class WebRTCService {
     try {
       localStream = await navigator.mediaDevices.getUserMedia({
         'audio': true,
-        'video': {
-          'facingMode': isFrontCamera ? 'user' : 'environment',
-        },
+        'video': {'facingMode': isFrontCamera ? 'user' : 'environment'},
       });
       localRenderer.srcObject = localStream;
     } catch (e) {
-      log('ERROR preparing local media: $e');
+      print('ERROR: Kamera-Fehler: $e');
     }
   }
 
   void toggleMic() {
     if (localStream != null) {
       isMicOn = !isMicOn;
-      localStream!.getAudioTracks().forEach((track) {
-        track.enabled = isMicOn;
-      });
+      localStream!.getAudioTracks().forEach((track) => track.enabled = isMicOn);
     }
   }
 
   void toggleCamera() {
     if (localStream != null) {
       isCameraOn = !isCameraOn;
-      localStream!.getVideoTracks().forEach((track) {
-        track.enabled = isCameraOn;
-      });
+      localStream!.getVideoTracks().forEach((track) => track.enabled = isCameraOn);
     }
   }
 
@@ -111,7 +116,6 @@ class WebRTCService {
       final videoTrack = localStream!.getVideoTracks().first;
       await Helper.switchCamera(videoTrack);
       isTorchOn = false;
-      log('INFO: Switched to ${isFrontCamera ? 'Front' : 'Back'} Camera');
     }
   }
 
@@ -122,7 +126,7 @@ class WebRTCService {
         final videoTrack = localStream!.getVideoTracks().first;
         await videoTrack.setTorch(isTorchOn);
       } catch (e) {
-        log('ERROR toggling torch: $e');
+        log('Torch-Error: $e');
       }
     }
   }
@@ -131,41 +135,49 @@ class WebRTCService {
     try {
       if (_peerConnection != null) return;
       _peerConnection = await _createPeerConnection();
-      if (localStream != null) {
-        localStream!.getTracks().forEach((track) {
-          _peerConnection!.addTrack(track, localStream!);
-        });
-      }
+      localStream?.getTracks().forEach((track) => _peerConnection!.addTrack(track, localStream!));
+
       RTCSessionDescription offer = await _peerConnection!.createOffer();
       await _peerConnection!.setLocalDescription(offer);
       
-      log('INFO: Sending call-offer to $targetId');
-      socket!.emit('call-request', {'from': selfId, 'to': targetId});
+      socket!.emit('call-request', {'from': selfId, 'to': targetId, 'metadata': {'type': 'emergency'}});
       socket!.emit('call-offer', {'from': selfId, 'to': targetId, 'sdp': offer.toMap()});
     } catch (e) {
-      log('ERROR starting call: $e');
       onCallFailed?.call(e.toString());
     }
   }
 
   Future<RTCPeerConnection> _createPeerConnection() async {
     RTCPeerConnection pc = await createPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+
+    // Test Test
+    pc.onIceConnectionState = (state) {
+      print('>>> ICE Connection State: $state');
+    };
+
     pc.onIceCandidate = (candidate) {
       socket!.emit('ice-candidate', {'from': selfId, 'to': targetId, 'candidate': candidate.toMap()});
     };
+
     pc.onTrack = (event) {
       if (event.streams.isNotEmpty) remoteRenderer.srcObject = event.streams[0];
     };
+
     return pc;
   }
 
   void dispose() {
-    log('INFO: Disposing WebRTC Service');
-    localStream?.getTracks().forEach((track) => track.stop());
+    print('INFO: WebRTC Service Ressourcen werden freigegeben');
+    localStream?.getTracks().forEach((track) {
+      track.stop();
+    });
     localStream?.dispose();
+    localStream = null;
     _peerConnection?.close();
-    localRenderer.dispose();
-    remoteRenderer.dispose();
+    _peerConnection = null;
+    localRenderer.srcObject = null;
+    remoteRenderer.srcObject = null;
     socket?.disconnect();
+    socket = null;
   }
 }
