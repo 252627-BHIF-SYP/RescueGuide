@@ -12,4 +12,4 @@ COPY . .
 EXPOSE 3000
 
 # Server starten
-CMD ["node", "signalingserver.js"]
+CMD ["node", "signalingserver.ts"]

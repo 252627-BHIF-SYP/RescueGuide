@@ -1,9 +1,9 @@
-import { Component, OnInit, signal, inject, OnDestroy, computed, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, inject, OnDestroy, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
 import { LocationService, Notruf } from '../services/location.service';
@@ -20,6 +20,7 @@ import { EmergencyService } from '../services/emergency.service';
     MatCardTitle,
     MatCardContent,
     MatButton,
+    MatIconButton,
     VideoCall,
     EmergencyChecklist
   ],
@@ -28,6 +29,7 @@ import { EmergencyService } from '../services/emergency.service';
 })
 export class EmergencyPage implements OnInit, OnDestroy {
   @ViewChild(VideoCall) videoCallComponent!: VideoCall;
+  @ViewChild('mapIframe') mapIframe?: ElementRef<HTMLIFrameElement>;
 
   private sanitizer = inject(DomSanitizer);
   public locationService = inject(LocationService);
@@ -110,5 +112,18 @@ export class EmergencyPage implements OnInit, OnDestroy {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  toggleMapFullscreen() {
+    if (this.mapIframe && this.mapIframe.nativeElement) {
+      const elem = this.mapIframe.nativeElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch((err: any) => {
+          console.error(`Error attempting to enable fullscreen mode: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
   }
 }

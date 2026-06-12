@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
 import { SignalingService } from '../services/signaling.service';
+import { EmergencyService } from '../services/emergency.service';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon],
+  imports: [CommonModule, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })
@@ -19,6 +21,7 @@ export class VideoCall implements OnInit, OnDestroy {
 
   private pc?: RTCPeerConnection;
   public localStream?: MediaStream;
+  public isMuted = false;
   
   // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
@@ -29,6 +32,7 @@ export class VideoCall implements OnInit, OnDestroy {
   // Signal Service injecten
   private signaling = inject(SignalingService);
   private router = inject(Router);
+  private emergencyService = inject(EmergencyService);
 
   ngOnInit() {
     this.initSignaling();
@@ -60,6 +64,7 @@ export class VideoCall implements OnInit, OnDestroy {
   private onCallEnd = () => {
     console.log('Call ended by signaling event, returning to instruction menu.');
     this.closeConnection();
+    this.emergencyService.isActive.set(false);
     this.router.navigate(['/instruction-menu']);
   };
 
@@ -129,9 +134,33 @@ export class VideoCall implements OnInit, OnDestroy {
     }
   }
 
+  toggleMute() {
+    if (this.localStream) {
+      const audioTrack = this.localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        this.isMuted = !audioTrack.enabled;
+      }
+    }
+  }
+
+  toggleVideoFullscreen() {
+    if (this.remoteVideo && this.remoteVideo.nativeElement) {
+      const elem = this.remoteVideo.nativeElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch((err: any) => {
+          console.error(`Error attempting to enable fullscreen mode: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  }
+
   endCall() {
     this.signaling.emit('call-end', { to: this.targetId, from: this.myId });
     this.closeConnection();
+    this.emergencyService.isActive.set(false);
     this.router.navigate(['/instruction-menu']);
   }
 

@@ -19,6 +19,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private signaling = inject(SignalingService);
+  private emergencyService = inject(EmergencyService);
   private cdr = inject(ChangeDetectorRef);
   private emergencyService = inject(EmergencyService);
 
@@ -70,6 +71,8 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
         from: 'controlcenter'
       });
       
+      this.emergencyService.isActive.set(true);
+
       this.activeAlarm.set(null); 
       this.cdr.detectChanges();
 

@@ -35,6 +35,7 @@ export class EmergencyService implements OnDestroy {
 
   
   // State Signals
+  isActive = signal<boolean>(false);
   protocol = signal<EmergencyProtocol>(this.getDefaultProtocol());
   durationSeconds = signal<number>(0);
   activeEmergencyId = signal<number | null>(null);
