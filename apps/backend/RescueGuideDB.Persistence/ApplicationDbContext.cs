@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RescueGuideDB.Core.Entities;
 
 namespace RescueGuideDB.Persistence;
@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<FirstHelp> FirstHelps { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Emergency> Emergencies { get; set; }
+    public DbSet<EmergencyProtocol> EmergencyProtocols { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<InstructionCategory> InstructionCategories { get; set; }
     public DbSet<InstructionStep> InstructionSteps { get; set; }

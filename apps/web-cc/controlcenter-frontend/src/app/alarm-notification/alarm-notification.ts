@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlarmService, AlarmData } from '../services/alarm.service';
 import { AuthService } from '../services/auth.service';
 import { SignalingService } from '../services/signaling.service';
+import { EmergencyService } from '../services/emergency.service';
 import { environment } from '../../environments/environment';
 import { Subscription } from 'rxjs';
 
@@ -19,6 +20,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private signaling = inject(SignalingService);
   private cdr = inject(ChangeDetectorRef);
+  private emergencyService = inject(EmergencyService);
 
   activeAlarm = signal<AlarmData | null>(null);
   private audio = new Audio('assets/sounds/alarm_tone.mp3');
@@ -58,6 +60,9 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     const alarm = this.activeAlarm();
     if (alarm) {
       this.audio.pause();
+
+      // Notfall in DB anlegen
+      this.emergencyService.createEmergency();
 
       // Sende Akzeptanz-Event an den Ersthelfer
       this.signaling.emit('call-accepted', {
