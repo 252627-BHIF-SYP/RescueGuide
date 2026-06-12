@@ -7,6 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDivider } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { EmergencyProtocol } from '../services/emergency.service';
 
 @Component({
@@ -24,7 +25,8 @@ import { EmergencyProtocol } from '../services/emergency.service';
     MatCheckboxModule,
     MatDivider,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatSelectModule
   ],
   templateUrl: './emergency-checklist.html',
   styleUrl: './emergency-checklist.scss'

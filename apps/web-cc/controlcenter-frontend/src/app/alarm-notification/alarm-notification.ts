@@ -21,7 +21,6 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private signaling = inject(SignalingService);
   private emergencyService = inject(EmergencyService);
   private cdr = inject(ChangeDetectorRef);
-  private emergencyService = inject(EmergencyService);
 
   activeAlarm = signal<AlarmData | null>(null);
   private audio = new Audio('assets/sounds/alarm_tone.mp3');
@@ -64,6 +63,15 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
       // Notfall in DB anlegen
       this.emergencyService.createEmergency();
+
+      // Protokoll mit Startdaten vorbelegen
+      const now = new Date();
+      this.emergencyService.updateProtocol({
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().split(' ')[0].substring(0, 5),
+        address: alarm.location !== 'Unbekannter Standort' ? alarm.location : '',
+        type: ['Medizinischer Notfall', 'Verkehrsunfall', 'Brand', 'Polizeilicher Notfall', 'Technische Hilfeleistung'].includes(alarm.type) ? alarm.type : 'Sonstiges'
+      });
 
       // Sende Akzeptanz-Event an den Ersthelfer
       this.signaling.emit('call-accepted', {
