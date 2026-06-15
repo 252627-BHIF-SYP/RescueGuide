@@ -18,7 +18,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<InstructionCategory> InstructionCategories { get; set; }
     public DbSet<InstructionStep> InstructionSteps { get; set; }
     public DbSet<UserControlCenter> UserControlCenters { get; set; }
-   
+    public DbSet<Measure> Measures { get; set; }
+    public DbSet<Plan> Plans { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

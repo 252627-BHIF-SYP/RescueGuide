@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 export interface Measure {
   id: number;
@@ -25,19 +26,28 @@ export interface Plan {
   providedIn: 'root'
 })
 export class InstructionMenuService {
-  private readonly _availableMeasures$ = new BehaviorSubject<Measure[]>([
-    { id: 1, name: 'Erste Hilfe leisten', description: 'Grundlegende Erste Hilfe Maßnahmen', isUserCreated: false },
-    { id: 2, name: 'Feuer löschen', description: 'Feuer mit geeigneten Mitteln löschen', isUserCreated: false },
-    { id: 3, name: 'Rettung rufen', description: 'Notruf absetzen', isUserCreated: false }
-  ]);
-
+  private readonly _availableMeasures$ = new BehaviorSubject<Measure[]>([]);
   private readonly _plans$ = new BehaviorSubject<Plan[]>([]);
   private readonly _currentMeasures$ = new BehaviorSubject<Measure[]>([]);
 
   constructor(
     private auth: AuthService,
     private http: HttpClient
-  ) {}
+  ) {
+    this.loadInitialData();
+  }
+
+  private loadInitialData(): void {
+    this.http.get<Measure[]>(`${environment.apiUrl}/Measures`).subscribe({
+      next: (measures) => this._availableMeasures$.next(measures),
+      error: (err) => console.error('Failed to load measures', err)
+    });
+
+    this.http.get<Plan[]>(`${environment.apiUrl}/Plans`).subscribe({
+      next: (plans) => this._plans$.next(plans),
+      error: (err) => console.error('Failed to load plans', err)
+    });
+  }
 
   get availableMeasures$(): Observable<Measure[]> {
     return this._availableMeasures$.asObservable();
@@ -77,18 +87,28 @@ export class InstructionMenuService {
   }
 
   createMeasure(name: string, description: string, imageUrl?: string): Measure {
-    const current = this._availableMeasures$.getValue();
-    const newMeasure: Measure = {
-      id: current.length > 0 ? Math.max(...current.map(m => m.id)) + 1 : 1,
+    const newMeasure: Partial<Measure> = {
       name,
       description,
       isUserCreated: true,
-      createdAt: new Date(),
-      author: 'Unbekannt',
+      author: this.auth.userName() || 'Unbekannt',
       imageUrl
     };
-    this._availableMeasures$.next([...current, newMeasure]);
-    return newMeasure;
+
+    // We can return a temporary measure object, but ideally we await backend response
+    // For simplicity with the current synchronous signature, we emit an optimistic update
+    const tempId = Date.now();
+    const optimisticMeasure = { ...newMeasure, id: tempId } as Measure;
+    
+    this.http.post<Measure>(`${environment.apiUrl}/Measures`, newMeasure).subscribe({
+      next: (createdMeasure) => {
+        // Reload all or update local
+        this.loadInitialData();
+      },
+      error: (err) => console.error('Failed to create measure', err)
+    });
+
+    return optimisticMeasure;
   }
 
   rollbackMeasure(measureId: number): void {
@@ -97,59 +117,62 @@ export class InstructionMenuService {
   }
 
   editMeasure(measure: Measure, name: string, description: string, imageUrl?: string): void {
-    const current = this._availableMeasures$.getValue();
-    const updated = current.map(m => {
-      if (m.id === measure.id) {
-        return { ...m, name, description, imageUrl };
-      }
-      return m;
+    const updatedMeasure = { ...measure, name, description, imageUrl };
+    
+    this.http.put(`${environment.apiUrl}/Measures/${measure.id}`, updatedMeasure).subscribe({
+      next: () => {
+        this.loadInitialData();
+      },
+      error: (err) => console.error('Failed to edit measure', err)
     });
-    this._availableMeasures$.next(updated);
-
-    const currentActive = this._currentMeasures$.getValue();
-    const updatedActive = currentActive.map(m => {
-      if (m.id === measure.id) {
-        return { ...m, name, description, imageUrl };
-      }
-      return m;
-    });
-    this._currentMeasures$.next(updatedActive);
   }
 
   deleteMeasure(measure: Measure): void {
-    const current = this._availableMeasures$.getValue();
-    this._availableMeasures$.next(current.filter(m => m.id !== measure.id));
-    
-    const active = this._currentMeasures$.getValue();
-    this._currentMeasures$.next(active.filter(m => m.id !== measure.id));
+    this.http.delete(`${environment.apiUrl}/Measures/${measure.id}`).subscribe({
+      next: () => {
+        this.loadInitialData();
+      },
+      error: (err) => console.error('Failed to delete measure', err)
+    });
   }
 
   createPlan(name: string, selectedMeasures: Measure[]): Plan {
-    const current = this._plans$.getValue();
-    const newPlan: Plan = {
-      id: current.length > 0 ? Math.max(...current.map(p => p.id)) + 1 : 1,
+    const newPlan: Partial<Plan> = {
       name,
       measures: selectedMeasures,
-      createdAt: new Date(),
-      author: 'Unbekannt'
+      author: this.auth.userName() || 'Unbekannt'
     };
-    this._plans$.next([...current, newPlan]);
-    return newPlan;
+
+    const tempId = Date.now();
+    const optimisticPlan = { ...newPlan, id: tempId } as Plan;
+
+    this.http.post<Plan>(`${environment.apiUrl}/Plans`, newPlan).subscribe({
+      next: () => {
+        this.loadInitialData();
+      },
+      error: (err) => console.error('Failed to create plan', err)
+    });
+
+    return optimisticPlan;
   }
 
   editPlan(plan: Plan, name: string, measures: Measure[]): void {
-    const current = this._plans$.getValue();
-    const updated = current.map(p => {
-      if (p.id === plan.id) {
-        return { ...p, name, measures };
-      }
-      return p;
+    const updatedPlan = { ...plan, name, measures };
+
+    this.http.put(`${environment.apiUrl}/Plans/${plan.id}`, updatedPlan).subscribe({
+      next: () => {
+        this.loadInitialData();
+      },
+      error: (err) => console.error('Failed to edit plan', err)
     });
-    this._plans$.next(updated);
   }
 
   deletePlan(plan: Plan): void {
-    const current = this._plans$.getValue();
-    this._plans$.next(current.filter(p => p.id !== plan.id));
+    this.http.delete(`${environment.apiUrl}/Plans/${plan.id}`).subscribe({
+      next: () => {
+        this.loadInitialData();
+      },
+      error: (err) => console.error('Failed to delete plan', err)
+    });
   }
 }
