@@ -30,7 +30,7 @@ export class Login {
 
   onLogin() {
     this.auth.login(this.username, this.password).subscribe({
-      next: () => this.router.navigate(['/emergency-page']),
+      next: () => this.router.navigate(['/dashboard']),
       error: () => this.error.set('Login fehlgeschlagen')
     });
   }

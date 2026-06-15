@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RescueGuideDB.Core.Entities;
+using RescueGuideDB.Core.Entities.DTOs;
+using RescueGuideDB.Core.Enums;
 using RescueGuideDB.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +21,31 @@ public class EmergencyController : ControllerBase
     public async Task<ActionResult<IEnumerable<Emergency>>> GetAll()
     {
         return await _context.Emergencies.ToListAsync();
+    }
+
+    [HttpGet("dashboard")]
+    public async Task<ActionResult<IEnumerable<EmergencyDashboardDto>>> GetDashboard()
+    {
+        var emergencies = await _context.Emergencies
+            .AsNoTracking()
+            .OrderByDescending(emergency => emergency.StartedAt)
+            .Select(emergency => new EmergencyDashboardDto
+            {
+                Id = emergency.Id,
+                Status = emergency.Status == EmergencyStatus.Active ? "Active" : "Completed",
+                StartedAt = emergency.StartedAt,
+                EndedAt = emergency.EndedAt,
+                EmergencyType = emergency.Protocol != null ? emergency.Protocol.Type : null,
+                CallerName = emergency.Protocol != null && emergency.Protocol.CallerName != null
+                    ? emergency.Protocol.CallerName
+                    : emergency.Client != null
+                        ? emergency.Client.FirstName + " " + emergency.Client.LastName
+                        : null,
+                Address = emergency.Protocol != null ? emergency.Protocol.Address : null
+            })
+            .ToListAsync();
+
+        return Ok(emergencies);
     }
 
     [HttpGet("{id}")]
