@@ -23,8 +23,6 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   activeAlarm = signal<AlarmData | null>(null);
-  lastEvent = signal<string | null>(null);
-  connectionState = signal<string>('disconnected');
   private audio = new Audio('assets/sounds/alarm_tone.mp3');
   private alarmSub?: Subscription;
 
@@ -39,39 +37,11 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     // Registriere als 'controlcenter' am Signaling Server
     this.signaling.connect(environment.signalingUrl, 'controlcenter');
 
-    // Connection state beobachten (socket.io 'connect'/'disconnect' Events)
-    this.signaling.on('connect', () => {
-      this.connectionState.set('connected');
-      this.lastEvent.set('connect');
-      this.cdr.detectChanges();
-    });
-    this.signaling.on('disconnect', () => {
-      this.connectionState.set('disconnected');
-      this.lastEvent.set('disconnect');
-      this.cdr.detectChanges();
-    });
-
     // Auf echte eingehende Notrufe hören
     this.signaling.on('incoming-call', (p: any) => {
       console.log('Echter eingehender Notruf empfangen von:', p.from);
-      this.lastEvent.set('incoming-call');
       this.activeAlarm.set({
         id: p.from, // z. B. 'clientapp'
-        caller: p.metadata?.caller || p.from,
-        location: p.metadata?.location || 'Unbekannter Standort',
-        type: p.metadata?.type || 'Notfall'
-      });
-      this.playAlarm();
-      this.cdr.detectChanges();
-    });
-
-    // Manche Signaling-Server leiten das initiale Event als 'call-request' weiter.
-    // Wir hören zusätzlich darauf, damit kein Alarm verloren geht.
-    this.signaling.on('call-request', (p: any) => {
-      console.log('call-request empfangen (fallback for incoming-call):', p.from);
-      this.lastEvent.set('call-request');
-      this.activeAlarm.set({
-        id: p.from,
         caller: p.metadata?.caller || p.from,
         location: p.metadata?.location || 'Unbekannter Standort',
         type: p.metadata?.type || 'Notfall'
@@ -140,7 +110,6 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.alarmSub?.unsubscribe();
     this.signaling.off('incoming-call');
-    this.signaling.off('call-request');
     this.audio.pause();
   }
 }

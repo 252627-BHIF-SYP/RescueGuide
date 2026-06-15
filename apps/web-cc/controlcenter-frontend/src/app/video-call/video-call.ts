@@ -1,22 +1,21 @@
 import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButton } from '@angular/material/button';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule, MatButton],
+  imports: [CommonModule],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })
 export class VideoCall implements OnInit, OnDestroy {
+  @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
 
   private pc?: RTCPeerConnection;
   public localStream?: MediaStream;
-  private pendingOffer?: RTCSessionDescription;
 
   // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
@@ -45,11 +44,10 @@ export class VideoCall implements OnInit, OnDestroy {
       this.incomingFrom = p.from;
     });
 
-    // WebRTC: Der Client schickt sein Angebot (Offer) - speichern, aber nicht sofort verarbeiten
-    this.signaling.on('call-offer', (p: any) => {
+    // WebRTC: Der Client schickt sein Angebot (Offer)
+    this.signaling.on('call-offer', async (p: any) => {
       if (p.sdp) {
-        console.log('Offer empfangen, warte auf User-Accept...');
-        this.pendingOffer = p.sdp;
+        await this.handleOffer(p.from, p.sdp);
       }
     });
 
@@ -72,23 +70,26 @@ export class VideoCall implements OnInit, OnDestroy {
   // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
   async handleOffer(from: string, sdp: any) {
     try {
-      console.log('Starte WebRTC Handshake nach User-Accept');
-
       // Leitstelle sendet meistens nur Audio zurück (oder Video optional)
       this.localStream = await navigator.mediaDevices.getUserMedia({
         video: true, // Ändern auf 'false', wenn die Leitstelle nicht gesehen werden soll
         audio: true
       });
 
+      if (this.localVideo && this.localStream) {
+        this.localVideo.nativeElement.srcObject = this.localStream;
+      }
+
       this.pc = new RTCPeerConnection({
         iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
       });
 
-      // **WICHTIG: ontrack MUSS ZUERST registriert werden, BEVOR setRemoteDescription!**
+      // Eigene Tracks hinzufügen
+      this.localStream.getTracks().forEach(t => this.pc!.addTrack(t, this.localStream!));
+
+      // Remote Stream (vom Client/Handy) empfangen
       this.pc.ontrack = (ev) => {
-        console.log('✅ Remote Track erhalten:', ev.track.kind);
-        if (this.remoteVideo && ev.streams[0]) {
-          console.log('Remote Stream wird angezeigt');
+        if (this.remoteVideo) {
           this.remoteVideo.nativeElement.srcObject = ev.streams[0];
         }
       };
@@ -103,14 +104,7 @@ export class VideoCall implements OnInit, OnDestroy {
         }
       };
 
-      // Eigene Tracks hinzufügen BEVOR RemoteDescription
-      this.localStream.getTracks().forEach(t => {
-        console.log('Füge lokalen Track hinzu:', t.kind);
-        this.pc!.addTrack(t, this.localStream!);
-      });
-
-      // WICHTIG: setRemoteDescription erst NACH ontrack Handler
-      console.log('Setze Remote Description...');
+      // Verbindung herstellen
       await this.pc.setRemoteDescription(new RTCSessionDescription(sdp));
       const answer = await this.pc.createAnswer();
       await this.pc.setLocalDescription(answer);
@@ -122,7 +116,7 @@ export class VideoCall implements OnInit, OnDestroy {
         sdp: this.pc.localDescription
       });
 
-      console.log('WebRTC Verbindung initialisiert');
+      this.incomingFrom = null;
     } catch (err) {
       console.error('Fehler bei der Anrufannahme:', err);
     }
@@ -143,16 +137,13 @@ export class VideoCall implements OnInit, OnDestroy {
       this.localStream = undefined;
     }
     this.incomingFrom = null;
-    this.pendingOffer = undefined;
     console.log('Video-Call beendet');
   }
 
   async acceptCall() {
-    console.log('Anruf akzeptiert - starte WebRTC Handshake');
-    if (this.incomingFrom && this.pendingOffer) {
-      await this.handleOffer(this.incomingFrom, this.pendingOffer);
+    console.log('Anruf-Button geklickt');
+    if (this.incomingFrom) {
       this.incomingFrom = null;
-      this.pendingOffer = undefined;
     }
   }
 }

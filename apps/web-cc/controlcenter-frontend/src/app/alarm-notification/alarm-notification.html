@@ -1,8 +1,5 @@
 @if (activeAlarm()) {
   <div class="alarm-overlay">
-    <div class="debug-banner" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; padding: 6px 8px; border-radius: 4px; font-size: 12px; z-index: 1001;">
-      Verbindungsstatus: {{ connectionState() }} | Letztes Event: {{ lastEvent() }}
-    </div>
     <div class="alarm-card">
       <div class="alarm-header">
         <h2>DRINGENDER ALARM</h2>
