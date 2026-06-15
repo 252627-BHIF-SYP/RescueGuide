@@ -9,7 +9,7 @@ export interface DashboardEmergency {
   startedAt: string;
   endedAt: string | null;
   emergencyType: string | null;
-  callerName: string | null;
+  handlerName: string | null;
   address: string | null;
   latitude: number | null;
   longitude: number | null;

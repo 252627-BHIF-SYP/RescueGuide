@@ -7,7 +7,7 @@ public class EmergencyDashboardDto
     public DateTime StartedAt { get; set; }
     public DateTime? EndedAt { get; set; }
     public string? EmergencyType { get; set; }
-    public string? CallerName { get; set; }
+    public string? HandlerName { get; set; }
     public string? Address { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }

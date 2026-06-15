@@ -4,6 +4,7 @@ using RescueGuideDB.Core.Entities.DTOs;
 using RescueGuideDB.Core.Enums;
 using RescueGuideDB.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WebApplication1.Services;
 
 namespace WebApplication1.Controllers;
@@ -43,11 +44,9 @@ public class EmergencyController : ControllerBase
                 StartedAt = emergency.StartedAt,
                 EndedAt = emergency.EndedAt,
                 EmergencyType = emergency.Einsatzart,
-                CallerName = emergency.Protocol != null && emergency.Protocol.CallerName != null
-                    ? emergency.Protocol.CallerName
-                    : emergency.Client != null
-                        ? emergency.Client.FirstName + " " + emergency.Client.LastName
-                        : null,
+                HandlerName = emergency.UserControlCenter != null
+                    ? emergency.UserControlCenter.Name
+                    : null,
                 Address = null,
                 Latitude = emergency.Location != null ? emergency.Location.Latitude : null,
                 Longitude = emergency.Location != null ? emergency.Location.Longitude : null
@@ -79,6 +78,17 @@ public class EmergencyController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Emergency>> Create(Emergency emergency)
     {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (int.TryParse(userIdValue, out var userId))
+        {
+            var handler = await _context.UserControlCenters.FindAsync(userId);
+            if (handler != null)
+            {
+                emergency.UserId = handler.Id;
+                emergency.UserControlCenter = handler;
+            }
+        }
+
         _context.Emergencies.Add(emergency);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = emergency.Id }, emergency);
