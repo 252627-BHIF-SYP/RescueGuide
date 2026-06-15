@@ -24,6 +24,12 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        
+        modelBuilder.Entity<Emergency>()
+            .HasOne(e => e.Protocol)
+            .WithOne(p => p.Emergency)
+            .HasForeignKey<EmergencyProtocol>(p => p.EmergencyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

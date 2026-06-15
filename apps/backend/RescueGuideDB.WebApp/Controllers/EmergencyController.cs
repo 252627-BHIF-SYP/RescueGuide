@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using RescueGuideDB.Core.Entities;
 using RescueGuideDB.Core.Entities.DTOs;
 using RescueGuideDB.Core.Enums;
@@ -89,6 +89,12 @@ public class EmergencyController : ControllerBase
             }
         }
 
+        emergency.Protocol = new EmergencyProtocol
+        {
+            Date = DateTime.Now.ToString("yyyy-MM-dd"),
+            Time = DateTime.Now.ToString("HH:mm")
+        };
+
         _context.Emergencies.Add(emergency);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = emergency.Id }, emergency);
@@ -117,6 +123,26 @@ public class EmergencyController : ControllerBase
         var emergency = await _context.Emergencies.FindAsync(id);
         if (emergency == null) return NotFound();
         _context.Emergencies.Remove(emergency);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPut("{id}/close")]
+    public async Task<IActionResult> Close(int id)
+    {
+        var emergency = await _context.Emergencies.FindAsync(id);
+        if (emergency == null) return NotFound();
+
+        emergency.EndedAt = DateTime.UtcNow;
+        emergency.Status = EmergencyStatus.Completed;
+
+        // Optionally, update Einsatzart from protocol if needed, but since protocol is auto-saving, we can just leave it as is or handle it.
+        var protocol = await _context.EmergencyProtocols.FirstOrDefaultAsync(p => p.EmergencyId == id);
+        if (protocol != null && !string.IsNullOrWhiteSpace(protocol.Type))
+        {
+            emergency.Einsatzart = protocol.Type;
+        }
+
         await _context.SaveChangesAsync();
         return NoContent();
     }
