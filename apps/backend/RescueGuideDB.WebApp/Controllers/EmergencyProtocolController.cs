@@ -27,7 +27,11 @@ public class EmergencyProtocolController : ControllerBase
 
         // Also mark the emergency as ended
         emergency.EndedAt = DateTime.UtcNow;
-        emergency.Status = RescueGuideDB.Core.Enums.EmergencyStatus.Completed; 
+        emergency.Status = RescueGuideDB.Core.Enums.EmergencyStatus.Completed;
+        if (!string.IsNullOrWhiteSpace(protocol.Type))
+        {
+            emergency.Einsatzart = protocol.Type;
+        }
         _context.Entry(emergency).State = EntityState.Modified;
 
         _context.EmergencyProtocols.Add(protocol);

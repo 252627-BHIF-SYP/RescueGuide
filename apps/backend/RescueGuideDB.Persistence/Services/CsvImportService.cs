@@ -100,7 +100,7 @@ public class CsvImportService
                 if (first) { first = false; continue; } 
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 var parts = line.Split(',');
-                if (parts.Length < 7) continue;
+                if (parts.Length < 8) continue;
 
                 emergencies.Add(new Emergency
                 {
@@ -112,8 +112,9 @@ public class CsvImportService
                     StartedAt = DateTime.SpecifyKind(DateTime.Parse(parts[3]), DateTimeKind.Utc),
                     EndedAt = string.IsNullOrWhiteSpace(parts[4]) ? null : DateTime.SpecifyKind(DateTime.Parse(parts[4]), DateTimeKind.Utc),
                     Status = Enum.Parse<EmergencyStatus>(parts[5]),
-                    LocationId = int.Parse(parts[6]),
-                    Location = locations[int.Parse(parts[6])]
+                    Einsatzart = parts[6],
+                    LocationId = int.Parse(parts[7]),
+                    Location = locations[int.Parse(parts[7])]
                 });
             }
         }

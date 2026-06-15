@@ -42,7 +42,7 @@ public class EmergencyController : ControllerBase
                 Status = emergency.Status == EmergencyStatus.Active ? "Active" : "Completed",
                 StartedAt = emergency.StartedAt,
                 EndedAt = emergency.EndedAt,
-                EmergencyType = emergency.Protocol != null ? emergency.Protocol.Type : null,
+                EmergencyType = emergency.Einsatzart,
                 CallerName = emergency.Protocol != null && emergency.Protocol.CallerName != null
                     ? emergency.Protocol.CallerName
                     : emergency.Client != null

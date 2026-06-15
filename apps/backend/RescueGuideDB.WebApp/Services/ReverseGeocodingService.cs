@@ -59,7 +59,7 @@ public class ReverseGeocodingService
             {
                 var client = _httpClientFactory.CreateClient("ReverseGeocoding");
                 var response = await client.GetFromJsonAsync<NominatimResponse>(path, cancellationToken);
-                var address = response?.DisplayName;
+                var address = FormatAddress(response);
 
                 _cache.Set(cacheKey, address ?? string.Empty, TimeSpan.FromDays(30));
                 return address;
@@ -86,9 +86,80 @@ public class ReverseGeocodingService
         }
     }
 
+    private static string? FormatAddress(NominatimResponse? response)
+    {
+        if (response?.Address == null)
+        {
+            return response?.DisplayName;
+        }
+
+        var street = response.Address.Road
+            ?? response.Address.Pedestrian
+            ?? response.Address.Residential
+            ?? response.Address.Footway;
+        var locality = response.Address.City
+            ?? response.Address.Town
+            ?? response.Address.Village
+            ?? response.Address.Municipality;
+
+        var streetAndNumber = string.Join(
+            " ",
+            new[] { street, response.Address.HouseNumber }
+                .Where(value => !string.IsNullOrWhiteSpace(value)));
+        var postcodeAndLocality = string.Join(
+            " ",
+            new[] { response.Address.Postcode, locality }
+                .Where(value => !string.IsNullOrWhiteSpace(value)));
+
+        var compactAddress = string.Join(
+            ", ",
+            new[] { streetAndNumber, postcodeAndLocality }
+                .Where(value => !string.IsNullOrWhiteSpace(value)));
+
+        return string.IsNullOrWhiteSpace(compactAddress)
+            ? response.DisplayName
+            : compactAddress;
+    }
+
     private sealed class NominatimResponse
     {
         [JsonPropertyName("display_name")]
         public string? DisplayName { get; set; }
+
+        [JsonPropertyName("address")]
+        public NominatimAddress? Address { get; set; }
+    }
+
+    private sealed class NominatimAddress
+    {
+        [JsonPropertyName("road")]
+        public string? Road { get; set; }
+
+        [JsonPropertyName("pedestrian")]
+        public string? Pedestrian { get; set; }
+
+        [JsonPropertyName("residential")]
+        public string? Residential { get; set; }
+
+        [JsonPropertyName("footway")]
+        public string? Footway { get; set; }
+
+        [JsonPropertyName("house_number")]
+        public string? HouseNumber { get; set; }
+
+        [JsonPropertyName("postcode")]
+        public string? Postcode { get; set; }
+
+        [JsonPropertyName("city")]
+        public string? City { get; set; }
+
+        [JsonPropertyName("town")]
+        public string? Town { get; set; }
+
+        [JsonPropertyName("village")]
+        public string? Village { get; set; }
+
+        [JsonPropertyName("municipality")]
+        public string? Municipality { get; set; }
     }
 }

@@ -95,6 +95,10 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Einsatzart")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("LocationId")
                         .HasColumnType("integer");
 
