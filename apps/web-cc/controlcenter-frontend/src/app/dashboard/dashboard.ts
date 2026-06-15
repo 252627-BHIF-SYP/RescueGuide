@@ -32,10 +32,6 @@ export class Dashboard implements OnInit, OnDestroy {
       return emergency.address;
     }
 
-    if (emergency.latitude != null && emergency.longitude != null) {
-      return `GPS: ${emergency.latitude.toFixed(5)}, ${emergency.longitude.toFixed(5)}`;
-    }
-
     return 'Adresse nicht erfasst';
   }
 

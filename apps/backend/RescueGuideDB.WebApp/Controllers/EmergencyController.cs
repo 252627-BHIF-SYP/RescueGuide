@@ -5,7 +5,6 @@ using RescueGuideDB.Core.Enums;
 using RescueGuideDB.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using WebApplication1.Services;
 
 namespace WebApplication1.Controllers;
 
@@ -14,14 +13,10 @@ namespace WebApplication1.Controllers;
 public class EmergencyController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    private readonly ReverseGeocodingService _reverseGeocodingService;
 
-    public EmergencyController(
-        ApplicationDbContext context,
-        ReverseGeocodingService reverseGeocodingService)
+    public EmergencyController(ApplicationDbContext context)
     {
         _context = context;
-        _reverseGeocodingService = reverseGeocodingService;
     }
 
     [HttpGet]
@@ -43,26 +38,11 @@ public class EmergencyController : ControllerBase
                 Status = emergency.Status == EmergencyStatus.Active ? "Active" : "Completed",
                 StartedAt = emergency.StartedAt,
                 EndedAt = emergency.EndedAt,
-                EmergencyType = emergency.Einsatzart,
-                HandlerName = emergency.UserControlCenter != null
-                    ? emergency.UserControlCenter.Name
-                    : null,
-                Address = null,
-                Latitude = emergency.Location != null ? emergency.Location.Latitude : null,
-                Longitude = emergency.Location != null ? emergency.Location.Longitude : null
+                EmergencyType = emergency.Protocol != null ? emergency.Protocol.Type : null,
+                HandlerName = emergency.Protocol != null ? emergency.Protocol.DispatcherName : null,
+                Address = emergency.Protocol != null ? emergency.Protocol.Address : null
             })
             .ToListAsync(cancellationToken);
-
-        foreach (var emergency in emergencies)
-        {
-            if (emergency.Latitude.HasValue && emergency.Longitude.HasValue)
-            {
-                emergency.Address = await _reverseGeocodingService.GetAddressAsync(
-                    emergency.Latitude.Value,
-                    emergency.Longitude.Value,
-                    cancellationToken);
-            }
-        }
 
         return Ok(emergencies);
     }

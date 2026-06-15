@@ -9,6 +9,4 @@ public class EmergencyDashboardDto
     public string? EmergencyType { get; set; }
     public string? HandlerName { get; set; }
     public string? Address { get; set; }
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
 }

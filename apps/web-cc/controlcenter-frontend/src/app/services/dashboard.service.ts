@@ -11,8 +11,6 @@ export interface DashboardEmergency {
   emergencyType: string | null;
   handlerName: string | null;
   address: string | null;
-  latitude: number | null;
-  longitude: number | null;
 }
 
 @Injectable({ providedIn: 'root' })
