@@ -21,7 +21,6 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
   Timer? _timer;
 
   String _currentAddress = "Suche Standort...";
-  Position? _currentPosition;
 
   @override
   void initState() {
@@ -67,7 +66,7 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     try {
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() => _currentAddress = "Standortdienst deaktiviert");
+        if (mounted) setState(() => _currentAddress = "Standortdienst deaktiviert");
         return;
       }
 
@@ -75,13 +74,13 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          setState(() => _currentAddress = "Standortberechtigung verweigert");
+          if (mounted) setState(() => _currentAddress = "Standortberechtigung verweigert");
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        setState(() => _currentAddress = "Standortberechtigung dauerhaft verweigert");
+        if (mounted) setState(() => _currentAddress = "Standortberechtigung dauerhaft verweigert");
         return;
       }
 
@@ -89,14 +88,8 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
         desiredAccuracy: LocationAccuracy.high
       );
       
-      if (!mounted) return;
-      setState(() {
-        _currentPosition = position;
-      });
-
       _getAddressFromLatLng(position);
     } catch (e) {
-      print("Location Error: $e");
       if (mounted) setState(() => _currentAddress = "Standortfehler");
     }
   }
@@ -114,9 +107,15 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
         setState(() {
           _currentAddress = "${place.street}, ${place.postalCode} ${place.locality}";
         });
+        
+        // Standort an den Service übergeben
+        _webRTCService.setLocation(
+          position.latitude, 
+          position.longitude, 
+          _currentAddress
+        );
       }
     } catch (e) {
-      print("Geocoding Error: $e");
       if (mounted) {
         setState(() {
           _currentAddress = "Koordinaten: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}";
@@ -229,10 +228,7 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
               Flexible(
                 child: Text(
                   _currentAddress,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
               ),

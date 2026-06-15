@@ -4,6 +4,8 @@ import { Subject } from 'rxjs';
 export interface AlarmData {
   id: string;
   location: string;
+  latitude? : number;
+  longitude? : number;
   caller: string;
   type: string;
 }

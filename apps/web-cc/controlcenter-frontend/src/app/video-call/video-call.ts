@@ -16,13 +16,14 @@ export class VideoCall implements OnInit, OnDestroy {
 
   private pc?: RTCPeerConnection;
   public localStream?: MediaStream;
-  
+
   // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
   private myId = 'controlcenter';
-  private targetId = 'clientapp';
 
   incomingFrom: string | null = null;
+  activeCallId: string | null = null; // Speichert, mit wem wir aktuell verbunden sind
+  pendingOffer: any = null;           // Speichert das SDP-Angebot, bis "Annehmen" geklickt wird
 
   // Signal Service injecten
   private signaling = inject(SignalingService);
@@ -38,16 +39,12 @@ export class VideoCall implements OnInit, OnDestroy {
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
 
-    // Wenn ein Anruf reinkommt, speichern wir, von wem er kommt (für das UI)
-    this.signaling.on('incoming-call', (p: any) => {
-      console.log('Eingehender Anruf von:', p.from);
-      this.incomingFrom = p.from;
-    });
-
-    // WebRTC: Der Client schickt sein Angebot (Offer)
-    this.signaling.on('call-offer', async (p: any) => {
+    // Wenn ein Angebot (Offer) reinkommt, Daten nur speichern. Noch KEIN MediaStream starten!
+    this.signaling.on('call-offer', (p: any) => {
       if (p.sdp) {
-        await this.handleOffer(p.from, p.sdp);
+        console.log('Eingehendes WebRTC Angebot von:', p.from);
+        this.incomingFrom = p.from;
+        this.pendingOffer = p.sdp;
       }
     });
 
@@ -68,12 +65,26 @@ export class VideoCall implements OnInit, OnDestroy {
   }
 
   // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
-  async handleOffer(from: string, sdp: any) {
+  async acceptCall() {
+    console.log('Anruf-Button geklickt');
+    if (this.incomingFrom && this.pendingOffer) {
+      const callerId = this.incomingFrom;
+      const offer = this.pendingOffer;
+
+      this.activeCallId = callerId;
+      this.incomingFrom = null;
+      this.pendingOffer = null;
+
+      await this.processOffer(callerId, offer);
+    }
+  }
+
+  async processOffer(from: string, sdp: any) {
     try {
-      // Leitstelle sendet meistens nur Audio zurück (oder Video optional)
-      this.localStream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, // Ändern auf 'false', wenn die Leitstelle nicht gesehen werden soll
-        audio: true 
+      // Leitstelle sendet meistens nur Audio zurück
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: false, // Ändern auf 'true', wenn die Leitstelle gesehen werden soll
+        audio: true
       });
 
       if (this.localVideo && this.localStream) {
@@ -87,19 +98,29 @@ export class VideoCall implements OnInit, OnDestroy {
       // Eigene Tracks hinzufügen
       this.localStream.getTracks().forEach(t => this.pc!.addTrack(t, this.localStream!));
 
-      // Remote Stream (vom Client/Handy) empfangen
+      // Remote Stream (vom Client/Handy) empfangen - mit sicherem Fallback
       this.pc.ontrack = (ev) => {
         if (this.remoteVideo) {
-          this.remoteVideo.nativeElement.srcObject = ev.streams[0];
+          if (ev.streams && ev.streams[0]) {
+            this.remoteVideo.nativeElement.srcObject = ev.streams[0];
+          } else {
+            // Fallback für manche Browser, die ev.streams nicht sauber befüllen
+            let stream = this.remoteVideo.nativeElement.srcObject as MediaStream;
+            if (!stream) {
+              stream = new MediaStream();
+              this.remoteVideo.nativeElement.srcObject = stream;
+            }
+            stream.addTrack(ev.track);
+          }
         }
       };
 
       this.pc.onicecandidate = (ev) => {
         if (ev.candidate) {
-          this.signaling.emit('ice-candidate', { 
-            to: from, 
-            from: this.myId, 
-            candidate: ev.candidate 
+          this.signaling.emit('ice-candidate', {
+            to: from,
+            from: this.myId,
+            candidate: ev.candidate
           });
         }
       };
@@ -110,20 +131,31 @@ export class VideoCall implements OnInit, OnDestroy {
       await this.pc.setLocalDescription(answer);
 
       // Antwort (Answer) zurück an den Client senden
-      this.signaling.emit('call-answer', { 
-        to: from, 
-        from: this.myId, 
-        sdp: this.pc.localDescription 
+      this.signaling.emit('call-answer', {
+        to: from,
+        from: this.myId,
+        sdp: this.pc.localDescription
       });
-      
-      this.incomingFrom = null;
+
     } catch (err) {
       console.error('Fehler bei der Anrufannahme:', err);
+      this.closeConnection(); // Bei Fehler direkt aufräumen
     }
   }
 
+  rejectCall() {
+    if (this.incomingFrom) {
+      this.signaling.emit('call-end', { to: this.incomingFrom, from: this.myId });
+    }
+    this.incomingFrom = null;
+    this.pendingOffer = null;
+  }
+
   endCall() {
-    this.signaling.emit('call-end', { to: this.targetId, from: this.myId });
+    // Beenden-Signal an den aktiven Anrufer senden (nicht mehr hart codiert)
+    if (this.activeCallId) {
+      this.signaling.emit('call-end', { to: this.activeCallId, from: this.myId });
+    }
     this.closeConnection();
   }
 
@@ -136,14 +168,12 @@ export class VideoCall implements OnInit, OnDestroy {
       this.localStream.getTracks().forEach(t => t.stop());
       this.localStream = undefined;
     }
-    this.incomingFrom = null;
-    console.log('Video-Call beendet');
-  }
-
-  async acceptCall() {
-    console.log('Anruf-Button geklickt');
-    if (this.incomingFrom) {
-      this.incomingFrom = null; 
+    if (this.remoteVideo && this.remoteVideo.nativeElement) {
+      this.remoteVideo.nativeElement.srcObject = null;
     }
+    this.incomingFrom = null;
+    this.pendingOffer = null;
+    this.activeCallId = null;
+    console.log('Video-Call beendet und Ressourcen freigegeben');
   }
 }

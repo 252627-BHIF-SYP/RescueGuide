@@ -1,15 +1,17 @@
 <div class="video-call">
+
   <div *ngIf="incomingFrom" class="incoming">
-    <p>Eingehender Anruf von {{ incomingFrom }}</p>
+    <p>Eingehender Notruf-Stream von {{ incomingFrom }}</p>
     <button mat-raised-button color="primary" (click)="acceptCall()">Annehmen</button>
-    <button mat-stroked-button color="warn" (click)="incomingFrom = null">Ablehnen</button>
+    <button mat-stroked-button color="warn" (click)="rejectCall()">Ablehnen</button>
   </div>
 
-  <div class="videos">
-    <!--<video #localVideo autoplay muted playsinline class="local"></video>-->
+  <div class="videos" [style.display]="activeCallId ? 'block' : 'none'">
     <video #remoteVideo autoplay playsinline class="remote"></video>
   </div>
-  <div class="controls">
-    <button mat-stroked-button color="warn" (click)="endCall()">Beenden</button>
+
+  <div class="controls" *ngIf="activeCallId">
+    <button mat-stroked-button color="warn" (click)="endCall()">Einsatz Beenden</button>
   </div>
+
 </div>

@@ -21,6 +21,24 @@ class WebRTCService {
   Function()? onCallEnd;
   Function()? onCallAccepted;
 
+  Map<String, dynamic>? _currentLocation;
+
+  void setLocation(double lat, double lng, String address) {
+    _currentLocation = {
+      'latitude': lat,
+      'longitude': lng,
+      'address': address,
+    };
+    // Wenn der Socket bereits verbunden ist, senden wir ein Update
+    if (socket != null && socket!.connected) {
+      socket!.emit('location-update', {
+        'from': selfId,
+        'to': targetId,
+        'location': _currentLocation,
+      });
+    }
+  }
+
   Future<void> init(String serverUrl) async {
     await localRenderer.initialize();
     await remoteRenderer.initialize();
@@ -152,7 +170,14 @@ class WebRTCService {
       await _peerConnection!.setLocalDescription(offer);
       
       print('INFO: Sende call-request und call-offer');
-      socket!.emit('call-request', {'from': selfId, 'to': targetId, 'metadata': {'type': 'emergency'}});
+      socket!.emit('call-request', {
+        'from': selfId, 
+        'to': targetId, 
+        'metadata': {
+          'type': 'emergency',
+          'location': _currentLocation
+        }
+      });
       socket!.emit('call-offer', {'from': selfId, 'to': targetId, 'sdp': offer.toMap()});
     } catch (e) {
       print('ERROR in _startCall: $e');
@@ -166,12 +191,11 @@ class WebRTCService {
         {'urls': 'stun:stun.l.google.com:19302'},
         {'urls': 'stun:stun1.l.google.com:19302'},
       ],
-      'sdpSemantics': 'unified-plan' // Wichtig für moderne Browser/Angular
+      'sdpSemantics': 'unified-plan'
     };
 
     RTCPeerConnection pc = await createPeerConnection(configuration);
 
-    // Test Test
     pc.onIceConnectionState = (state) {
       print('>>> ICE Connection State: $state');
     };
