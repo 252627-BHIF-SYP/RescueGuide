@@ -61,12 +61,9 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     if (alarm) {
       this.audio.pause();
 
-      // Notfall in DB anlegen
-      this.emergencyService.createEmergency();
-
-      // Protokoll mit Startdaten vorbelegen
+      // Notfall in DB anlegen und Protokoll mit Startdaten vorbelegen
       const now = new Date();
-      this.emergencyService.updateProtocol({
+      this.emergencyService.createEmergency({
         date: now.toISOString().split('T')[0],
         time: now.toTimeString().split(' ')[0].substring(0, 5),
         address: alarm.location !== 'Unbekannter Standort' ? alarm.location : '',

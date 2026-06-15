@@ -67,8 +67,8 @@ export class EmergencyPage implements OnInit, OnDestroy {
       this.videoCallComponent.endCall();
     }
     
-    // Protokoll in DB abspeichern und Notfall beenden
-    this.emergencyService.saveProtocol();
+    // Protokoll final speichern und Notfall beenden
+    this.emergencyService.endEmergency();
   }
 
   fetchLatestLocation() {

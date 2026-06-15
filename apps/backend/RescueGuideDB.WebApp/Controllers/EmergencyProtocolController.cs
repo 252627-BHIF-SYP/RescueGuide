@@ -57,4 +57,38 @@ public class EmergencyProtocolController : ControllerBase
         if (protocol == null) return NotFound();
         return protocol;
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, EmergencyProtocol protocol)
+    {
+        if (id != protocol.Id)
+        {
+            return BadRequest();
+        }
+
+        _context.Entry(protocol).State = EntityState.Modified;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!EmergencyProtocolExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
+    }
+
+    private bool EmergencyProtocolExists(int id)
+    {
+        return _context.EmergencyProtocols.Any(e => e.Id == id);
+    }
 }
