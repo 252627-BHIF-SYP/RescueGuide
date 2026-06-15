@@ -27,6 +27,18 @@ export class Dashboard implements OnInit, OnDestroy {
     this.emergencies().filter((emergency) => emergency.status === 'Completed'),
   );
 
+  getLocationLabel(emergency: DashboardEmergency): string {
+    if (emergency.address?.trim()) {
+      return emergency.address;
+    }
+
+    if (emergency.latitude != null && emergency.longitude != null) {
+      return `GPS: ${emergency.latitude.toFixed(5)}, ${emergency.longitude.toFixed(5)}`;
+    }
+
+    return 'Adresse nicht erfasst';
+  }
+
   ngOnInit(): void {
     this.loadEmergencies();
     this.refreshInterval = setInterval(() => this.loadEmergencies(true), 15000);

@@ -4,6 +4,7 @@ using RescueGuideDB.Core.Entities.DTOs;
 using RescueGuideDB.Core.Enums;
 using RescueGuideDB.Persistence;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Services;
 
 namespace WebApplication1.Controllers;
 
@@ -12,9 +13,14 @@ namespace WebApplication1.Controllers;
 public class EmergencyController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    public EmergencyController(ApplicationDbContext context)
+    private readonly ReverseGeocodingService _reverseGeocodingService;
+
+    public EmergencyController(
+        ApplicationDbContext context,
+        ReverseGeocodingService reverseGeocodingService)
     {
         _context = context;
+        _reverseGeocodingService = reverseGeocodingService;
     }
 
     [HttpGet]
@@ -24,7 +30,8 @@ public class EmergencyController : ControllerBase
     }
 
     [HttpGet("dashboard")]
-    public async Task<ActionResult<IEnumerable<EmergencyDashboardDto>>> GetDashboard()
+    public async Task<ActionResult<IEnumerable<EmergencyDashboardDto>>> GetDashboard(
+        CancellationToken cancellationToken)
     {
         var emergencies = await _context.Emergencies
             .AsNoTracking()
@@ -41,9 +48,22 @@ public class EmergencyController : ControllerBase
                     : emergency.Client != null
                         ? emergency.Client.FirstName + " " + emergency.Client.LastName
                         : null,
-                Address = emergency.Protocol != null ? emergency.Protocol.Address : null
+                Address = null,
+                Latitude = emergency.Location != null ? emergency.Location.Latitude : null,
+                Longitude = emergency.Location != null ? emergency.Location.Longitude : null
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+
+        foreach (var emergency in emergencies)
+        {
+            if (emergency.Latitude.HasValue && emergency.Longitude.HasValue)
+            {
+                emergency.Address = await _reverseGeocodingService.GetAddressAsync(
+                    emergency.Latitude.Value,
+                    emergency.Longitude.Value,
+                    cancellationToken);
+            }
+        }
 
         return Ok(emergencies);
     }

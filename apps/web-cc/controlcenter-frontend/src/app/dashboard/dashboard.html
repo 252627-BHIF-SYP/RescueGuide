@@ -28,7 +28,7 @@
           <mat-card class="emergency-row active">
             <div class="main-info">
               <strong>{{ emergency.emergencyType || 'Einsatzart nicht erfasst' }}</strong>
-              <span>{{ emergency.address || 'Adresse nicht erfasst' }}</span>
+              <span>{{ getLocationLabel(emergency) }}</span>
             </div>
             <div class="field caller">
               <span>Anrufer</span>
@@ -61,7 +61,7 @@
           <mat-card class="emergency-row">
             <div class="main-info">
               <strong>{{ emergency.emergencyType || 'Einsatzart nicht erfasst' }}</strong>
-              <span>{{ emergency.address || 'Adresse nicht erfasst' }}</span>
+              <span>{{ getLocationLabel(emergency) }}</span>
             </div>
             <div class="field caller">
               <span>Anrufer</span>
@@ -84,5 +84,12 @@
         }
       </div>
     </section>
+
+    <p class="map-attribution">
+      Adressdaten &copy;
+      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
+        OpenStreetMap-Mitwirkende
+      </a>
+    </p>
   }
 </main>

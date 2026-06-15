@@ -4,12 +4,26 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Scalar.AspNetCore;
+using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient("ReverseGeocoding", (serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var baseUrl = configuration["ReverseGeocoding:BaseUrl"]
+        ?? "https://nominatim.openstreetmap.org/";
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("RescueGuide/1.0");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("de-AT,de;q=0.9,en;q=0.7");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+builder.Services.AddSingleton<ReverseGeocodingService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
