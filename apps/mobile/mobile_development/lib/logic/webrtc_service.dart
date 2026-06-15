@@ -135,20 +135,41 @@ class WebRTCService {
     try {
       if (_peerConnection != null) return;
       _peerConnection = await _createPeerConnection();
-      localStream?.getTracks().forEach((track) => _peerConnection!.addTrack(track, localStream!));
+      
+      // Tracks hinzufügen BEVOR das Offer erstellt wird
+      if (localStream != null) {
+        for (var track in localStream!.getTracks()) {
+          print('INFO: Füge Track hinzu: ${track.kind}');
+          await _peerConnection!.addTrack(track, localStream!);
+        }
+      }
 
-      RTCSessionDescription offer = await _peerConnection!.createOffer();
+      // Warten bis Tracks stabil sind
+      RTCSessionDescription offer = await _peerConnection!.createOffer({
+        'offerToReceiveAudio': true,
+        'offerToReceiveVideo': true,
+      });
       await _peerConnection!.setLocalDescription(offer);
       
+      print('INFO: Sende call-request und call-offer');
       socket!.emit('call-request', {'from': selfId, 'to': targetId, 'metadata': {'type': 'emergency'}});
       socket!.emit('call-offer', {'from': selfId, 'to': targetId, 'sdp': offer.toMap()});
     } catch (e) {
+      print('ERROR in _startCall: $e');
       onCallFailed?.call(e.toString());
     }
   }
 
   Future<RTCPeerConnection> _createPeerConnection() async {
-    RTCPeerConnection pc = await createPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+    Map<String, dynamic> configuration = {
+      'iceServers': [
+        {'urls': 'stun:stun.l.google.com:19302'},
+        {'urls': 'stun:stun1.l.google.com:19302'},
+      ],
+      'sdpSemantics': 'unified-plan' // Wichtig für moderne Browser/Angular
+    };
+
+    RTCPeerConnection pc = await createPeerConnection(configuration);
 
     // Test Test
     pc.onIceConnectionState = (state) {

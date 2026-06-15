@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import '../logic/webrtc_service.dart';
 
 class ConnectingScreen extends StatefulWidget {
@@ -18,6 +20,9 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
   int _seconds = 0;
   Timer? _timer;
 
+  String _currentAddress = "Suche Standort...";
+  Position? _currentPosition;
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +33,7 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     )..repeat();
 
     _initCall();
+    _determinePosition();
   }
 
   Future<void> _initCall() async {
@@ -52,6 +58,71 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     };
 
     await _webRTCService.init('http://192.168.6.10:3000');
+  }
+
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() => _currentAddress = "Standortdienst deaktiviert");
+        return;
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() => _currentAddress = "Standortberechtigung verweigert");
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() => _currentAddress = "Standortberechtigung dauerhaft verweigert");
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high
+      );
+      
+      if (!mounted) return;
+      setState(() {
+        _currentPosition = position;
+      });
+
+      _getAddressFromLatLng(position);
+    } catch (e) {
+      print("Location Error: $e");
+      if (mounted) setState(() => _currentAddress = "Standortfehler");
+    }
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        if (!mounted) return;
+        setState(() {
+          _currentAddress = "${place.street}, ${place.postalCode} ${place.locality}";
+        });
+      }
+    } catch (e) {
+      print("Geocoding Error: $e");
+      if (mounted) {
+        setState(() {
+          _currentAddress = "Koordinaten: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}";
+        });
+      }
+    }
   }
 
   void _startTimer() {
@@ -124,7 +195,7 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     );
   }
 
-  // --- UI für den aktiven Notruf (vorher EmergencyScreen) ---
+  // --- UI für den aktiven Notruf ---
   Widget _buildEmergencyUI() {
     return SafeArea(
       child: Column(
@@ -150,7 +221,23 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          const Text('Standort: Musterstraße 12, 12345 Stadt', style: TextStyle(color: Colors.black54)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.location_on, color: Colors.red, size: 18),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  _currentAddress,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
