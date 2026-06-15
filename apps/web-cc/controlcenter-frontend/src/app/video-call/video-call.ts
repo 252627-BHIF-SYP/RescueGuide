@@ -73,14 +73,6 @@ export class VideoCall implements OnInit, OnDestroy {
       this.incomingFrom = p.from;
     });
 
-    // WebRTC: Der Client schickt sein Angebot (Offer)
-    // Hinweis: das Offer wird im SignalingService in CallContext zwischengespeichert
-    // damit die Leitstelle das Angebot erst nach User-Accept verarbeiten kann.
-    // Daher hier kein sofortiges handleOffer mehr.
-    this.signaling.on('call-offer', (p: any) => {
-      // no-op here; SignalingService stores the offer into CallContextService
-      console.log('call-offer empfangen und in CallContext gespeichert (falls Implementiert)');
-    });
 
     // WebRTC: ICE Candidates austauschen
     this.signaling.on('ice-candidate', async (p: any) => {

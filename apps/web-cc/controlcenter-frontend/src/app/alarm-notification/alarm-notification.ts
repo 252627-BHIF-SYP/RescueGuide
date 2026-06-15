@@ -55,6 +55,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     // Fallback: einige mobile Clients/Server senden 'call-request' zuerst
     this.signaling.on('call-request', (p: any) => {
       console.log('call-request empfangen, zeige Popup von:', p.from);
+      this.callContext.setPendingOffer(p, p.from);
       this.activeAlarm.set({
         id: p.from,
         caller: p.metadata?.caller || p.from,
@@ -63,6 +64,14 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
       });
       this.playAlarm();
       this.cdr.detectChanges();
+    });
+
+    // WebRTC: Speichere call-offer zur späteren Verarbeitung
+    this.signaling.on('call-offer', (p: any) => {
+      console.log('call-offer empfangen, speichere in CallContext von:', p.from);
+      if (p && p.sdp) {
+        this.callContext.setPendingOffer(p.sdp, p.from);
+      }
     });
   }
 
@@ -125,6 +134,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     this.alarmSub?.unsubscribe();
     this.signaling.off('incoming-call');
     this.signaling.off('call-request');
+    this.signaling.off('call-offer');
     this.audio.pause();
   }
 }
