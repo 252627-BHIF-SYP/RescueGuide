@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RescueGuideDB.Persistence",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RescueGuideDB.WebApp", "RescueGuideDB.WebApp\RescueGuideDB.WebApp.csproj", "{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RescueGuideDB.Tests", "RescueGuideDB.Tests\RescueGuideDB.Tests.csproj", "{037FA6C5-81EB-499F-9519-F7D11BE76C30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x64.Build.0 = Release|Any CPU
 		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x86.ActiveCfg = Release|Any CPU
 		{5F0DB81B-146A-47FA-AEB2-BB02E2ECFE16}.Release|x86.Build.0 = Release|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Debug|x64.Build.0 = Debug|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Debug|x86.Build.0 = Debug|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Release|x64.ActiveCfg = Release|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Release|x64.Build.0 = Release|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Release|x86.ActiveCfg = Release|Any CPU
+		{037FA6C5-81EB-499F-9519-F7D11BE76C30}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

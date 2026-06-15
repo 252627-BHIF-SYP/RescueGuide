@@ -38,17 +38,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // Add Database Context
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? "Host=localhost;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseInMemoryDatabase("TestingDb"));
+}
+else
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") 
+            ?? "Host=localhost;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres"));
+}
 
 var app = builder.Build();
 
 // Automatically apply EF Core migrations on startup
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        if (db.Database.IsRelational())
+        {
+            try { db.Database.Migrate(); } catch { }
+        }
+        else
+        {
+            db.Database.EnsureCreated();
+        }
+    }
 }
 
 // Configure the HTTP request pipeline - EXACT ORDER MATTERS!
@@ -69,3 +87,5 @@ app.MapScalarApiReference();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
