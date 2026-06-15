@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlarmService, AlarmData } from '../services/alarm.service';
 import { AuthService } from '../services/auth.service';
 import { SignalingService } from '../services/signaling.service';
+import { CallContextService } from '../services/call-context.service';
 import { EmergencyService } from '../services/emergency.service';
 import { environment } from '../../environments/environment';
 import { Subscription } from 'rxjs';
@@ -19,6 +20,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private signaling = inject(SignalingService);
+  private callContext = inject(CallContextService);
   private emergencyService = inject(EmergencyService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -37,11 +39,24 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
     // Registriere als 'controlcenter' am Signaling Server
     this.signaling.connect(environment.signalingUrl, 'controlcenter');
 
-    // Auf echte eingehende Notrufe hören
+    // Auf echte eingehende Notrufe hören (call-request oder incoming-call)
     this.signaling.on('incoming-call', (p: any) => {
       console.log('Echter eingehender Notruf empfangen von:', p.from);
       this.activeAlarm.set({
-        id: p.from, // z. B. 'clientapp'
+        id: p.from,
+        caller: p.metadata?.caller || p.from,
+        location: p.metadata?.location || 'Unbekannter Standort',
+        type: p.metadata?.type || 'Notfall'
+      });
+      this.playAlarm();
+      this.cdr.detectChanges();
+    });
+
+    // Fallback: einige mobile Clients/Server senden 'call-request' zuerst
+    this.signaling.on('call-request', (p: any) => {
+      console.log('call-request empfangen, zeige Popup von:', p.from);
+      this.activeAlarm.set({
+        id: p.from,
         caller: p.metadata?.caller || p.from,
         location: p.metadata?.location || 'Unbekannter Standort',
         type: p.metadata?.type || 'Notfall'
@@ -75,6 +90,8 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
         to: alarm.id,
         from: 'controlcenter'
       });
+      // Informiere lokale Komponenten (z.B. VideoCall) dass der User akzeptiert hat
+      try { this.callContext.acceptCall(); } catch (e) { /* best-effort */ }
 
       this.emergencyService.isActive.set(true);
 
@@ -107,6 +124,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.alarmSub?.unsubscribe();
     this.signaling.off('incoming-call');
+    this.signaling.off('call-request');
     this.audio.pause();
   }
 }

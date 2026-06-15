@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@an
 import { CommonModule } from '@angular/common';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
+import { CallContextService } from '../services/call-context.service';
 
 @Component({
   selector: 'app-video-call',
@@ -26,9 +27,37 @@ export class VideoCall implements OnInit, OnDestroy {
 
   // Signal Service injecten
   private signaling = inject(SignalingService);
+  private callContext = inject(CallContextService);
 
   ngOnInit() {
     this.initSignaling();
+
+    // Wenn der Nutzer später akzeptiert, versucht VideoCall die gespeicherte Offer
+    this.callContext.getAccept$().subscribe(() => {
+      const pending = this.callContext.getPendingOffer();
+      if (pending) {
+        // Wenn Offer schon vorhanden: direkt verarbeiten
+        this.handleOffer(pending.from, pending.sdp).catch(err => console.error(err));
+        this.callContext.clearPendingOffer();
+      } else {
+        // Wenn Offer noch nicht da, warte einmalig auf die nächste Offer
+        this.callContext.getPendingOffer$().subscribe(p => {
+          if (p) {
+            this.handleOffer(p.from, p.sdp).catch(err => console.error(err));
+            this.callContext.clearPendingOffer();
+          }
+        });
+      }
+    });
+    // Falls der User bereits akzeptiert hat (AlarmNotification hat accept schon gesendet)
+    if (this.callContext.getAcceptedValue()) {
+      const pendingNow = this.callContext.getPendingOffer();
+      if (pendingNow) {
+        this.handleOffer(pendingNow.from, pendingNow.sdp).catch(err => console.error(err));
+        this.callContext.clearPendingOffer();
+        this.callContext.clearAcceptedFlag();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -45,10 +74,12 @@ export class VideoCall implements OnInit, OnDestroy {
     });
 
     // WebRTC: Der Client schickt sein Angebot (Offer)
-    this.signaling.on('call-offer', async (p: any) => {
-      if (p.sdp) {
-        await this.handleOffer(p.from, p.sdp);
-      }
+    // Hinweis: das Offer wird im SignalingService in CallContext zwischengespeichert
+    // damit die Leitstelle das Angebot erst nach User-Accept verarbeiten kann.
+    // Daher hier kein sofortiges handleOffer mehr.
+    this.signaling.on('call-offer', (p: any) => {
+      // no-op here; SignalingService stores the offer into CallContextService
+      console.log('call-offer empfangen und in CallContext gespeichert (falls Implementiert)');
     });
 
     // WebRTC: ICE Candidates austauschen
