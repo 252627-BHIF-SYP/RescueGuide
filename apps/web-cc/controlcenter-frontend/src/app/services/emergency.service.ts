@@ -116,8 +116,6 @@ export class EmergencyService implements OnDestroy {
     }
 
     const payload = {
-      id: protocolId,
-      emergencyId: this.activeEmergencyId(),
       ...this.protocol()
     };
 
