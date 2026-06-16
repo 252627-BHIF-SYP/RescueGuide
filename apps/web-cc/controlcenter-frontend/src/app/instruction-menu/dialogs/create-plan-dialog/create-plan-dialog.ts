@@ -6,7 +6,7 @@ import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angu
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon'; // Neu hinzugefügt
+import { MatIconModule } from '@angular/material/icon';
 import { InstructionMenuService, Measure } from '../../../services/instruction-menu.service';
 import { CreateMeasureDialog } from '../create-measure-dialog/create-measure-dialog';
 import { Subscription } from 'rxjs';
