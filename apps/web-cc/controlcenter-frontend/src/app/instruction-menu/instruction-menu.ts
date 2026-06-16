@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -30,7 +30,7 @@ import { PreviewPlanDialog } from './dialogs/preview-plan-dialog/preview-plan-di
   templateUrl: './instruction-menu.html',
   styleUrl: './instruction-menu.scss',
 })
-export class InstructionMenu {
+export class InstructionMenu implements OnInit {
   expandedDescriptions: { [key: number]: boolean } = {};
 
   constructor(
@@ -41,6 +41,10 @@ export class InstructionMenu {
     private alarmService: AlarmService,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.service.fetchInitialData();
+  }
 
   get availableMeasures(): Measure[] {
     return this.service.availableMeasures;
@@ -77,8 +81,12 @@ export class InstructionMenu {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newMeasure = this.service.createMeasure(result.name, result.description, result.imageUrl);
-        this.addMeasure(newMeasure);
+        this.service.createMeasure(result.name, result.description, result.imageUrl).subscribe({
+          next: (newMeasure) => {
+            this.addMeasure(newMeasure);
+          },
+          error: (err) => console.error('Failed to create measure', err)
+        });
       }
     });
   }
@@ -91,15 +99,19 @@ export class InstructionMenu {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.editMeasure(measure, result.name, result.description, result.imageUrl);
-        this.cdr.markForCheck();
+        this.service.editMeasure(measure, result.name, result.description, result.imageUrl).subscribe({
+          next: () => this.cdr.markForCheck(),
+          error: (err) => console.error('Failed to edit measure', err)
+        });
       }
     });
   }
 
   deleteMeasure(measure: Measure): void {
-    this.service.deleteMeasure(measure);
-    this.cdr.markForCheck();
+    this.service.deleteMeasure(measure).subscribe({
+      next: () => this.cdr.markForCheck(),
+      error: (err) => console.error('Failed to delete measure', err)
+    });
   }
 
   createPlan(): void {
@@ -110,8 +122,10 @@ export class InstructionMenu {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.createPlan(result.name, result.selectedMeasures);
-        this.cdr.markForCheck();
+        this.service.createPlan(result.name, result.selectedMeasures).subscribe({
+          next: () => this.cdr.markForCheck(),
+          error: (err) => console.error('Failed to create plan', err)
+        });
       }
     });
   }
@@ -124,15 +138,19 @@ export class InstructionMenu {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.service.editPlan(plan, result.name, result.selectedMeasures);
-        this.cdr.markForCheck();
+        this.service.editPlan(plan, result.name, result.selectedMeasures).subscribe({
+          next: () => this.cdr.markForCheck(),
+          error: (err) => console.error('Failed to edit plan', err)
+        });
       }
     });
   }
 
   deletePlan(plan: Plan): void {
-    this.service.deletePlan(plan);
-    this.cdr.markForCheck();
+    this.service.deletePlan(plan).subscribe({
+      next: () => this.cdr.markForCheck(),
+      error: (err) => console.error('Failed to delete plan', err)
+    });
   }
 
   previewPlan(plan: Plan): void {

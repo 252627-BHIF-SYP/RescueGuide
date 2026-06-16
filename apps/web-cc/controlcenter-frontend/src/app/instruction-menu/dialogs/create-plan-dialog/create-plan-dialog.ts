@@ -71,12 +71,15 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newMeasure = this.service.createMeasure(result.name, result.description, result.imageUrl);
-        this.tempMeasureIds.push(newMeasure.id);
-
-        const currentSelected = this.planForm.get('selectedMeasures')?.value || [];
-        this.planForm.get('selectedMeasures')?.setValue([...currentSelected, newMeasure]);
-        this.cdr.detectChanges(); // Auch hier Rendering erzwingen
+        this.service.createMeasure(result.name, result.description, result.imageUrl).subscribe({
+          next: (newMeasure) => {
+            this.tempMeasureIds.push(newMeasure.id);
+            const currentSelected = this.planForm.get('selectedMeasures')?.value || [];
+            this.planForm.get('selectedMeasures')?.setValue([...currentSelected, newMeasure]);
+            this.cdr.detectChanges(); // Auch hier Rendering erzwingen
+          },
+          error: (err) => console.error('Failed to create new measure from plan dialog', err)
+        });
       }
     });
   }
