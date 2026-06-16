@@ -9,7 +9,8 @@ using WebApplication1.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient("ReverseGeocoding", (serviceProvider, client) =>
@@ -84,14 +85,14 @@ if (!app.Environment.IsEnvironment("Testing"))
 }
 
 // Configure the HTTP request pipeline - EXACT ORDER MATTERS!
-app.UseCors("AllowAll");
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
 
 app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
