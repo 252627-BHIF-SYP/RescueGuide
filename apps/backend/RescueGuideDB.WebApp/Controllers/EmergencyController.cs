@@ -77,7 +77,21 @@ public class EmergencyController : ControllerBase
 
         _context.Emergencies.Add(emergency);
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = emergency.Id }, emergency);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = emergency.Id },
+            new
+            {
+                emergency.Id,
+                Protocol = emergency.Protocol == null
+                    ? null
+                    : new
+                    {
+                        emergency.Protocol.Id,
+                        emergency.Protocol.EmergencyId
+                    }
+            });
     }
 
     [HttpPut("{id}")]
