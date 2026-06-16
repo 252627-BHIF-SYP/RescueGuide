@@ -6,6 +6,8 @@ export interface AlarmData {
   id: string;
   type: string;
   location: string;
+  latitude? : number;
+  longitude? : number;
   caller: string;
   lat?: number;
   lng?: number;

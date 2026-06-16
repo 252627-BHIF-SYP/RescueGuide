@@ -24,7 +24,6 @@ class MeinApp extends StatelessWidget {
       // Die anderen Routen bleiben für den Navigator erreichbar
       routes: {
         '/connecting': (context) => const ConnectingScreen(),
-        '/emergency': (context) => const EmergencyScreen(),
       },
     );
   }
