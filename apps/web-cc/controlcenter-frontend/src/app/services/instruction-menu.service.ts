@@ -119,7 +119,7 @@ export class InstructionMenuService {
   deleteMeasure(measure: Measure): void {
     const current = this._availableMeasures$.getValue();
     this._availableMeasures$.next(current.filter(m => m.id !== measure.id));
-    
+
     const active = this._currentMeasures$.getValue();
     this._currentMeasures$.next(active.filter(m => m.id !== measure.id));
   }

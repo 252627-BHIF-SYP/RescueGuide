@@ -52,6 +52,11 @@ io.on('connection', (socket) => {
     if (target) io.to(target).emit('call-rejected', { from: payload.from, reason: payload.reason });
   });
 
+  socket.on('call-accepted', (payload) => {
+    const target = registry.get(payload.to);
+    if (target) io.to(target).emit('call-accepted', { from: payload.from });
+  });
+
   socket.on('call-end', (payload) => {
     const target = registry.get(payload.to);
     if (target) io.to(target).emit('call-end', { from: payload.from, reason: payload.reason });

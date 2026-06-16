@@ -1,36 +1,60 @@
-<h2 mat-dialog-title>
-  @if (data?.plan) { Plan bearbeiten } @else { Neuen Plan erstellen }
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon class="title-icon">{{ data?.plan ? 'edit_note' : 'playlist_add' }}</mat-icon>
+  <span>{{ data?.plan ? 'Einsatzplan bearbeiten' : 'Neuen Einsatzplan erstellen' }}</span>
 </h2>
-<mat-dialog-content>
-  <form [formGroup]="planForm">
-    @if (data?.plan) {
-      <mat-form-field appearance="fill" class="full-width read-only-field">
-        <mat-label>Author</mat-label>
-        <input matInput [value]="data.plan.author" disabled>
-      </mat-form-field>
-      <mat-form-field appearance="fill" class="full-width read-only-field">
-        <mat-label>Erstellt am</mat-label>
-        <input matInput [value]="data.plan.createdAt | date:'short'" disabled>
-      </mat-form-field>
-    }
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Plan Name</mat-label>
-      <input matInput formControlName="name" required>
-    </mat-form-field>
-    <h3>Maßnahmen auswählen</h3>
-    <mat-selection-list formControlName="selectedMeasures" [compareWith]="compareMeasures">
-      @for (measure of availableMeasures; track measure.id) {
-        <mat-list-option [value]="measure">
-          {{ measure.name }}
-        </mat-list-option>
+
+<mat-dialog-content class="custom-dialog-content">
+  <form [formGroup]="planForm" class="dialog-form-grid">
+
+    <div class="form-column main-info">
+      @if (data?.plan) {
+        <div class="meta-info-box">
+          <mat-form-field appearance="outline" class="full-width read-only-field">
+            <mat-label>Ersteller (Author)</mat-label>
+            <mat-icon matPrefix>person</mat-icon>
+            <input matInput [value]="data.plan.author || 'System'" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width read-only-field">
+            <mat-label>Erstellt am</mat-label>
+            <mat-icon matPrefix>calendar_today</mat-icon>
+            <input matInput [value]="data.plan.createdAt | date:'short'" readonly>
+          </mat-form-field>
+        </div>
       }
-    </mat-selection-list>
-    <button mat-stroked-button type="button" (click)="createNewMeasure()">Neue Maßnahme erstellen</button>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Abbrechen</button>
-  <button mat-raised-button color="primary" (click)="submit()" [disabled]="!planForm.valid">
-    @if (data?.plan) { Speichern } @else { Erstellen }
-  </button>
-</mat-dialog-actions>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name des Ablaufplans</mat-label>
+        <mat-icon matPrefix>assignment</mat-icon>
+        <input matInput formControlName="name" placeholder="z.B. Reanimation Erwachsene" required autocomplete="off">
+        @if (planForm.get('name')?.hasError('required') && planForm.get('name')?.touched) {
+          <mat-error>Ein Plan-Name ist zwingend erforderlich</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="inline-info-card">
+        <mat-icon>info_outline</mat-icon>
+        <p>Wählen Sie rechts die erforderlichen Sofortmaßnahmen aus und bringen Sie diese in die gewünschte Reihenfolge.</p>
+      </div>
+    </div>
+
+    <div class="form-column measures-selection">
+      <div class="section-header">
+        <h3>Zugeordnete Sofortmaßnahmen</h3>
+        <button mat-stroked-button type="button" class="add-inline-measure-btn" (click)="createNewMeasure()">
+          <mat-icon>add</mat-icon>
+          Neue Maßnahme
+        </button>
+      </div>
+
+      <div class="selection-list-container">
+        <mat-selection-list formControlName="selectedMeasures" [compareWith]="compareMeasures" color="primary">
+          @for (measure of availableMeasures; track measure.id) {
+            <mat-list-option [value]="measure" class="custom-select-option">
+              <mat-icon matListItemMeta class="option-icon">healing</mat-icon>
+              <div class="option-text-wrapper">
+                <span class="measure-title">{{ measure.name }}</span>
+              </div>
+            </mat-list-option>
+          }
+          @if (availableMeasures.length === 0)

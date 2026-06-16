@@ -1,6 +1,11 @@
 <mat-toolbar color="primary">
+  @if (auth.isLoggedIn()) {
+    <button mat-button routerLink="/dashboard">Dashboard</button>
+  }
   <button mat-button routerLink="/instruction-menu">Instruction Menu</button>
-  <button mat-button routerLink="/emergency-page">Emergency Page</button>
+  @if (emergencyService.isActive()) {
+    <button mat-button routerLink="/emergency-page">Emergency Page</button>
+  }
 
   <span style="flex: 1 1 auto;"></span>
 

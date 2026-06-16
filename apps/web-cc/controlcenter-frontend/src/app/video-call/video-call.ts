@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@an
 import { CommonModule } from '@angular/common';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
+import { CallContextService } from '../services/call-context.service';
 
 @Component({
   selector: 'app-video-call',
@@ -27,9 +28,37 @@ export class VideoCall implements OnInit, OnDestroy {
 
   // Signal Service injecten
   private signaling = inject(SignalingService);
+  private callContext = inject(CallContextService);
 
   ngOnInit() {
     this.initSignaling();
+
+    // Wenn der Nutzer später akzeptiert, versucht VideoCall die gespeicherte Offer
+    this.callContext.getAccept$().subscribe(() => {
+      const pending = this.callContext.getPendingOffer();
+      if (pending) {
+        // Wenn Offer schon vorhanden: direkt verarbeiten
+        this.handleOffer(pending.from, pending.sdp).catch(err => console.error(err));
+        this.callContext.clearPendingOffer();
+      } else {
+        // Wenn Offer noch nicht da, warte einmalig auf die nächste Offer
+        this.callContext.getPendingOffer$().subscribe(p => {
+          if (p) {
+            this.handleOffer(p.from, p.sdp).catch(err => console.error(err));
+            this.callContext.clearPendingOffer();
+          }
+        });
+      }
+    });
+    // Falls der User bereits akzeptiert hat (AlarmNotification hat accept schon gesendet)
+    if (this.callContext.getAcceptedValue()) {
+      const pendingNow = this.callContext.getPendingOffer();
+      if (pendingNow) {
+        this.handleOffer(pendingNow.from, pendingNow.sdp).catch(err => console.error(err));
+        this.callContext.clearPendingOffer();
+        this.callContext.clearAcceptedFlag();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -38,15 +67,6 @@ export class VideoCall implements OnInit, OnDestroy {
 
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
-
-    // Wenn ein Angebot (Offer) reinkommt, Daten nur speichern. Noch KEIN MediaStream starten!
-    this.signaling.on('call-offer', (p: any) => {
-      if (p.sdp) {
-        console.log('Eingehendes WebRTC Angebot von:', p.from);
-        this.incomingFrom = p.from;
-        this.pendingOffer = p.sdp;
-      }
-    });
 
     // WebRTC: ICE Candidates austauschen
     this.signaling.on('ice-candidate', async (p: any) => {
@@ -81,9 +101,6 @@ export class VideoCall implements OnInit, OnDestroy {
 
   async processOffer(from: string, sdp: any) {
     try {
-      // Leitstelle sendet meistens nur Audio zurück
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: false, // Ändern auf 'true', wenn die Leitstelle gesehen werden soll
         audio: true
       });
 
@@ -168,8 +185,7 @@ export class VideoCall implements OnInit, OnDestroy {
       this.localStream.getTracks().forEach(t => t.stop());
       this.localStream = undefined;
     }
-    if (this.remoteVideo && this.remoteVideo.nativeElement) {
-      this.remoteVideo.nativeElement.srcObject = null;
+
     }
     this.incomingFrom = null;
     this.pendingOffer = null;

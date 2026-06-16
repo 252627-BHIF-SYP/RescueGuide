@@ -17,10 +17,25 @@ namespace RescueGuideDB.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("MeasurePlan", b =>
+                {
+                    b.Property<int>("MeasuresId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlansId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MeasuresId", "PlansId");
+
+                    b.HasIndex("PlansId");
+
+                    b.ToTable("MeasurePlan");
+                });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.Client", b =>
                 {
@@ -74,13 +89,17 @@ namespace RescueGuideDB.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClientId")
+                    b.Property<int?>("ClientId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Einsatzart")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("StartedAt")
@@ -92,7 +111,7 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Property<int?>("UserControlCenterId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -104,6 +123,67 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.HasIndex("UserControlCenterId");
 
                     b.ToTable("Emergencies");
+                });
+
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.EmergencyProtocol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("AlarmedFW")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AlarmedNA")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AlarmedPol")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AlarmedRD")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("CallbackNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CallerName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CallerType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Date")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DispatcherName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EmergencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("InjuredCount")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Time")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmergencyId")
+                        .IsUnique();
+
+                    b.ToTable("EmergencyProtocols");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.FirstHelp", b =>
@@ -195,6 +275,62 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.Measure", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsUserCreated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Measures");
+                });
+
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.Plan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Plans");
+                });
+
             modelBuilder.Entity("RescueGuideDB.Core.Entities.UserControlCenter", b =>
                 {
                     b.Property<int>("Id")
@@ -216,19 +352,30 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.ToTable("UserControlCenters");
                 });
 
+            modelBuilder.Entity("MeasurePlan", b =>
+                {
+                    b.HasOne("RescueGuideDB.Core.Entities.Measure", null)
+                        .WithMany()
+                        .HasForeignKey("MeasuresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RescueGuideDB.Core.Entities.Plan", null)
+                        .WithMany()
+                        .HasForeignKey("PlansId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RescueGuideDB.Core.Entities.Emergency", b =>
                 {
                     b.HasOne("RescueGuideDB.Core.Entities.Client", "Client")
                         .WithMany("Emergencies")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientId");
 
                     b.HasOne("RescueGuideDB.Core.Entities.Location", "Location")
                         .WithMany("Emergencies")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
 
                     b.HasOne("RescueGuideDB.Core.Entities.UserControlCenter", "UserControlCenter")
                         .WithMany("Emergencies")
@@ -239,6 +386,17 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("UserControlCenter");
+                });
+
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.EmergencyProtocol", b =>
+                {
+                    b.HasOne("RescueGuideDB.Core.Entities.Emergency", "Emergency")
+                        .WithOne("Protocol")
+                        .HasForeignKey("RescueGuideDB.Core.Entities.EmergencyProtocol", "EmergencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Emergency");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.InstructionStep", b =>
@@ -255,6 +413,11 @@ namespace RescueGuideDB.Persistence.Migrations
             modelBuilder.Entity("RescueGuideDB.Core.Entities.Client", b =>
                 {
                     b.Navigation("Emergencies");
+                });
+
+            modelBuilder.Entity("RescueGuideDB.Core.Entities.Emergency", b =>
+                {
+                    b.Navigation("Protocol");
                 });
 
             modelBuilder.Entity("RescueGuideDB.Core.Entities.InstructionCategory", b =>

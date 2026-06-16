@@ -31,13 +31,13 @@ public class Program
 
             var importer = scope.ServiceProvider.GetRequiredService<CsvImportService>();
 
-            //await importer.ImportClients("Data/clients.csv");
-            //await importer.ImportLocations("Data/locations.csv");
-            //await importer.ImportUsers("Data/usercontrolcenters.csv");
-            //await importer.ImportInstructionCategories("Data/instructioncategories.csv");
-            //await importer.ImportInstructions("Data/instructionsteps.csv");
+            await importer.ImportClients("Data/clients.csv");
+            await importer.ImportLocations("Data/locations.csv");
+            await importer.ImportUsers("Data/usercontrolcenters.csv");
+            await importer.ImportInstructionCategories("Data/instructioncategories.csv");
+            await importer.ImportInstructions("Data/instructionsteps.csv");
             await importer.ImportEmergencies("Data/emergencies.csv");
-            //await importer.ImportFirstHelps("Data/firsthelp.csv");
+            await importer.ImportFirstHelps("Data/firsthelp.csv");
 
             Console.WriteLine("CSV Import abgeschlossen.");
         }

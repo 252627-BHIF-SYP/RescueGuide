@@ -4,6 +4,7 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { EmergencyService } from '../services/emergency.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class Navbar {
   public auth = inject(AuthService);
+  public emergencyService = inject(EmergencyService);
   private router = inject(Router);
 
   logout() {

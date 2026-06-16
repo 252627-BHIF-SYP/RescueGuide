@@ -1,4 +1,4 @@
-@if (activeAlarm) {
+@if (activeAlarm()) {
   <div class="alarm-overlay">
     <div class="alarm-card">
       <div class="alarm-header">
@@ -8,16 +8,17 @@
       <div class="alarm-content">
         <div class="data-row">
           <span class="label">Einsatzart:</span>
-          <span class="value"><strong>{{ activeAlarm.type }}</strong></span>
+          <span class="value"><strong>{{ activeAlarm()?.type }}</strong></span>
         </div>
         <hr>
         <div class="data-row">
           <span class="label">Standort:</span>
-          <span class="value">{{ activeAlarm.location }}</span>
+          <!--<span class="value">{{ activeAlarm()?.location }}</span>-->
+          <span class="value">Limesstraße 14, 4060 Leonding</span>
         </div>
         <div class="data-row">
           <span class="label">Anrufer:</span>
-          <span class="value">{{ activeAlarm.caller }}</span>
+          <span class="value">{{ activeAlarm()?.caller }}</span>
         </div>
       </div>
 

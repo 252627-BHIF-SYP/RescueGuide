@@ -6,6 +6,10 @@ export class SignalingService {
   private socket?: Socket;
 
   connect(serverUrl: string, userId: string) {
+    if (this.socket) {
+      this.socket.emit('register', userId);
+      return;
+    }
     this.socket = io(serverUrl);
     this.socket.on('connect', () => {
       this.socket!.emit('register', userId);

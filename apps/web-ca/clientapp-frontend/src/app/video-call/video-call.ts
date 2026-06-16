@@ -1,4 +1,6 @@
 import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { EmergencyStateService } from '../emergency-state-service';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 
@@ -22,6 +24,8 @@ export class VideoCall implements OnInit, OnDestroy {
   private targetId = 'controlcenter';
 
   private signaling = inject(SignalingService);
+  private router = inject(Router);
+  private state = inject(EmergencyStateService);
 
   ngOnInit() {
     this.initSignaling();
@@ -29,36 +33,46 @@ export class VideoCall implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.endCall();
+    this.signaling.off('incoming-call', this.onIncomingCall);
+    this.signaling.off('call-answer', this.onCallAnswer);
+    this.signaling.off('ice-candidate', this.onIceCandidate);
+    this.signaling.off('call-end', this.onCallEnd);
   }
+
+  private onIncomingCall = (p: any) => {
+    console.log('Eingehender Anruf von:', p.from);
+  };
+
+  private onCallAnswer = async (p: any) => {
+    if (p.sdp && this.pc) {
+      await this.pc.setRemoteDescription(new RTCSessionDescription(p.sdp));
+    }
+  };
+
+  private onIceCandidate = async (p: any) => {
+    if (p.candidate && this.pc) {
+      try {
+        await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
+      } catch (e) {
+        console.warn('ICE Candidate Error:', e);
+      }
+    }
+  };
+
+  private onCallEnd = () => {
+    console.log('Call ended by dispatcher, closing connection and returning to startscreen.');
+    this.closeConnection();
+    this.state.reset();
+    this.router.navigate(['/startscreen']);
+  };
 
   private initSignaling() {
     this.signaling.connect(this.serverUrl, this.myId);
 
-    this.signaling.on('incoming-call', (p: any) => {
-      console.log('Eingehender Anruf von:', p.from);
-      // Hier könntest du eine Logik einbauen, um automatisch anzunehmen 
-      // oder dem User einen Button anzuzeigen
-    });
-
-    this.signaling.on('call-answer', async (p: any) => {
-      if (p.sdp && this.pc) {
-        await this.pc.setRemoteDescription(new RTCSessionDescription(p.sdp));
-      }
-    });
-
-    this.signaling.on('ice-candidate', async (p: any) => {
-      if (p.candidate && this.pc) {
-        try {
-          await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
-        } catch (e) {
-          console.warn('ICE Candidate Error:', e);
-        }
-      }
-    });
-
-    this.signaling.on('call-end', () => {
-      this.closeConnection();
-    });
+    this.signaling.on('incoming-call', this.onIncomingCall);
+    this.signaling.on('call-answer', this.onCallAnswer);
+    this.signaling.on('ice-candidate', this.onIceCandidate);
+    this.signaling.on('call-end', this.onCallEnd);
   }
 
   async startCall() {

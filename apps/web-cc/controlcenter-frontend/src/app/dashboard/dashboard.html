@@ -1,0 +1,89 @@
+<main class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <span class="eyebrow">Leitstelle</span>
+      <h1>Notruf-Dashboard</h1>
+    </div>
+    <button mat-icon-button (click)="loadEmergencies()" [disabled]="loading() || refreshing()" aria-label="Notrufe aktualisieren">
+      <mat-icon [class.spinning]="refreshing()">refresh</mat-icon>
+    </button>
+  </header>
+
+  @if (loading()) {
+    <div class="message">Notrufe werden geladen...</div>
+  } @else if (error()) {
+    <div class="message error">
+      <span>{{ error() }}</span>
+      <button mat-button (click)="loadEmergencies()">Erneut versuchen</button>
+    </div>
+  } @else {
+    <section>
+      <div class="section-title">
+        <h2>Aktive Notrufe</h2>
+        <span class="count active-count">{{ activeEmergencies().length }}</span>
+      </div>
+
+      <div class="emergency-list">
+        @for (emergency of activeEmergencies(); track emergency.id) {
+          <mat-card class="emergency-row active">
+            <div class="main-info">
+              <strong>{{ emergency.emergencyType || 'Einsatzart nicht erfasst' }}</strong>
+              <span>{{ getLocationLabel(emergency) }}</span>
+            </div>
+            <div class="field caller">
+              <span>Notrufbehandler</span>
+              <strong>{{ emergency.handlerName || 'Nicht zugewiesen' }}</strong>
+            </div>
+            <div class="field">
+              <span>Beginn</span>
+              <strong>{{ emergency.startedAt | date: 'dd.MM., HH:mm' }}</strong>
+            </div>
+            <div class="field">
+              <span>Ende</span>
+              <strong>–</strong>
+            </div>
+            <span class="status active-status">Aktiv</span>
+          </mat-card>
+        } @empty {
+          <div class="empty">Keine aktiven Notrufe.</div>
+        }
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Vergangene Notrufe</h2>
+        <span class="count">{{ completedEmergencies().length }}</span>
+      </div>
+
+      <div class="emergency-list">
+        @for (emergency of completedEmergencies(); track emergency.id) {
+          <mat-card class="emergency-row">
+            <div class="main-info">
+              <strong>{{ emergency.emergencyType || 'Einsatzart nicht erfasst' }}</strong>
+              <span>{{ getLocationLabel(emergency) }}</span>
+            </div>
+            <div class="field caller">
+              <span>Notrufbehandler</span>
+              <strong>{{ emergency.handlerName || 'Nicht zugewiesen' }}</strong>
+            </div>
+            <div class="field">
+              <span>Beginn</span>
+              <strong>{{ emergency.startedAt | date: 'dd.MM., HH:mm' }}</strong>
+            </div>
+            <div class="field">
+              <span>Ende</span>
+              <strong>
+                {{ emergency.endedAt ? (emergency.endedAt | date: 'dd.MM., HH:mm') : '–' }}
+              </strong>
+            </div>
+            <span class="status">Beendet</span>
+          </mat-card>
+        } @empty {
+          <div class="empty">Keine vergangenen Notrufe.</div>
+        }
+      </div>
+    </section>
+
+  }
+</main>

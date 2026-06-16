@@ -1,85 +1,88 @@
-<div class="realtime-container">
-  <div class="page-header">
-    <h1>Notfall</h1>
-    <div class="page-subtitle">
-      <strong>Einsatzdauer:</strong> {{ formatTime(durationSeconds()) }}
+<div class="container">
+  <!-- Top Unified Header Bar -->
+  <div class="page-header-bar">
+    <div class="header-left">
+      <mat-icon class="emergency-icon animate-pulse">emergency</mat-icon>
+      <h2>Laufender Notfalleinsatz</h2>
+    </div>
+    <div class="header-right">
+      <div class="timer-box">
+        <mat-icon class="timer-icon">schedule</mat-icon>
+        <span class="timer-label">Einsatzdauer:</span>
+        <span class="timer-value">{{ formatTime(durationSeconds()) }}</span>
+      </div>
+      <button mat-flat-button color="warn" class="btn-end-call" (click)="endCall()">
+        <mat-icon>call_end</mat-icon>
+        Einsatz beenden
+      </button>
     </div>
   </div>
 
-  <div class="main-content">
+  <div class="content">
     
-    <!-- 1. Spalte: Alles andere (Video & Infos untereinander) - Jetzt links -->
-    <div class="info-column">
+    <!-- Linker Bereich: Video-Stream & Echtzeit-Standort / Karte -->
+    <div class="left-column flex-column-gap">
       
+      <!-- Video-Call-Bereich -->
       <app-video-call></app-video-call>
 
-      <mat-card class="info-card">
+      <!-- Standort- & GPS-Daten -->
+      <mat-card class="status-card info-card-padding">
         <mat-card-header>
-          <mat-card-title>
-            <mat-icon class="card-icon">info</mat-icon>
-            Echtzeit Infos
+          <mat-card-title style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div>
+              <mat-icon class="card-icon">location_on</mat-icon>
+              Echtzeit-Standort & GPS
+            </div>
+            @if (mapUrl !== null) {
+              <button mat-icon-button (click)="toggleMapFullscreen()" color="primary" aria-label="Karte als Vollbild" title="Karte als Vollbild">
+                <mat-icon>fullscreen</mat-icon>
+              </button>
+            }
           </mat-card-title>
         </mat-card-header>
-
+        
         <mat-card-content>
           <div class="map-container">
-            <h3><mat-icon>location_on</mat-icon> Standort</h3>
-            <p class="status-text">{{ status() }}</p>
+            <p class="status-text">
+              <span class="status-dot" [class.active]="mapUrl !== null"></span>
+              {{ status() }}
+            </p>
 
             @if (mapUrl !== null) {
-              <div class="google-maps">
-                <iframe [src]="mapUrl!" width="100%" height="300" style="border:0;" loading="lazy"></iframe>
-                <div class="map-marker"><mat-icon>location_on</mat-icon></div>
+              <div class="google-maps-frame">
+                <iframe #mapIframe [src]="mapUrl!" width="100%" height="280" style="border:0; border-radius: 8px;" loading="lazy"></iframe>
               </div>
               <div class="coordinates">
                 <div class="coord-item">
-                  <span class="coord-value">{{ latitude() }}° , {{ longitude() }}°</span>
+                  <span class="coord-label">Breitengrad:</span>
+                  <span class="coord-value">{{ latitude() }}°</span>
+                </div>
+                <div class="coord-item">
+                  <span class="coord-label">Längengrad:</span>
+                  <span class="coord-value">{{ longitude() }}°</span>
                 </div>
               </div>
             } @else {
-              <p class="no-location">Kein Standort verfügbar</p>
+              <div class="no-location-box">
+                <mat-icon class="search-icon animate-spin">autorenew</mat-icon>
+                <p>Warte auf GPS-Koordinaten des Ersthelfers…</p>
+              </div>
             }
           </div>
-
-          <div class="eta-section">
-            <h3><mat-icon>schedule</mat-icon> Eintreffen Einsatzkräfte</h3>
-            <div class="rescue-card">
-              <div class="rescue-header">
-                <mat-icon>medical_services</mat-icon>
-                <span>Rettungsdienst (RTW 1, NEF 12)</span>
-              </div>
-              <mat-progress-bar mode="determinate" value="60" color="primary" class="eta-bar"></mat-progress-bar>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="instructions-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon class="card-icon">assignment</mat-icon>
-            Schnellzugriff
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list class="instructions-list">
-            <mat-list-item>
-              <mat-icon matListItemIcon>folder</mat-icon>
-              <div matListItemTitle>Pläne & Maßnahmen</div>
-              <button mat-icon-button color="primary" routerLink="/instruction-menu">
-                <mat-icon>arrow_forward</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
         </mat-card-content>
       </mat-card>
 
     </div>
 
-    <!-- 2. Spalte: Checkliste (Ganz rechts) -->
-    <!-- 📋 CHECKLISTE / NOTFALLDATEN -->
-    <div class="checklist-column">
-      <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
+    <!-- Rechter Bereich: Protokoll / Checkliste & Schnellzugriff -->
+    <div class="right-column flex-column-gap">
+      
+      <!-- Checkliste / Notfallprotokoll (nimmt vollen Platz ein) -->
+      <div class="checklist-wrapper">
+        <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
+      </div>
+
     </div>
 
   </div>

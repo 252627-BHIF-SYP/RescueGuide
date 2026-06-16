@@ -1,6 +1,9 @@
 import { Injectable, signal, computed, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
+import { Subject, firstValueFrom } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 export interface Notruf {
   userId: string;
@@ -34,13 +37,19 @@ export class EmergencyService implements OnDestroy {
 
   
   // State Signals
+  isActive = signal<boolean>(false);
   protocol = signal<EmergencyProtocol>(this.getDefaultProtocol());
   durationSeconds = signal<number>(0);
+  activeEmergencyId = signal<number | null>(null);
+  activeProtocolId = signal<number | null>(null);
 
   private timerInterval: any;
+  private saveSubject = new Subject<void>();
 
   constructor() {
-    this.startTimer();
+    this.saveSubject.pipe(debounceTime(1000)).subscribe(() => {
+      this.executeSaveProtocol();
+    });
   }
 
   ngOnDestroy() {
@@ -69,6 +78,64 @@ export class EmergencyService implements OnDestroy {
 
   updateProtocol(data: Partial<EmergencyProtocol>) {
     this.protocol.update(p => ({ ...p, ...data }));
+    this.saveProtocol();
+  }
+
+  async createEmergency(initialData?: Partial<EmergencyProtocol>) {
+    // Create an empty emergency
+    const emergencyPayload = {
+      startedAt: new Date().toISOString(),
+      status: 0 // e.g. 0 = Active, adapt to your EmergencyStatus enum
+    };
+    
+    try {
+      const res = await firstValueFrom(this.http.post<any>(`${environment.apiUrl}/Emergency`, emergencyPayload));
+      this.activeEmergencyId.set(res.id);
+      if (res.protocol) {
+        this.activeProtocolId.set(res.protocol.id);
+        this.protocol.set({ ...this.getDefaultProtocol(), ...res.protocol, ...initialData });
+      }
+      console.log('Emergency created with ID:', res.id);
+      if (initialData) {
+        this.saveProtocol();
+      }
+    } catch (err) {
+      console.error('Error creating emergency', err);
+    }
+  }
+
+  saveProtocol() {
+    this.saveSubject.next();
+  }
+
+  executeSaveProtocol() {
+    const protocolId = this.activeProtocolId();
+    if (!protocolId) {
+      console.error('Cannot save protocol: No active protocol ID');
+      return;
+    }
+
+    const payload = {
+      ...this.protocol()
+    };
+
+    this.http.put(`${environment.apiUrl}/EmergencyProtocol/${protocolId}`, payload)
+      .subscribe({
+        next: () => console.log('Protocol saved successfully'),
+        error: (err) => console.error('Error saving protocol', err)
+      });
+  }
+
+  endEmergency() {
+    this.executeSaveProtocol();
+    const emergencyId = this.activeEmergencyId();
+    if (emergencyId) {
+      this.http.put(`${environment.apiUrl}/Emergency/${emergencyId}/close`, {})
+        .subscribe({
+          next: () => console.log('Emergency ended in backend'),
+          error: (err) => console.error('Error ending emergency', err)
+        });
+    }
   }
 
   startTimer() {

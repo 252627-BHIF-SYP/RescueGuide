@@ -1,11 +1,12 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
-import { MatList, MatListItem } from '@angular/material/list';
-import { MatButton } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
 import { InstructionMenuService, Measure, Plan } from '../services/instruction-menu.service';
 import { AuthService } from '../services/auth.service';
 import { AlarmService } from '../services/alarm.service';
@@ -17,18 +18,14 @@ import { PreviewPlanDialog } from './dialogs/preview-plan-dialog/preview-plan-di
 
 @Component({
   selector: 'app-instruction-menu',
+  standalone: true,
   imports: [
-    MatCard,
-    MatCardHeader,
-    MatCardContent,
-    MatCardActions,
-    MatIcon,
-    MatList,
-    MatListItem,
-    MatButton,
-    MatCardTitle,
-    MatDialogModule,
-    CommonModule
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    MatListModule,
+    MatButtonModule,
+    MatDialogModule
   ],
   templateUrl: './instruction-menu.html',
   styleUrl: './instruction-menu.scss',
@@ -143,9 +140,5 @@ export class InstructionMenu {
       width: '600px',
       data: { plan }
     });
-  }
-
-  triggerAlarm(): void {
-    this.alarmService.triggerMockAlarm();
   }
 }
