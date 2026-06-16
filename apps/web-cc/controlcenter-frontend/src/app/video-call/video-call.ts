@@ -101,6 +101,8 @@ export class VideoCall implements OnInit, OnDestroy {
 
   async processOffer(from: string, sdp: any) {
     try {
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
         audio: true
       });
 
@@ -185,11 +187,14 @@ export class VideoCall implements OnInit, OnDestroy {
       this.localStream.getTracks().forEach(t => t.stop());
       this.localStream = undefined;
     }
-
-    }
     this.incomingFrom = null;
     this.pendingOffer = null;
     this.activeCallId = null;
     console.log('Video-Call beendet und Ressourcen freigegeben');
+  }
+
+  private async handleOffer(from: string, sdp: any) {
+    this.activeCallId = from;
+    await this.processOffer(from, sdp);
   }
 }
