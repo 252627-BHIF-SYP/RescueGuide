@@ -57,4 +57,23 @@
               </div>
             </mat-list-option>
           }
-          @if (availableMeasures.length === 0)
+          @if (availableMeasures.length === 0) {
+            <div class="empty-state-nested">
+              <mat-icon>healing_off</mat-icon>
+              <span>Keine Maßnahmen zur Auswahl verfügbar</span>
+            </div>
+          }
+        </mat-selection-list>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions-row">
+  <button mat-button mat-dialog-close class="cancel-btn">Abbrechen</button>
+  <button mat-flat-button class="submit-btn" (click)="submit()" [disabled]="!planForm.valid">
+    <mat-icon>{{ data?.plan ? 'save' : 'check' }}</mat-icon>
+    <span>{{ data?.plan ? 'Speichern' : 'Plan erstellen' }}</span>
+  </button>
+</mat-dialog-actions>
