@@ -15,6 +15,7 @@ public class Emergency
     public DateTime? EndedAt { get; set; }
 
     public EmergencyStatus Status { get; set; }
+    public string Einsatzart { get; set; } = "Sonstiges";
 
     public int? LocationId { get; set; }
     public Location? Location { get; set; }
