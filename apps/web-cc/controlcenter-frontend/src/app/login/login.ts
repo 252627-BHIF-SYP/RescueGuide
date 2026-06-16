@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -15,23 +16,30 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class Login {
-  username = '';
-  password = '';
+  username = signal('');
+  password = signal('');
   error = signal('');
+  hidePassword = signal(true);
 
   private auth = inject(AuthService);
   private router = inject(Router);
 
   onLogin() {
-    this.auth.login(this.username, this.password).subscribe({
+    if (!this.username() || !this.password()) {
+      this.error.set('Bitte füllen Sie alle Felder aus.');
+      return;
+    }
+
+    this.auth.login(this.username(), this.password()).subscribe({
       next: () => this.router.navigate(['/emergency-page']),
-      error: () => this.error.set('Login fehlgeschlagen')
+      error: () => this.error.set('Login fehlgeschlagen. Bitte Daten prüfen.')
     });
   }
 

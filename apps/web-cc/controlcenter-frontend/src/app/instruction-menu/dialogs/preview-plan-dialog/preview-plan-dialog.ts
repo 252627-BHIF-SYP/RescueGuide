@@ -1,20 +1,19 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatDivider } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon'; // Neu importiert für UI-Icons
 
 @Component({
   selector: 'preview-plan-dialog',
   templateUrl: './preview-plan-dialog.html',
   styleUrl: './preview-plan-dialog.scss',
+  standalone: true,
   imports: [
+    CommonModule,
     MatDialogModule,
-    MatButton,
-    MatListModule,
-    MatDivider,
-    CommonModule
+    MatButtonModule,
+    MatIconModule
   ]
 })
 export class PreviewPlanDialog {

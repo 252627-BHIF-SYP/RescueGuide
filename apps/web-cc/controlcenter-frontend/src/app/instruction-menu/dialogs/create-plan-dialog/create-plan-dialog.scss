@@ -1,7 +1,230 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2b2d42;
+  padding: 20px 24px 10px 24px;
+  margin: 0;
+  border-bottom: 1px solid #f1f3f5;
+
+  .title-icon {
+    color: #e63946; // RescueGuide Rot
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+  }
+}
+
+.custom-dialog-content {
+  padding: 20px 24px !important;
+  max-height: 75vh;
+}
+
+// Grid Layout für Zwei-Spalten-Ansicht auf Desktop
+.dialog-form-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 28px;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
 .full-width {
   width: 100%;
 }
 
-.read-only-field .mat-input-element {
-  color: rgba(0, 0, 0, 0.6);
+// Meta Info Box
+.meta-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  margin-bottom: 4px;
+}
+
+// Spezielles Styling für gesperrte Form-Fields
+::v-deep .read-only-field {
+  .mat-mdc-text-field-wrapper {
+    background-color: #f8f9fa !important;
+  }
+  .mat-mdc-form-field-flex {
+    cursor: not-allowed;
+  }
+  input[readonly] {
+    color: #6c757d !important;
+  }
+  mat-icon[matPrefix] {
+    color: #94a3b8 !important;
+  }
+}
+
+::v-deep mat-form-field {
+  mat-icon[matPrefix] {
+    color: #7d8597;
+    margin-right: 4px;
+  }
+}
+
+.inline-info-card {
+  display: flex;
+  gap: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 8px;
+
+  mat-icon {
+    color: #0284c7;
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.4;
+  }
+}
+
+// Rechte Spalte: Header und Selection-List
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2b2d42;
+  }
+
+  .add-inline-measure-btn {
+    border-color: #cbd5e1;
+    color: #475569;
+    font-size: 0.85rem;
+    padding: 0 10px;
+    height: 32px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    &:hover {
+      border-color: #e63946;
+      color: #e63946;
+      background-color: #fff5f5;
+    }
+  }
+}
+
+.selection-list-container {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+// Custom Styling der Angular Material Selection Options
+.custom-select-option {
+  border-bottom: 1px solid #f1f3f5;
+  transition: background-color 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .option-icon {
+    color: #94a3b8;
+    margin-right: 8px;
+  }
+
+  .measure-title {
+    font-weight: 500;
+    color: #334155;
+  }
+
+  // Zustand: Selektiert
+  &.mat-mdc-list-option-selected {
+    background-color: #fff5f5 !important;
+
+    .measure-title {
+      color: #e63946;
+      font-weight: 600;
+    }
+    .option-icon {
+      color: #e63946;
+    }
+  }
+}
+
+.empty-state-nested {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 20px;
+  color: #94a3b8;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  span {
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+}
+
+// Actions Footer
+.dialog-actions-row {
+  padding: 16px 24px 20px 24px !important;
+  border-top: 1px solid #f1f3f5;
+  gap: 8px;
+  margin: 0;
+
+  .cancel-btn {
+    color: #64748b;
+    border-radius: 8px;
+  }
+
+  .submit-btn {
+    background-color: #e63946 !important;
+    color: white !important;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-weight: 600;
+
+    &[disabled] {
+      background-color: #f1f3f5 !important;
+      color: #94a3b8 !important;
+    }
+
+    mat-icon {
+      margin-right: 4px;
+    }
+  }
 }

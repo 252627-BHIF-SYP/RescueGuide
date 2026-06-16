@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon'; // Neu für Symbole
 
 @Component({
   selector: 'app-signup',
@@ -15,20 +16,28 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './signup.html',
+  styleUrl: './signup.scss' // Hier verknüpfen wir die SCSS-Datei explizit
 })
 export class Signup {
-  username = '';
-  password = '';
+  username = signal('');
+  password = signal('');
   error = signal('');
+  hidePassword = signal(true); // Passwort-Sichtbarkeit umschalten
 
   private auth = inject(AuthService);
   private router = inject(Router);
 
   onSignup() {
-    this.auth.register(this.username, this.password).subscribe({
+    if (!this.username() || !this.password()) {
+      this.error.set('Bitte füllen Sie alle Felder aus.');
+      return;
+    }
+
+    this.auth.register(this.username(), this.password()).subscribe({
       next: () => this.router.navigate(['/login']),
       error: err => this.error.set(err.error || 'Registrierung fehlgeschlagen')
     });

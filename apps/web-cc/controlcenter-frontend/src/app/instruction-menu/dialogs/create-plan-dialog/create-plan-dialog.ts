@@ -1,11 +1,12 @@
 import { Component, Inject, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon'; // Neu hinzugefügt
 import { InstructionMenuService, Measure } from '../../../services/instruction-menu.service';
 import { CreateMeasureDialog } from '../create-measure-dialog/create-measure-dialog';
 import { Subscription } from 'rxjs';
@@ -14,14 +15,16 @@ import { Subscription } from 'rxjs';
   selector: 'create-plan-dialog',
   templateUrl: './create-plan-dialog.html',
   styleUrl: './create-plan-dialog.scss',
+  standalone: true,
   imports: [
-    MatDialogModule,
+    CommonModule,
     ReactiveFormsModule,
-    MatButton,
+    MatDialogModule,
+    MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatListModule,
-    CommonModule
+    MatIconModule
   ]
 })
 export class CreatePlanDialog implements OnInit, OnDestroy {
@@ -46,7 +49,6 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Reagiere auf Änderungen der verfügbaren Maßnahmen auch während der Dialog offen ist, um die Liste aktuell zu halten
     this.subscription = this.service.availableMeasures$.subscribe(measures => {
       this.availableMeasures = measures;
       this.cdr.markForCheck();
@@ -55,7 +57,6 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();
-    // Rollback aller temporären Maßnahmen, falls der Dialog geschlossen wird ohne zu speichern
     if (!this.isSubmitted) {
       this.tempMeasureIds.forEach(id => this.service.rollbackMeasure(id));
     }
@@ -68,10 +69,9 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newMeasure = this.service.createMeasure(result.name, result.description);
+        const newMeasure = this.service.createMeasure(result.name, result.description, result.imageUrl);
         this.tempMeasureIds.push(newMeasure.id);
-        
-        // Die neue Maßnahme automatisch zur Auswahl hinzufügen
+
         const currentSelected = this.planForm.get('selectedMeasures')?.value || [];
         this.planForm.get('selectedMeasures')?.setValue([...currentSelected, newMeasure]);
         this.cdr.markForCheck();

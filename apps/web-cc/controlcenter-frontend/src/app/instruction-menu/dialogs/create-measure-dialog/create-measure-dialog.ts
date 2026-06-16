@@ -1,22 +1,25 @@
 import { Component, Inject, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon'; // Neu hinzugefügt für Icons
 
 @Component({
   selector: 'create-measure-dialog',
   templateUrl: './create-measure-dialog.html',
   styleUrl: './create-measure-dialog.scss',
+  standalone: true, // Gewährleistet sauberes Standalone-Verhalten
   imports: [
     CommonModule,
     MatDialogModule,
     ReactiveFormsModule,
-    MatButton,
+    MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatIconModule
   ]
 })
 export class CreateMeasureDialog {

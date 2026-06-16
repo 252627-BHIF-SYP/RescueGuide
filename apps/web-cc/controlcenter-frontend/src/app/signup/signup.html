@@ -1,32 +1,69 @@
-<div class="login-wrapper">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Registrieren</mat-card-title>
-    </mat-card-header>
+<div class="signup-wrapper">
+  <div class="signup-container">
 
-    <mat-card-content>
-      <div class="form-container">
-        <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
-          <input matInput [(ngModel)]="username" placeholder="Dein Name" autocomplete="off">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Passwort</mat-label>
-          <input matInput type="password" [(ngModel)]="password" (keyup.enter)="onSignup()">
-        </mat-form-field>
-
-        @if (error()) {
-          <p class="error-message">{{ error() }}</p>
-        }
+    <div class="brand-section">
+      <div class="logo-icon">
+        <mat-icon>person_add</mat-icon>
       </div>
-    </mat-card-content>
+      <h1>Konto erstellen</h1>
+      <br>
+      <p>RescueGuide Leitstellen-Portal</p>
+    </div>
 
-    <mat-card-actions align="end">
-      <button mat-raised-button color="primary" (click)="onSignup()">
-        Registrieren
-      </button>
-      <button mat-button color="accent" (click)="goToLogin()">Schon Account? Login</button>
-    </mat-card-actions>
-  </mat-card>
+    <mat-card class="signup-card" appearance="outlined">
+      <mat-card-content>
+        <form (ngSubmit)="onSignup()" class="form-container">
+
+          <mat-form-field appearance="outline">
+            <mat-label>Benutzername / Leitstellen-ID</mat-label>
+            <mat-icon matPrefix>badge</mat-icon>
+            <input matInput
+                   [ngModel]="username()"
+                   (ngModelChange)="username.set($event)"
+                   name="username"
+                   autocomplete="off"
+                   required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Passwort</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input matInput
+                   [type]="hidePassword() ? 'password' : 'text'"
+                   [ngModel]="password()"
+                   (ngModelChange)="password.set($event)"
+                   name="password"
+                   required>
+            <button mat-icon-button matSuffix
+                    type="button"
+                    (click)="hidePassword.set(!hidePassword())"
+                    [attr.aria-label]="'Passwort anzeigen'"
+                    [attr.aria-pressed]="!hidePassword()">
+              <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          @if (error()) {
+            <div class="error-box">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <div class="action-container">
+            <button mat-flat-button color="primary" class="submit-btn" type="submit">
+              <mat-icon>how_to_reg</mat-icon>
+              Registrieren
+            </button>
+
+            <button mat-button class="login-btn" type="button" (click)="goToLogin()">
+              Schon ein Account? Zum Login
+            </button>
+          </div>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
 </div>
