@@ -6,7 +6,7 @@ import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angu
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon'; // Import ist da!
 import { InstructionMenuService, Measure } from '../../../services/instruction-menu.service';
 import { CreateMeasureDialog } from '../create-measure-dialog/create-measure-dialog';
 import { Subscription } from 'rxjs';
@@ -24,7 +24,7 @@ import { Subscription } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatListModule,
-    MatIconModule
+    MatIconModule // Im Array vorhanden!
   ]
 })
 export class CreatePlanDialog implements OnInit, OnDestroy {
@@ -51,7 +51,9 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription = this.service.availableMeasures$.subscribe(measures => {
       this.availableMeasures = measures;
-      this.cdr.markForCheck();
+      // detectChanges() stellt im Dialog-Kontext sicher, dass Kind-Elemente (wie mat-icon)
+      // sofort fehlerfrei gerendert werden, wenn asynchrone Daten eintreffen.
+      this.cdr.detectChanges();
     });
   }
 
@@ -74,7 +76,7 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
 
         const currentSelected = this.planForm.get('selectedMeasures')?.value || [];
         this.planForm.get('selectedMeasures')?.setValue([...currentSelected, newMeasure]);
-        this.cdr.markForCheck();
+        this.cdr.detectChanges(); // Auch hier Rendering erzwingen
       }
     });
   }
