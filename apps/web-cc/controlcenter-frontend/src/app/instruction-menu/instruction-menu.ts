@@ -1,4 +1,5 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -30,8 +31,10 @@ import { PreviewPlanDialog } from './dialogs/preview-plan-dialog/preview-plan-di
   templateUrl: './instruction-menu.html',
   styleUrl: './instruction-menu.scss',
 })
-export class InstructionMenu implements OnInit {
+export class InstructionMenu implements OnInit, OnDestroy {
   expandedDescriptions: { [key: number]: boolean } = {};
+
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private dialog: MatDialog,
@@ -43,7 +46,17 @@ export class InstructionMenu implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.service.availableMeasures$.subscribe(() => this.cdr.markForCheck())
+    );
+    this.subscriptions.add(
+      this.service.plans$.subscribe(() => this.cdr.markForCheck())
+    );
     this.service.fetchInitialData();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   get availableMeasures(): Measure[] {
