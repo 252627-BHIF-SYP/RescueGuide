@@ -16,24 +16,62 @@
   overflow: hidden;
 
   &.collapsed {
-    width: 64px;
+    width: 80px;
     
     .sidebar-header {
       justify-content: center;
+      padding: 12px 8px;
     }
     
     .sidebar-auth {
-      padding: 16px 4px;
+      padding: 16px 8px;
+
+      .user-info {
+        justify-content: center;
+      }
+
+      .auth-btn {
+        width: 48px !important;
+        min-width: 48px !important;
+        height: 48px !important;
+        padding: 0 !important;
+        border-radius: 12px;
+        margin: 0 auto;
+
+        ::ng-deep .mdc-button__label {
+          justify-content: center;
+          gap: 0 !important;
+        }
+
+        mat-icon {
+          margin: 0 !important;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
     }
     
     .nav-item {
-      padding-left: 0;
-      padding-right: 0;
-      min-width: 48px;
+      padding: 0 !important;
+      width: 48px !important;
+      min-width: 48px !important;
+      height: 48px !important;
+      margin: 0 auto;
       justify-content: center;
       
       ::ng-deep .mdc-button__label {
         justify-content: center;
+        gap: 0 !important;
+      }
+
+      mat-icon {
+        margin: 0 !important;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
       }
     }
   }

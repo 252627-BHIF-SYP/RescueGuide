@@ -7,7 +7,7 @@
 .checklist-card {
   height: 100%;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   background: var(--surface);
   border: 1px solid var(--border-color);
   overflow-y: auto;
@@ -55,7 +55,7 @@
   }
 
   ::ng-deep .mdc-label {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-main);
     white-space: normal;
     line-height: 1.4;
