@@ -11,4 +11,5 @@ public class Measure
     public string? ImageUrl { get; set; }
 
     public ICollection<Plan> Plans { get; set; } = [];
+    public ICollection<PlanMeasure> PlanMeasures { get; set; } = [];
 }

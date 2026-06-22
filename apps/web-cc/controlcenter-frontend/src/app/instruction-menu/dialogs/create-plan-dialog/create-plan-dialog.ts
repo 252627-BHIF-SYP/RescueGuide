@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon'; // Import ist da!
+import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag } from '@angular/cdk/drag-drop';
 import { InstructionMenuService, Measure } from '../../../services/instruction-menu.service';
 import { CreateMeasureDialog } from '../create-measure-dialog/create-measure-dialog';
 import { Subscription } from 'rxjs';
@@ -24,15 +25,19 @@ import { Subscription } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatListModule,
-    MatIconModule // Im Array vorhanden!
+    MatIconModule,
+    CdkDropList,
+    CdkDrag
   ]
 })
 export class CreatePlanDialog implements OnInit, OnDestroy {
   planForm: FormGroup;
   availableMeasures: Measure[] = [];
+  orderedSelectedMeasures: Measure[] = [];
   private tempMeasureIds: number[] = [];
   private isSubmitted = false;
   private subscription?: Subscription;
+  private formSubscription?: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -42,23 +47,38 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
     public service: InstructionMenuService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    this.orderedSelectedMeasures = [...(data?.plan?.measures || [])];
     this.planForm = this.fb.group({
       name: [data?.plan?.name || '', Validators.required],
-      selectedMeasures: [data?.plan?.measures || []]
+      selectedMeasures: [this.orderedSelectedMeasures]
     });
   }
 
   ngOnInit() {
     this.subscription = this.service.availableMeasures$.subscribe(measures => {
       this.availableMeasures = measures;
-      // detectChanges() stellt im Dialog-Kontext sicher, dass Kind-Elemente (wie mat-icon)
-      // sofort fehlerfrei gerendert werden, wenn asynchrone Daten eintreffen.
       this.cdr.detectChanges();
+    });
+
+    this.formSubscription = this.planForm.get('selectedMeasures')?.valueChanges.subscribe((selected: Measure[]) => {
+      if (!selected) return;
+      
+      // Remove deselected measures
+      this.orderedSelectedMeasures = this.orderedSelectedMeasures.filter(m => 
+        selected.some(s => this.compareMeasures(s, m))
+      );
+      
+      // Add newly selected measures at the end
+      const newMeasures = selected.filter(s => 
+        !this.orderedSelectedMeasures.some(m => this.compareMeasures(s, m))
+      );
+      this.orderedSelectedMeasures.push(...newMeasures);
     });
   }
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();
+    this.formSubscription?.unsubscribe();
     if (!this.isSubmitted) {
       this.tempMeasureIds.forEach(id => this.service.rollbackMeasure(id));
     }
@@ -88,8 +108,12 @@ export class CreatePlanDialog implements OnInit, OnDestroy {
     this.isSubmitted = true;
     this.dialogRef.close({
       name: this.planForm.get('name')?.value,
-      selectedMeasures: this.planForm.get('selectedMeasures')?.value
+      selectedMeasures: this.orderedSelectedMeasures
     });
+  }
+
+  drop(event: CdkDragDrop<Measure[]>) {
+    moveItemInArray(this.orderedSelectedMeasures, event.previousIndex, event.currentIndex);
   }
 
   compareMeasures(o1: Measure, o2: Measure): boolean {

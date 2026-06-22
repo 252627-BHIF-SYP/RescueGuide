@@ -8,4 +8,5 @@ public class Plan
     public string? Author { get; set; }
 
     public ICollection<Measure> Measures { get; set; } = [];
+    public ICollection<PlanMeasure> PlanMeasures { get; set; } = [];
 }

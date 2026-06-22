@@ -47,6 +47,18 @@
         </button>
       </div>
 
+      <div class="ordered-measures-container" *ngIf="orderedSelectedMeasures.length > 0">
+        <h4>Ausgewählte Reihenfolge (Drag & Drop)</h4>
+        <div cdkDropList class="drag-drop-list" (cdkDropListDropped)="drop($event)">
+          @for (measure of orderedSelectedMeasures; track measure.id) {
+            <div class="drag-drop-box" cdkDrag>
+              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+              <span class="measure-title">{{ measure.name }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
       <div class="selection-list-container">
         <mat-selection-list formControlName="selectedMeasures" [compareWith]="compareMeasures" color="primary">
           @for (measure of availableMeasures; track measure.id) {

@@ -20,6 +20,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserControlCenter> UserControlCenters { get; set; }
     public DbSet<Measure> Measures { get; set; }
     public DbSet<Plan> Plans { get; set; }
+    public DbSet<PlanMeasure> PlanMeasures { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,23 @@ public class ApplicationDbContext : DbContext
             .WithOne(p => p.Emergency)
             .HasForeignKey<EmergencyProtocol>(p => p.EmergencyId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Plan>()
+            .HasMany(p => p.Measures)
+            .WithMany(m => m.Plans)
+            .UsingEntity<PlanMeasure>(
+                j => j
+                    .HasOne(pm => pm.Measure)
+                    .WithMany(m => m.PlanMeasures)
+                    .HasForeignKey(pm => pm.MeasureId),
+                j => j
+                    .HasOne(pm => pm.Plan)
+                    .WithMany(p => p.PlanMeasures)
+                    .HasForeignKey(pm => pm.PlanId),
+                j =>
+                {
+                    j.HasKey(t => new { t.PlanId, t.MeasureId });
+                });
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
