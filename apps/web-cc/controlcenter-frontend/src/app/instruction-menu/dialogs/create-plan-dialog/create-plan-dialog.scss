@@ -1,13 +1,14 @@
 .dialog-title {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1.4rem;
+  gap: 12px;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-main);
-  padding: 20px 24px 10px 24px;
+  color: var(--primary-hover);
+  background-color: var(--primary-light);
+  padding: 20px 24px;
   margin: 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(163, 29, 88, 0.1);
 
   .title-icon {
     color: var(--primary-color);
@@ -72,7 +73,7 @@
 
 ::v-deep mat-form-field {
   mat-icon[matPrefix] {
-    color: #7d8597;
+    color: var(--text-muted);
     margin-right: 4px;
   }
 }
@@ -80,8 +81,8 @@
 .inline-info-card {
   display: flex;
   gap: 10px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
   padding: 12px;
   border-radius: 8px;
 
@@ -96,7 +97,7 @@
   p {
     margin: 0;
     font-size: 0.85rem;
-    color: #475569;
+    color: var(--text-main);
     line-height: 1.4;
   }
 }
@@ -112,12 +113,12 @@
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
-    color: #2b2d42;
+    color: var(--text-main);
   }
 
   .add-inline-measure-btn {
-    border-color: #cbd5e1;
-    color: #475569;
+    border-color: var(--border-color);
+    color: var(--text-main);
     font-size: 0.85rem;
     padding: 0 10px;
     height: 32px;
@@ -144,13 +145,13 @@
     margin: 0 0 8px 0;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #475569;
+    color: var(--text-muted);
   }
 
   .drag-drop-list {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
     min-height: 40px;
     max-height: 200px;
     overflow-y: auto;
@@ -158,10 +159,10 @@
 
   .drag-drop-box {
     padding: 10px 12px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    background: #ffffff;
+    background: var(--surface);
     gap: 8px;
     cursor: grab;
 
@@ -174,7 +175,7 @@
     }
 
     .drag-handle {
-      color: #94a3b8;
+      color: var(--text-muted);
       cursor: grab;
       font-size: 20px;
       width: 20px;
@@ -187,7 +188,7 @@
 
     .measure-title {
       font-weight: 500;
-      color: #334155;
+      color: var(--text-main);
     }
   }
 
@@ -208,16 +209,16 @@
 }
 
 .selection-list-container {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   max-height: 200px;
   overflow-y: auto;
-  background-color: #ffffff;
+  background-color: var(--surface);
 }
 
 // Custom Styling der Angular Material Selection Options
 .custom-select-option {
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid var(--border-color);
   transition: background-color 0.15s ease;
 
   &:last-child {
@@ -225,13 +226,13 @@
   }
 
   .option-icon {
-    color: #94a3b8;
+    color: var(--text-muted);
     margin-right: 8px;
   }
 
   .measure-title {
     font-weight: 500;
-    color: #334155;
+    color: var(--text-main);
   }
 
   // Zustand: Selektiert
@@ -255,7 +256,7 @@
   justify-content: center;
   gap: 8px;
   padding: 40px 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
 
   mat-icon {
     font-size: 32px;
@@ -272,12 +273,12 @@
 // Actions Footer
 .dialog-actions-row {
   padding: 16px 24px 20px 24px !important;
-  border-top: 1px solid #f1f3f5;
+  border-top: 1px solid var(--border-color);
   gap: 8px;
   margin: 0;
 
   .cancel-btn {
-    color: #64748b;
+    color: var(--text-muted);
     border-radius: 8px;
   }
 

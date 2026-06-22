@@ -38,6 +38,12 @@ body {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+/* Modernize Dialogs globally */
+.mdc-dialog__surface {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
 .preview-plan-dialog .mat-mdc-dialog-container,
 .preview-plan-dialog .mat-dialog-container {
   max-height: 85vh;
