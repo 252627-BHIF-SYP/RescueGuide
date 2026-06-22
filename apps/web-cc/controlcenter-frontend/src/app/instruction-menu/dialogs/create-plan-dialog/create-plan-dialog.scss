@@ -137,10 +137,80 @@
   }
 }
 
+.ordered-measures-container {
+  margin-bottom: 16px;
+
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .drag-drop-list {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    min-height: 40px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .drag-drop-box {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    gap: 8px;
+    cursor: grab;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    .drag-handle {
+      color: #94a3b8;
+      cursor: grab;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    .measure-title {
+      font-weight: 500;
+      color: #334155;
+    }
+  }
+
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+  }
+
+  .cdk-drag-placeholder {
+    opacity: 0.3;
+  }
+
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
 .selection-list-container {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  max-height: 280px;
+  max-height: 200px;
   overflow-y: auto;
   background-color: #ffffff;
 }
