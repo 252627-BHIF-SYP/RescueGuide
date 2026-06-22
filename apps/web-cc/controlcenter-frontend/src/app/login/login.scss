@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #fcfcfc 0%, #fff5f5 100%);
+  background: var(--bg-main);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -24,12 +24,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #e63946;
+    background-color: var(--primary-color);
     color: white;
     padding: 14px;
     border-radius: 50%;
     margin-bottom: 12px;
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    box-shadow: 0 4px 15px rgba(163, 29, 88, 0.3);
 
     mat-icon {
       font-size: 32px;
@@ -42,7 +42,7 @@
     font-size: 2.2rem;
     font-weight: 800;
     margin: 0;
-    color: #e63946;
+    color: var(--primary-color);
     letter-spacing: -0.5px;
   }
 
@@ -55,10 +55,10 @@
 }
 
 .login-card {
-  border-radius: 16px;
-  border: 1px solid rgba(230, 57, 70, 0.15);
-  background: #ffffff;
-  box-shadow: 0 10px 25px rgba(230, 57, 70, 0.05), 0 5px 10px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
   padding: 12px;
 }
 
@@ -81,11 +81,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #fff5f5;
-  border: 1px solid #ffe3e3;
-  color: #e63946;
+  background-color: var(--primary-light);
+  border: 1px solid rgba(163, 29, 88, 0.2);
+  color: var(--primary-color);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 600;
 
@@ -106,25 +106,25 @@
     padding: 24px;
     font-size: 1rem;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    background-color: #e63946;
+    background-color: var(--primary-color);
     color: white;
 
     &:hover {
-      background-color: #d62839;
+      background-color: var(--primary-hover);
     }
   }
 
   .signup-btn {
     font-size: 0.85rem;
-    color: #6c757d;
+    color: var(--text-muted);
 
     &:hover {
-      color: #e63946;
+      color: var(--primary-color);
     }
   }
 }

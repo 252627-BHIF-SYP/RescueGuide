@@ -4,13 +4,13 @@
   gap: 10px;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #2b2d42;
+  color: var(--text-main);
   padding: 20px 24px 12px 24px;
   margin: 0;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid var(--border-color);
 
   .title-icon {
-    color: #e63946; // Signalrot
+    color: var(--primary-color);
     font-size: 28px;
     height: 28px;
     width: 28px;
@@ -96,7 +96,7 @@
 .step-badge {
   width: 24px;
   height: 24px;
-  background-color: #e63946; // Signalrot
+  background-color: var(--primary-color);
   color: #ffffff;
   border-radius: 50%;
   display: flex;
@@ -106,7 +106,7 @@
   font-size: 0.85rem;
   flex-shrink: 0;
   margin-top: 14px;
-  box-shadow: 0 0 0 4px #ffffff, 0 2px 4px rgba(230, 57, 70, 0.2);
+  box-shadow: 0 0 0 4px #ffffff, 0 2px 4px rgba(163, 29, 88, 0.2);
 }
 
 .step-card {
@@ -135,7 +135,7 @@
     margin: 0 0 6px 0;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #e63946; // Titel rot
+    color: var(--primary-color);
   }
 
   .measure-description {
@@ -202,13 +202,13 @@
   margin: 0;
 
   .close-btn {
-    background-color: #e63946 !important;
+    background-color: var(--primary-color) !important;
     color: #ffffff !important;
-    border-radius: 8px !important;
+    border-radius: var(--radius-sm) !important;
     font-weight: 600 !important;
 
     &:hover {
-      background-color: #d62839 !important;
+      background-color: var(--primary-hover) !important;
     }
 
     mat-icon {

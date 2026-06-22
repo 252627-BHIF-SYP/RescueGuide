@@ -1,16 +1,29 @@
-<div class="video-call">
+<mat-card class="video-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>videocam</mat-icon>
+      Live-Videoübertragung
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content class="video-card-content">
+    <div *ngIf="incomingFrom" class="incoming" style="margin-bottom: 16px;">
+      <p>Eingehender Notruf-Stream von {{ incomingFrom }}</p>
+      <div style="display: flex; gap: 8px;">
+        <button mat-raised-button color="primary" (click)="acceptCall()">Annehmen</button>
+        <button mat-stroked-button color="warn" (click)="rejectCall()">Ablehnen</button>
+      </div>
+    </div>
 
-  <div *ngIf="incomingFrom" class="incoming">
-    <p>Eingehender Notruf-Stream von {{ incomingFrom }}</p>
-    <button mat-raised-button color="primary" (click)="acceptCall()">Annehmen</button>
-    <button mat-stroked-button color="warn" (click)="rejectCall()">Ablehnen</button>
-  </div>
-
-  <div class="videos" [style.display]="activeCallId ? 'block' : 'none'">
-    <video #remoteVideo autoplay playsinline class="remote"></video>
-  </div>
-
-  <div class="controls" *ngIf="activeCallId">
-    <button mat-stroked-button color="warn" (click)="endCall()">Einsatz Beenden</button>
-  </div>
-</div>
+    <div class="video-wrapper">
+      <div class="feed-overlay">
+        <span class="live-badge" *ngIf="activeCallId">LIVE</span>
+        <span class="feed-status">
+          {{ activeCallId ? 'Verbunden mit ' + activeCallId : 'Warte auf Videosignal...' }}
+        </span>
+      </div>
+      
+      <video #remoteVideo autoplay playsinline class="remote-feed" [style.opacity]="activeCallId ? '1' : '0'"></video>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,6 +1,154 @@
-.status-badge {
-  background-color: #fff3e0;
-  border: 1px solid #ff9800;
-  border-radius: 16px;
-  padding: 4px 12px;
+:host {
+  display: flex;
+  height: 100%;
+  z-index: 100;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 100%;
+  background-color: var(--surface);
+  border-right: 1px solid var(--border-color-dark);
+  box-shadow: var(--shadow-sm);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &.collapsed {
+    width: 64px;
+    
+    .sidebar-header {
+      justify-content: center;
+    }
+    
+    .sidebar-auth {
+      padding: 16px 4px;
+    }
+    
+    .nav-item {
+      padding-left: 0;
+      padding-right: 0;
+      min-width: 48px;
+      justify-content: center;
+      
+      ::ng-deep .mdc-button__label {
+        justify-content: center;
+      }
+    }
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  min-height: 64px;
+  box-sizing: border-box;
+
+  .sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.sidebar-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 16px;
+  gap: 12px;
+  min-height: 80px;
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-start;
+    
+    .user-icon {
+      color: var(--text-muted);
+    }
+    .user-name {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      flex: 1;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .auth-btn {
+    width: 100%;
+    transition: all 0.2s;
+    
+    &.icon-only {
+      min-width: 40px !important;
+      padding: 0;
+      border-radius: 50%;
+      height: 40px;
+      
+      ::ng-deep .mat-mdc-button-touch-target {
+        display: none;
+      }
+    }
+  }
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--border-color-dark);
+  margin: 0;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 8px;
+  gap: 8px;
+  flex: 1;
+
+  .nav-item {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: left;
+    border-radius: 8px;
+    height: 48px;
+    
+    ::ng-deep .mdc-button__label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    mat-icon {
+      margin-right: 0;
+    }
+
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    
+    &.active {
+      background-color: var(--primary-light);
+      color: var(--primary-color);
+      font-weight: 500;
+      
+      mat-icon {
+        color: var(--primary-color);
+      }
+    }
+    
+    &.emergency-item {
+      margin-top: auto;
+    }
+  }
 }

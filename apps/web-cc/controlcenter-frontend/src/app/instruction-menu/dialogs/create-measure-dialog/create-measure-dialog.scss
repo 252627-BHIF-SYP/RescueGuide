@@ -4,12 +4,12 @@
   gap: 10px;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #2b2d42;
+  color: var(--text-main);
   padding: 20px 24px 10px 24px;
   margin: 0;
 
   .title-icon {
-    color: #e63946; // Rescue-Rot
+    color: var(--primary-color);
     font-size: 28px;
     height: 28px;
     width: 28px;
@@ -45,16 +45,16 @@
 // Spezielles Styling für gesperrte, informative Form-Fields
 ::v-deep .read-only-field {
   .mat-mdc-text-field-wrapper {
-    background-color: #f8f9fa !important;
+    background-color: var(--bg-main) !important;
   }
   .mat-mdc-form-field-flex {
     cursor: not-allowed;
   }
   input[readonly] {
-    color: #6c757d !important;
+    color: var(--text-muted) !important;
   }
   mat-icon[matPrefix] {
-    color: #94a3b8 !important;
+    color: var(--text-muted) !important;
   }
 }
 
@@ -85,12 +85,12 @@
     }
 
     &.has-file {
-      border-color: rgba(230, 57, 70, 0.4);
-      background-color: #fff5f5;
-      color: #e63946;
+      border-color: rgba(163, 29, 88, 0.4);
+      background-color: var(--primary-light);
+      color: var(--primary-color);
 
       mat-icon {
-        color: #e63946;
+        color: var(--primary-color);
       }
     }
   }
@@ -132,9 +132,9 @@
   }
 
   .submit-btn {
-    background-color: #e63946 !important;
+    background-color: var(--primary-color) !important;
     color: white !important;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 0 20px;
     font-weight: 600;
 

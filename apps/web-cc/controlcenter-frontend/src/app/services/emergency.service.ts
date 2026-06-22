@@ -136,6 +136,12 @@ export class EmergencyService implements OnDestroy {
           error: (err) => console.error('Error ending emergency', err)
         });
     }
+    this.isActive.set(false);
+    this.stopTimer();
+    this.resetTimer();
+    this.activeEmergencyId.set(null);
+    this.activeProtocolId.set(null);
+    this.protocol.set(this.getDefaultProtocol());
   }
 
   startTimer() {

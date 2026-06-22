@@ -4,13 +4,13 @@
   gap: 10px;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #2b2d42;
+  color: var(--text-main);
   padding: 20px 24px 10px 24px;
   margin: 0;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid var(--border-color);
 
   .title-icon {
-    color: #e63946; // RescueGuide Rot
+    color: var(--primary-color);
     font-size: 28px;
     height: 28px;
     width: 28px;
@@ -57,16 +57,16 @@
 // Spezielles Styling für gesperrte Form-Fields
 ::v-deep .read-only-field {
   .mat-mdc-text-field-wrapper {
-    background-color: #f8f9fa !important;
+    background-color: var(--bg-main) !important;
   }
   .mat-mdc-form-field-flex {
     cursor: not-allowed;
   }
   input[readonly] {
-    color: #6c757d !important;
+    color: var(--text-muted) !important;
   }
   mat-icon[matPrefix] {
-    color: #94a3b8 !important;
+    color: var(--text-muted) !important;
   }
 }
 
@@ -130,9 +130,9 @@
     }
 
     &:hover {
-      border-color: #e63946;
-      color: #e63946;
-      background-color: #fff5f5;
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      background-color: var(--primary-light);
     }
   }
 }
@@ -236,14 +236,14 @@
 
   // Zustand: Selektiert
   &.mat-mdc-list-option-selected {
-    background-color: #fff5f5 !important;
+    background-color: var(--primary-light) !important;
 
     .measure-title {
-      color: #e63946;
+      color: var(--primary-color);
       font-weight: 600;
     }
     .option-icon {
-      color: #e63946;
+      color: var(--primary-color);
     }
   }
 }
@@ -282,15 +282,15 @@
   }
 
   .submit-btn {
-    background-color: #e63946 !important;
+    background-color: var(--primary-color) !important;
     color: white !important;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 0 20px;
     font-weight: 600;
 
     &[disabled] {
-      background-color: #f1f3f5 !important;
-      color: #94a3b8 !important;
+      background-color: var(--border-color) !important;
+      color: var(--text-muted) !important;
     }
 
     mat-icon {

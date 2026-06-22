@@ -9,18 +9,18 @@ export class AuthService {
   private readonly STORAGE_KEY = 'user_name';
   private apiUrl = environment.apiUrl + '/auth'; 
 
-  userName = signal<string | null>(localStorage.getItem(this.STORAGE_KEY));
+  userName = signal<string | null>(sessionStorage.getItem(this.STORAGE_KEY));
 
   constructor(private http: HttpClient, private router: Router) {}
 
   login(name: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { name, password }).pipe(
       tap((res: any) => {
-        localStorage.setItem('token', res.token);
+        sessionStorage.setItem('token', res.token);
         // Username aus JWT extrahieren
         const payload = JSON.parse(atob(res.token.split('.')[1]));
         const username = payload['unique_name'] || payload['name'] || name;
-        localStorage.setItem(this.STORAGE_KEY, username);
+        sessionStorage.setItem(this.STORAGE_KEY, username);
         this.userName.set(username);
       })
     );
@@ -31,13 +31,13 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem(this.STORAGE_KEY);
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem(this.STORAGE_KEY);
     this.userName.set(null);
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token');
   }
 }

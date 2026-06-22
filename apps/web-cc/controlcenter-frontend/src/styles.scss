@@ -62,3 +62,37 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .preview-plan-dialog .mat-dialog-actions {
   flex-shrink: 0;
 }
+
+:root {
+  --bg-main: #f8f9fa;
+  --surface: #ffffff;
+  --border-color: #f1f3f5;
+  --border-color-dark: #e1e2e5;
+  --text-main: #2b2d42;
+  --text-muted: #6c757d;
+  --primary-color: #a31d58;
+  --primary-light: #fcf1f5;
+  --primary-hover: #8c164a;
+  --warn-color: #ff9800;
+  
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.04);
+}
+
+.modern-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.modern-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(163, 29, 88, 0.2);
+}

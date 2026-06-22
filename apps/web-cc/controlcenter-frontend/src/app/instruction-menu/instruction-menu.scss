@@ -1,8 +1,7 @@
 .container {
-  height: 93vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #fcfcfc;
 }
 
 .content {
@@ -10,7 +9,7 @@
   flex: 1;
   padding: 24px;
   gap: 24px;
-  background: linear-gradient(180deg, #ffffff 0%, #fff5f5 100%);
+  background: transparent;
   overflow-y: auto;
 }
 
@@ -23,10 +22,10 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
-  border: 1px solid rgba(230, 57, 70, 0.15);
-  background: #ffffff;
-  box-shadow: 0 10px 25px rgba(230, 57, 70, 0.03);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
 
   mat-card-header {
     padding: 16px 20px 8px 20px;
@@ -39,10 +38,10 @@
     gap: 10px;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #2b2d42;
+    color: var(--text-main);
 
     .title-icon {
-      color: #e63946; // Signalrot
+      color: var(--primary-color);
     }
   }
 
@@ -68,10 +67,10 @@
     height: auto !important;
     min-height: 56px;
     margin-bottom: 8px;
-    border: 1px solid #f1f3f5 !important;
-    border-radius: 8px !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
     transition: all 0.2s ease;
-    background-color: #ffffff;
+    background-color: var(--surface);
 
     .mdc-list-item__content {
       width: 100% !important;
@@ -79,8 +78,8 @@
     }
 
     &:hover {
-      background-color: #fff5f5 !important;
-      border-color: rgba(230, 57, 70, 0.2) !important;
+      background-color: var(--primary-light) !important;
+      border-color: rgba(225, 29, 72, 0.15) !important;
     }
   }
 }
@@ -99,13 +98,13 @@
 
   .plan-name {
     font-weight: 600;
-    color: #2b2d42;
+    color: var(--text-main);
     font-size: 1rem;
   }
 
   .plan-meta {
     font-size: 0.8rem;
-    color: #6c757d;
+    color: var(--text-muted);
     margin-top: 4px;
   }
 }
@@ -134,29 +133,29 @@
 
   .measure-name {
     font-weight: 600;
-    color: #2b2d42;
+    color: var(--text-main);
     font-size: 1rem;
   }
 
   .toggle-arrow {
-    color: #6c757d;
+    color: var(--text-muted);
     transition: color 0.2s;
   }
 
   &:hover .toggle-arrow {
-    color: #e63946;
+    color: var(--primary-color);
   }
 }
 
 .measure-description {
   margin-top: 12px;
   font-size: 0.9rem;
-  color: #4a4e69;
+  color: var(--text-main);
   line-height: 1.5;
-  background-color: #fafafa;
+  background-color: var(--bg-main);
   padding: 12px;
-  border-radius: 8px;
-  border-left: 4px solid #e63946; // Signalrot Kennzeichnung
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--primary-color);
 }
 
 .image-container {
@@ -194,15 +193,15 @@
   gap: 4px;
 
   button[mat-icon-button] {
-    color: #6c757d !important;
+    color: var(--text-muted) !important;
     transition: all 0.2s;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 
     &:hover {
-      color: #e63946 !important;
-      background-color: rgba(230, 57, 70, 0.05) !important;
+      color: var(--primary-color) !important;
+      background-color: var(--primary-light) !important;
     }
 
     &.btn-delete:hover {
@@ -213,15 +212,15 @@
 }
 
 .create-btn {
-  background-color: #e63946 !important;
+  background-color: var(--primary-color) !important;
   color: white !important;
   padding: 0 20px !important;
-  border-radius: 8px !important;
+  border-radius: var(--radius-sm) !important;
   font-weight: 600 !important;
-  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.15);
+  box-shadow: var(--shadow-sm);
 
   &:hover {
-    background-color: #d62839 !important;
+    background-color: var(--primary-hover) !important;
   }
 }
 

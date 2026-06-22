@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, inject, OnDestroy, computed, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
@@ -40,6 +41,8 @@ export class EmergencyPage implements OnInit, OnDestroy {
   latitude = computed(() => this.lastLocation()?.latitude ?? null);
   longitude = computed(() => this.lastLocation()?.longitude ?? null);
 
+  private router = inject(Router);
+
   durationSeconds = this.emergencyService.durationSeconds;
   emergencyData = this.emergencyService.protocol;
 
@@ -49,8 +52,6 @@ export class EmergencyPage implements OnInit, OnDestroy {
   private _mapUrl: SafeResourceUrl | null = null;
 
   ngOnInit() {
-    this.emergencyService.resetTimer();
-    this.emergencyService.startTimer();
     this.fetchLatestLocation();
     this.pollingInterval = setInterval(() => this.fetchLatestLocation(), 5000);
   }
@@ -59,7 +60,6 @@ export class EmergencyPage implements OnInit, OnDestroy {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
-    this.emergencyService.stopTimer();
   }
 
   endCall() {
@@ -69,6 +69,7 @@ export class EmergencyPage implements OnInit, OnDestroy {
     
     // Protokoll final speichern und Notfall beenden
     this.emergencyService.endEmergency();
+    this.router.navigate(['/dashboard']);
   }
 
   fetchLatestLocation() {

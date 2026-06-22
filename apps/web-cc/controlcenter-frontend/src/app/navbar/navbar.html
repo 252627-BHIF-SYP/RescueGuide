@@ -1,21 +1,60 @@
-<mat-toolbar color="primary">
-  @if (auth.isLoggedIn()) {
-    <button mat-button routerLink="/dashboard">Dashboard</button>
-  }
-  <button mat-button routerLink="/instruction-menu">Instruction Menu</button>
-  @if (emergencyService.isActive()) {
-    <button mat-button routerLink="/emergency-page">Emergency Page</button>
-  }
+<div class="sidebar" [class.collapsed]="!isExpanded">
+  <div class="sidebar-header">
+    @if (isExpanded) {
+      <span class="sidebar-title">Control Center</span>
+    }
+    <button mat-icon-button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar" [title]="isExpanded ? 'Einklappen' : 'Ausklappen'">
+      <mat-icon>{{ isExpanded ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+  </div>
 
-  <span style="flex: 1 1 auto;"></span>
-
-  @if (auth.userName()) {
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <mat-icon>person</mat-icon>
-      <span>{{ auth.userName() }}</span>
-      <button mat-icon-button (click)="logout()">
+  <div class="sidebar-auth">
+    @if (auth.isLoggedIn()) {
+      <div class="user-info">
+        <mat-icon class="user-icon">person</mat-icon>
+        @if (isExpanded) {
+          <span class="user-name">{{ auth.userName() }}</span>
+        }
+      </div>
+      <button mat-flat-button color="warn" class="auth-btn" (click)="logout()" [title]="!isExpanded ? 'Abmelden' : ''">
         <mat-icon>logout</mat-icon>
+        @if (isExpanded) { <span>Abmelden</span> }
       </button>
-    </div>
-  }
-</mat-toolbar>
+    } @else {
+      <button mat-flat-button color="primary" class="auth-btn" routerLink="/login" [title]="!isExpanded ? 'Anmelden' : ''">
+        <mat-icon>login</mat-icon>
+        @if (isExpanded) { <span>Anmelden</span> }
+      </button>
+    }
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sidebar-nav">
+    @if (auth.isLoggedIn()) {
+      <button mat-button class="nav-item" routerLink="/dashboard" routerLinkActive="active" [title]="!isExpanded ? 'Dashboard' : ''">
+        <mat-icon>dashboard</mat-icon>
+        @if (isExpanded) { <span>Dashboard</span> }
+      </button>
+    }
+    
+    <button mat-button class="nav-item" routerLink="/instruction-menu" routerLinkActive="active" [title]="!isExpanded ? 'Instruction Menu' : ''">
+      <mat-icon>menu_book</mat-icon>
+      @if (isExpanded) { <span>Instruction Menu</span> }
+    </button>
+
+    @if (auth.isLoggedIn() && !emergencyService.isActive()) {
+      <button mat-button class="nav-item" style="color: #ff9800;" (click)="simulateEmergency()" [title]="!isExpanded ? 'Mock Notruf' : ''">
+        <mat-icon>bug_report</mat-icon>
+        @if (isExpanded) { <span>Mock Notruf</span> }
+      </button>
+    }
+
+    @if (emergencyService.isActive()) {
+      <button mat-flat-button color="warn" class="nav-item emergency-item" routerLink="/emergency-page" routerLinkActive="active" [title]="!isExpanded ? 'Emergency Page' : ''">
+        <mat-icon>emergency</mat-icon>
+        @if (isExpanded) { <span>Emergency Page</span> }
+      </button>
+    }
+  </div>
+</div>

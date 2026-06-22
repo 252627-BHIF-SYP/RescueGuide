@@ -100,6 +100,8 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
       try { this.callContext.acceptCall(); } catch (e) { /* best-effort */ }
 
       this.emergencyService.isActive.set(true);
+      this.emergencyService.resetTimer();
+      this.emergencyService.startTimer();
 
       // Alarm in der UI und im Service zurücksetzen
       this.alarmService.clearAlarm();
