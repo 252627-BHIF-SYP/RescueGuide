@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 import { CallContextService } from '../services/call-context.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-video-call',
@@ -30,6 +31,7 @@ export class VideoCall implements OnInit, OnDestroy {
 
   private signaling = inject(SignalingService);
   private callContext = inject(CallContextService);
+  private router = inject(Router);
 
   ngOnInit() {
     this.initSignaling();
@@ -228,6 +230,8 @@ export class VideoCall implements OnInit, OnDestroy {
       this.signaling.emit('call-end', { to: this.activeCallId, from: this.myId });
     }
     this.closeConnection();
+
+    this.router.navigate(['/dashboard']);
   }
 
   private closeConnection() {
