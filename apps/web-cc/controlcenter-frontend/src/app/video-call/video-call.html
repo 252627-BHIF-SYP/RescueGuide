@@ -6,11 +6,18 @@
     <button mat-stroked-button color="warn" (click)="rejectCall()">Ablehnen</button>
   </div>
 
-  <div class="videos" [style.display]="activeCallId ? 'block' : 'none'">
-    <video #remoteVideo autoplay playsinline class="remote"></video>
+  <div class="video-wrapper" [style.display]="activeCallId ? 'flex' : 'none'">
+
+    <div class="feed-overlay" *ngIf="activeCallId">
+      <span class="live-badge">LIVE</span>
+      <span class="feed-status">{{ activeCallId }}</span>
+    </div>
+
+    <video #remoteVideo autoplay playsinline controls class="remote-feed"></video>
   </div>
 
-  <div class="controls" *ngIf="activeCallId">
+  <div class="controls" *ngIf="activeCallId" style="margin-top: 16px;">
     <button mat-stroked-button color="warn" (click)="endCall()">Einsatz Beenden</button>
   </div>
+
 </div>

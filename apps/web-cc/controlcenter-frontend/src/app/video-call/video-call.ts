@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 import { CallContextService } from '../services/call-context.service';
+import {MatButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatButton],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss']
 })
