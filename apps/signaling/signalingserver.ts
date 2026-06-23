@@ -55,8 +55,19 @@ io.on("connection", (socket) => {
     });
 
     socket.on("ice-candidate", (payload) => {
+        console.log(`\n🧊 [SERVER] ICE Candidate empfangen!`);
+        console.log(`   Von: ${payload.from}`);
+        console.log(`   An:  ${payload.to}`);
+
         const target = registry.get(payload.to);
-        if (target) io.to(target).emit("ice-candidate", { from: payload.from, candidate: payload.candidate });
+        if (target) {
+            io.to(target).emit("ice-candidate", { from: payload.from, candidate: payload.candidate });
+            console.log(`   ✅ Weitergeleitet an Socket-ID: ${target}`);
+        } else {
+            console.log(`   ❌ FEHLER: Ziel '${payload.to}' ist nicht registriert!`);
+            // Lass uns mal schauen, wer überhaupt registriert ist:
+            console.log(`   Aktuelle Registry:`, Array.from(registry.keys()));
+        }
     });
 
     socket.on("call-rejected", (payload) => {
