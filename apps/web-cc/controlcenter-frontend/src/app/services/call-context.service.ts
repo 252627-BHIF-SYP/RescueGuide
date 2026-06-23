@@ -12,6 +12,9 @@ export class CallContextService {
   private acceptSubject = new Subject<void>();
   private acceptedFlag$ = new BehaviorSubject<boolean>(false);
 
+  // === NEU: Der globale Auffang-Korb für frühe ICE-Candidates ===
+  private earlyIceCandidates: any[] = [];
+
   // Called by signaling layer when an offer arrives
   setPendingOffer(sdp: any, from: string) {
     this.pendingOffer$.next({ sdp, from });
@@ -55,6 +58,20 @@ export class CallContextService {
   clearAcceptedFlag() {
     this.acceptedFlag$.next(false);
   }
+
+  // ========================================================
+  // NEUE METHODEN FÜR DIE WEBRTC ICE-CANDIDATE WARTESCHLANGE
+  // ========================================================
+
+  addEarlyCandidate(candidate: any) {
+    this.earlyIceCandidates.push(candidate);
+  }
+
+  getEarlyCandidates(): any[] {
+    return this.earlyIceCandidates;
+  }
+
+  clearEarlyCandidates() {
+    this.earlyIceCandidates = [];
+  }
 }
-
-

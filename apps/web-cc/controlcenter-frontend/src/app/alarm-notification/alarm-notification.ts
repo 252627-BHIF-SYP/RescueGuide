@@ -69,6 +69,12 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
         this.callContext.setPendingOffer(p.sdp, p.from);
       }
     });
+    this.signaling.on('ice-candidate', (payload: any) => {
+      if (payload && payload.candidate) {
+        console.log('🧊 [Global] Frühen ICE-Candidate abgefangen und gespeichert!');
+        this.callContext.addEarlyCandidate(payload.candidate);
+      }
+    });
   }
 
   private playAlarm() {
