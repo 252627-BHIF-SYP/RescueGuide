@@ -13,7 +13,7 @@
       <span class="feed-status">{{ activeCallId }}</span>
     </div>
 
-    <video #remoteVideo autoplay playsinline controls class="remote-feed"></video>
+    <video #remoteVideo autoplay playsinline muted class="remote-feed"></video>
   </div>
 
   <div class="controls" *ngIf="activeCallId" style="margin-top: 16px;">

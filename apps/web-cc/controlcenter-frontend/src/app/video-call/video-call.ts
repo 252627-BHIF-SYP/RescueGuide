@@ -126,6 +126,10 @@ export class VideoCall implements OnInit, OnDestroy {
         iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
       });
 
+      this.pc.oniceconnectionstatechange = () => {
+        console.log(`📡 [WebRTC Status] ICE Connection State geändert auf: ${this.pc?.iceConnectionState}`);
+      };
+
       // Füge nur die Leitstellen-Audiospur hinzu, damit das Handy uns hören kann
       this.localStream.getTracks().forEach(t => {
         console.log(`📤 [WebRTC] Sende eigenen Track an Handy: ${t.kind}`);
