@@ -1,6 +1,6 @@
 <div class="video-call">
 
-  <div *ngIf="incomingFrom" class="incoming">
+  <div *ngIf="incomingFrom && !activeCallId" class="incoming">
     <p>Eingehender Notruf-Stream von {{ incomingFrom }}</p>
     <button mat-raised-button color="primary" (click)="acceptCall()">Annehmen</button>
     <button mat-stroked-button color="warn" (click)="rejectCall()">Ablehnen</button>

@@ -12,46 +12,50 @@ import { CallContextService } from '../services/call-context.service';
   styleUrls: ['./video-call.scss']
 })
 export class VideoCall implements OnInit, OnDestroy {
-  @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
+  // Nur noch das Remote-Video vom Smartphone wird referenziert
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
 
   private pc?: RTCPeerConnection;
   public localStream?: MediaStream;
 
-  // Nutzt die zentrale URL aus der Environment-Datei
   private serverUrl = environment.signalingUrl;
   private myId = 'controlcenter';
 
   incomingFrom: string | null = null;
-  activeCallId: string | null = null; // Speichert, mit wem wir aktuell verbunden sind
-  pendingOffer: any = null;           // Speichert das SDP-Angebot, bis "Annehmen" geklickt wird
+  activeCallId: string | null = null;
+  pendingOffer: any = null;
 
-  // Signal Service injecten
   private signaling = inject(SignalingService);
   private callContext = inject(CallContextService);
 
   ngOnInit() {
     this.initSignaling();
 
-    // Wenn der Nutzer später akzeptiert, versucht VideoCall die gespeicherte Offer
-    this.callContext.getAccept$().subscribe(() => {
-      const pending = this.callContext.getPendingOffer();
-      if (pending) {
-        // Wenn Offer schon vorhanden: direkt verarbeiten
-        this.handleOffer(pending.from, pending.sdp).catch(err => console.error(err));
-        this.callContext.clearPendingOffer();
+    // Synchronisiert den CallContextService mit der UI (erkennt eingehende Offers)
+    this.callContext.getPendingOffer$().subscribe(offer => {
+      if (offer) {
+        console.log('📡 [Signal] Neues Angebot im Context Service gefunden von:', offer.from);
+        this.incomingFrom = offer.from;
+        this.pendingOffer = offer.sdp;
       } else {
-        // Wenn Offer noch nicht da, warte einmalig auf die nächste Offer
-        this.callContext.getPendingOffer$().subscribe(p => {
-          if (p) {
-            this.handleOffer(p.from, p.sdp).catch(err => console.error(err));
-            this.callContext.clearPendingOffer();
-          }
-        });
+        this.incomingFrom = null;
+        this.pendingOffer = null;
       }
     });
-    // Falls der User bereits akzeptiert hat (AlarmNotification hat accept schon gesendet)
+
+    // Falls das Signal zum Annehmen von einer externen Komponente (z.B. globaler Notification) kommt
+    this.callContext.getAccept$().subscribe(() => {
+      console.log('✅ [CallContext] Anruf wurde extern via Service angenommen.');
+      const pending = this.callContext.getPendingOffer();
+      if (pending) {
+        this.handleOffer(pending.from, pending.sdp).catch(err => console.error(err));
+        this.callContext.clearPendingOffer();
+      }
+    });
+
+    // Falls die andere Komponente "accept" gefeuert hat, bevor diese Komponente geladen war
     if (this.callContext.getAcceptedValue()) {
+      console.log('⚡ [CallContext] Vorab-Akzeptierung erkannt.');
       const pendingNow = this.callContext.getPendingOffer();
       if (pendingNow) {
         this.handleOffer(pendingNow.from, pendingNow.sdp).catch(err => console.error(err));
@@ -66,27 +70,31 @@ export class VideoCall implements OnInit, OnDestroy {
   }
 
   private initSignaling() {
+    console.log('🔌 [Signal] Verbinde mit Signaling-Server:', this.serverUrl);
     this.signaling.connect(this.serverUrl, this.myId);
 
-    // WebRTC: ICE Candidates austauschen
+    // ICE-Candidates austauschen
     this.signaling.on('ice-candidate', async (p: any) => {
       if (p.candidate && this.pc) {
         try {
           await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
+          console.log('🧊 [WebRTC] ICE Candidate von Gegenseite erfolgreich verarbeitet.');
         } catch (e) {
-          console.warn('ICE Candidate Error:', e);
+          console.warn('⚠️ [WebRTC] Fehler beim Hinzufügen des ICE Candidates:', e);
         }
       }
     });
 
+    // Anruf wurde von Gegenseite beendet
     this.signaling.on('call-end', () => {
+      console.log('🛑 [Signal] Gegenseite (Handy) hat den Anruf beendet.');
       this.closeConnection();
     });
   }
 
-  // Wird aufgerufen, wenn der Leitstellen-Mitarbeiter auf "Annehmen" klickt
+  // Klick auf "Annehmen" im eigenen HTML-Template
   async acceptCall() {
-    console.log('Anruf-Button geklickt');
+    console.log('📞 [UI] "Annehmen" geklickt für Anrufer:', this.incomingFrom);
     if (this.incomingFrom && this.pendingOffer) {
       const callerId = this.incomingFrom;
       const offer = this.pendingOffer;
@@ -94,36 +102,45 @@ export class VideoCall implements OnInit, OnDestroy {
       this.activeCallId = callerId;
       this.incomingFrom = null;
       this.pendingOffer = null;
+      this.callContext.clearPendingOffer();
 
       await this.processOffer(callerId, offer);
+    } else {
+      console.warn('⚠️ [UI] Annehmen geklickt, aber keine Daten vorhanden.');
     }
   }
 
   async processOffer(from: string, sdp: any) {
     try {
+      console.log('🎙️ [Media] Fordere reines Audio-Mikrofon an (kein lokales Video)...');
+      // Hier wird VIDEO auf FALSE gesetzt, damit die Leitstelle kein Kamerabild überträgt
       this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true
       });
+      console.log('✅ [Media] Mikrofon-Stream erfolgreich initialisiert.');
 
-      if (this.localVideo && this.localStream) {
-        this.localVideo.nativeElement.srcObject = this.localStream;
-      }
-
+      console.log('🌐 [WebRTC] Erstelle PeerConnection...');
       this.pc = new RTCPeerConnection({
         iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
       });
 
-      // Eigene Tracks hinzufügen
-      this.localStream.getTracks().forEach(t => this.pc!.addTrack(t, this.localStream!));
+      // Füge nur die Leitstellen-Audiospur hinzu, damit das Handy uns hören kann
+      this.localStream.getTracks().forEach(t => {
+        console.log(`📤 [WebRTC] Sende eigenen Track an Handy: ${t.kind}`);
+        this.pc!.addTrack(t, this.localStream!);
+      });
 
-      // Remote Stream (vom Client/Handy) empfangen - mit sicherem Fallback
+      // EVENT: Hier kommt der Video/Audio-Stream vom Handy an
       this.pc.ontrack = (ev) => {
+        console.log(`📥 [WebRTC] Stream-Track vom Handy empfangen! Typ: ${ev.track.kind}`);
+
         if (this.remoteVideo) {
           if (ev.streams && ev.streams[0]) {
+            console.log('📺 [WebRTC] Binde eingehenden Video-Stream an <video #remoteVideo>');
             this.remoteVideo.nativeElement.srcObject = ev.streams[0];
           } else {
-            // Fallback für manche Browser, die ev.streams nicht sauber befüllen
+            console.log('📺 [WebRTC] Fallback: Track manuell an MediaStream binden.');
             let stream = this.remoteVideo.nativeElement.srcObject as MediaStream;
             if (!stream) {
               stream = new MediaStream();
@@ -131,11 +148,15 @@ export class VideoCall implements OnInit, OnDestroy {
             }
             stream.addTrack(ev.track);
           }
+        } else {
+          console.error('❌ [UI] Das #remoteVideo Element existiert nicht im DOM!');
         }
       };
 
+      // Lokale ICE Candidates an das Handy senden
       this.pc.onicecandidate = (ev) => {
         if (ev.candidate) {
+          console.log('🧊 [WebRTC] Generiere lokalen ICE Candidate -> sende an Handy.');
           this.signaling.emit('ice-candidate', {
             to: from,
             from: this.myId,
@@ -144,12 +165,14 @@ export class VideoCall implements OnInit, OnDestroy {
         }
       };
 
-      // Verbindung herstellen
+      console.log('🤝 [WebRTC] Setze Remote-Description (SDP-Offer vom Handy)...');
       await this.pc.setRemoteDescription(new RTCSessionDescription(sdp));
+
+      console.log('🤝 [WebRTC] Erstelle SDP-Answer...');
       const answer = await this.pc.createAnswer();
       await this.pc.setLocalDescription(answer);
 
-      // Antwort (Answer) zurück an den Client senden
+      console.log('🚀 [Signal] Sende Antwort (SDP-Answer) zurück an das Handy.');
       this.signaling.emit('call-answer', {
         to: from,
         from: this.myId,
@@ -157,21 +180,23 @@ export class VideoCall implements OnInit, OnDestroy {
       });
 
     } catch (err) {
-      console.error('Fehler bei der Anrufannahme:', err);
-      this.closeConnection(); // Bei Fehler direkt aufräumen
+      console.error('❌ [WebRTC] Fehler während des Verbindungsaufbaus:', err);
+      this.closeConnection();
     }
   }
 
   rejectCall() {
+    console.log('🚫 [UI] Anruf abgelehnt.');
     if (this.incomingFrom) {
       this.signaling.emit('call-end', { to: this.incomingFrom, from: this.myId });
     }
     this.incomingFrom = null;
     this.pendingOffer = null;
+    this.callContext.clearPendingOffer();
   }
 
   endCall() {
-    // Beenden-Signal an den aktiven Anrufer senden (nicht mehr hart codiert)
+    console.log('🛑 [UI] Laufenden Einsatz manuell beendet.');
     if (this.activeCallId) {
       this.signaling.emit('call-end', { to: this.activeCallId, from: this.myId });
     }
@@ -179,6 +204,7 @@ export class VideoCall implements OnInit, OnDestroy {
   }
 
   private closeConnection() {
+    console.log('🧹 [Cleanup] Schließe WebRTC-Verbindung und stoppe lokale Medien...');
     if (this.pc) {
       this.pc.close();
       this.pc = undefined;
@@ -190,7 +216,6 @@ export class VideoCall implements OnInit, OnDestroy {
     this.incomingFrom = null;
     this.pendingOffer = null;
     this.activeCallId = null;
-    console.log('Video-Call beendet und Ressourcen freigegeben');
   }
 
   private async handleOffer(from: string, sdp: any) {
