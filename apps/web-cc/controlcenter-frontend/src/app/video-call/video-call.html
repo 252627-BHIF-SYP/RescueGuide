@@ -6,18 +6,26 @@
     <button mat-stroked-button color="warn" (click)="rejectCall()">Ablehnen</button>
   </div>
 
-  <div class="video-wrapper" [style.display]="activeCallId ? 'flex' : 'none'">
+  <div #videoWrapper class="video-wrapper" [style.display]="activeCallId ? 'flex' : 'none'">
 
     <div class="feed-overlay" *ngIf="activeCallId">
       <span class="live-badge">LIVE</span>
       <span class="feed-status">{{ activeCallId }}</span>
     </div>
 
+    <!-- Fullscreen Button -->
+    <button
+      *ngIf="activeCallId"
+      class="fullscreen-btn"
+      (click)="toggleVideoFullscreen()"
+      aria-label="Video Vollbild"
+      title="Vollbild">
+      <mat-icon>fullscreen</mat-icon>
+    </button>
+
     <video #remoteVideo autoplay playsinline muted class="remote-feed"></video>
   </div>
 
-  <div class="controls" *ngIf="activeCallId" style="margin-top: 16px;">
-    <button mat-stroked-button color="warn" (click)="endCall()">Einsatz Beenden</button>
-  </div>
+
 
 </div>
