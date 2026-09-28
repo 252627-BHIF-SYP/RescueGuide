@@ -18,7 +18,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /app/dist/clientapp-frontend/browser /usr/share/nginx/html/
 
 # Port exponieren
-EXPOSE 80
+EXPOSE 4202
 
 # nginx starten
 CMD ["nginx", "-g", "daemon off;"]
