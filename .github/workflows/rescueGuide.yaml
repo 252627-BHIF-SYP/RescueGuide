@@ -26,12 +26,12 @@ jobs:
           password: ${{ secrets.rescueGuideGhcrLogin }}
 
       # Build & Push Client App
-      - name: Build and push Client App
-        uses: docker/build-push-action@v5
-        with:
-          context: ./apps/web-ca/clientapp-frontend
-          push: true
-          tags: ghcr.io/252627-bhif-syp/rescueguide-client:latest
+    #  - name: Build and push Client App
+    #    uses: docker/build-push-action@v5
+    #    with:
+    #      context: ./apps/web-ca/clientapp-frontend
+    #      push: true
+     #     tags: ghcr.io/252627-bhif-syp/rescueguide-client:latest
 
       # Build & Push Backend
       - name: Build and push Backend
