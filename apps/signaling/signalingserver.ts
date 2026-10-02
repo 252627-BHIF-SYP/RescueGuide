@@ -10,13 +10,7 @@ const LAPTOP_IP = "192.168.178.73";
 
 const io = new Server(server, {
     cors: {
-        origin: [
-            "http://localhost:81",
-            "http://192.168.6.10:80",
-            "http://192.168.6.10:81",
-            "http://192.168.6.10:3000",
-            "http://192.168.178.73:81",
-        ],
+        origin: true,
         methods: ["GET", "POST"],
         credentials: true,
     },
@@ -70,6 +64,26 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("location-update", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) {
+            io.to(target).emit("location-update", {
+                from: payload.from,
+                location: payload.location,
+            });
+        }
+    });
+
+    socket.on("location-update", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) {
+            io.to(target).emit("location-update", {
+                from: payload.from,
+                location: payload.location,
+            });
+        }
+    });
+
     socket.on("call-rejected", (payload) => {
         const target = registry.get(payload.to);
         if (target) io.to(target).emit("call-rejected", { from: payload.from, reason: payload.reason });
@@ -88,8 +102,10 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         const userId = socket.data.userId;
         if (userId) {
-            registry.delete(userId);
-            console.log(`User ${userId} getrennt`);
+            if (registry.get(userId) === socket.id) {
+                registry.delete(userId);
+                console.log(`User ${userId} getrennt`);
+            }
         } else {
             console.log(`Socket ${socket.id} getrennt`);
         }

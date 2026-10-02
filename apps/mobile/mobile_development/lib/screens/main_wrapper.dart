@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import './panic_screen.dart';
+import './settings_screen.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -23,7 +24,7 @@ class _MainWrapperState extends State<MainWrapper> {
       const PanicScreen(),
       const Scaffold(body: Center(child: Text("Schnelle Hilfe"))),
       const Scaffold(body: Center(child: Text("Lernmodus"))),
-      const Scaffold(body: Center(child: Text("Settings"))),
+      const SettingsScreen(),
     ];
   }
 

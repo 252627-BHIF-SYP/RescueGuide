@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 import { CallContextService } from '../services/call-context.service';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './video-call.html',
-  styleUrls: ['./video-call.scss']
+  styleUrls: ['./video-call.scss'],
 })
 export class VideoCall implements OnInit, OnDestroy {
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
@@ -36,11 +36,14 @@ export class VideoCall implements OnInit, OnDestroy {
   ngOnInit() {
     this.initSignaling();
 
-    this.callContext.getPendingOffer$().subscribe(offer => {
+    this.callContext.getPendingOffer$().subscribe((offer) => {
       if (offer) {
         console.log('📡 [Signal] Neues Angebot im Context Service gefunden von:', offer.from);
         this.incomingFrom = offer.from;
         this.pendingOffer = offer.sdp;
+        if (this.callContext.getAcceptedValue() && !this.activeCallId) {
+          this.startAcceptedOffer(offer);
+        }
       } else {
         this.incomingFrom = null;
         this.pendingOffer = null;
@@ -50,21 +53,8 @@ export class VideoCall implements OnInit, OnDestroy {
     this.callContext.getAccept$().subscribe(() => {
       console.log('✅ [CallContext] Anruf wurde extern via Service angenommen.');
       const pending = this.callContext.getPendingOffer();
-      if (pending) {
-        this.handleOffer(pending.from, pending.sdp).catch(err => console.error(err));
-        this.callContext.clearPendingOffer();
-      }
+      if (pending) this.startAcceptedOffer(pending);
     });
-
-    if (this.callContext.getAcceptedValue()) {
-      console.log('⚡ [CallContext] Vorab-Akzeptierung erkannt.');
-      const pendingNow = this.callContext.getPendingOffer();
-      if (pendingNow) {
-        this.handleOffer(pendingNow.from, pendingNow.sdp).catch(err => console.error(err));
-        this.callContext.clearPendingOffer();
-        this.callContext.clearAcceptedFlag();
-      }
-    }
   }
 
   ngOnDestroy() {
@@ -85,7 +75,9 @@ export class VideoCall implements OnInit, OnDestroy {
             console.warn('⚠️ [WebRTC] Fehler beim Hinzufügen des ICE Candidates:', e);
           }
         } else {
-          console.log('⏳ [WebRTC] PC noch nicht bereit. Candidate in lokale Warteschlange gelegt.');
+          console.log(
+            '⏳ [WebRTC] PC noch nicht bereit. Candidate in lokale Warteschlange gelegt.',
+          );
           this.iceCandidateQueue.push(p.candidate);
         }
       }
@@ -117,20 +109,22 @@ export class VideoCall implements OnInit, OnDestroy {
       console.log('🎙️ [Media] Fordere reines Audio-Mikrofon an (kein lokales Video)...');
       this.localStream = await navigator.mediaDevices.getUserMedia({
         video: false,
-        audio: true
+        audio: true,
       });
       console.log('✅ [Media] Mikrofon-Stream erfolgreich initialisiert.');
 
       console.log('🌐 [WebRTC] Erstelle PeerConnection...');
       this.pc = new RTCPeerConnection({
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
       });
 
       this.pc.oniceconnectionstatechange = () => {
-        console.log(`📡 [WebRTC Status] ICE Connection State geändert auf: ${this.pc?.iceConnectionState}`);
+        console.log(
+          `📡 [WebRTC Status] ICE Connection State geändert auf: ${this.pc?.iceConnectionState}`,
+        );
       };
 
-      this.localStream.getTracks().forEach(t => {
+      this.localStream.getTracks().forEach((t) => {
         console.log(`📤 [WebRTC] Sende eigenen Track an Handy: ${t.kind}`);
         this.pc!.addTrack(t, this.localStream!);
       });
@@ -153,11 +147,13 @@ export class VideoCall implements OnInit, OnDestroy {
           }
 
           setTimeout(() => {
-            this.remoteVideo.nativeElement.play().catch(err => {
-              console.warn('⚠️ [Browser] Autoplay wurde blockiert. Prüfe, ob "muted" im HTML steht:', err);
+            this.remoteVideo.nativeElement.play().catch((err) => {
+              console.warn(
+                '⚠️ [Browser] Autoplay wurde blockiert. Prüfe, ob "muted" im HTML steht:',
+                err,
+              );
             });
           }, 150);
-
         } else {
           console.error('❌ [UI] Das #remoteVideo Element existiert nicht im DOM!');
         }
@@ -169,7 +165,7 @@ export class VideoCall implements OnInit, OnDestroy {
           this.signaling.emit('ice-candidate', {
             to: from,
             from: this.myId,
-            candidate: ev.candidate
+            candidate: ev.candidate,
           });
         }
       };
@@ -206,9 +202,8 @@ export class VideoCall implements OnInit, OnDestroy {
       this.signaling.emit('call-answer', {
         to: from,
         from: this.myId,
-        sdp: this.pc.localDescription
+        sdp: this.pc.localDescription,
       });
-
     } catch (err) {
       console.error('❌ [WebRTC] Fehler während des Verbindungsaufbaus:', err);
       this.closeConnection();
@@ -241,7 +236,7 @@ export class VideoCall implements OnInit, OnDestroy {
       this.pc = undefined;
     }
     if (this.localStream) {
-      this.localStream.getTracks().forEach(t => t.stop());
+      this.localStream.getTracks().forEach((t) => t.stop());
       this.localStream = undefined;
     }
 
@@ -253,8 +248,11 @@ export class VideoCall implements OnInit, OnDestroy {
     this.callContext.clearEarlyCandidates();
   }
 
-  private async handleOffer(from: string, sdp: any) {
-    this.activeCallId = from;
-    await this.processOffer(from, sdp);
+  private startAcceptedOffer(offer: { from: string; sdp: any }) {
+    if (this.activeCallId) return;
+    this.activeCallId = offer.from;
+    this.callContext.clearPendingOffer();
+    this.callContext.clearAcceptedFlag();
+    this.processOffer(offer.from, offer.sdp).catch((err) => console.error(err));
   }
 }

@@ -6,6 +6,8 @@ class WebRTCService {
   IO.Socket? socket;
   RTCPeerConnection? _peerConnection;
   MediaStream? localStream;
+  final List<RTCIceCandidate> _pendingIceCandidates = [];
+  bool _isRemoteDescriptionSet = false;
   RTCVideoRenderer localRenderer = RTCVideoRenderer();
   RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
 
@@ -24,11 +26,7 @@ class WebRTCService {
   Map<String, dynamic>? _currentLocation;
 
   void setLocation(double lat, double lng, String address) {
-    _currentLocation = {
-      'latitude': lat,
-      'longitude': lng,
-      'address': address,
-    };
+    _currentLocation = {'latitude': lat, 'longitude': lng, 'address': address};
     // Wenn der Socket bereits verbunden ist, senden wir ein Update
     if (socket != null && socket!.connected) {
       socket!.emit('location-update', {
@@ -65,6 +63,9 @@ class WebRTCService {
       socket!.emit('register', selfId);
       _startCall();
     });
+    socket!.on('connect_error', (error) {
+      onCallFailed?.call('Signaling-Server nicht erreichbar: $error');
+    });
 
     // WICHTIG: Das Controlcenter sendet "call-accepted"
     socket!.on('call-accepted', (data) {
@@ -75,8 +76,16 @@ class WebRTCService {
     socket!.on('call-answer', (data) async {
       print('INFO: Event [call-answer] (SDP) erhalten');
       if (_peerConnection != null && data['sdp'] != null) {
-        var answer = RTCSessionDescription(data['sdp']['sdp'], data['sdp']['type']);
+        var answer = RTCSessionDescription(
+          data['sdp']['sdp'],
+          data['sdp']['type'],
+        );
         await _peerConnection!.setRemoteDescription(answer);
+        _isRemoteDescriptionSet = true;
+        for (final candidate in _pendingIceCandidates) {
+          await _peerConnection!.addCandidate(candidate);
+        }
+        _pendingIceCandidates.clear();
       }
       onCallAccepted?.call(); // Sicherheitshalber auch hier triggern
     });
@@ -88,16 +97,26 @@ class WebRTCService {
           data['candidate']['sdpMid'],
           data['candidate']['sdpMLineIndex'],
         );
-        _peerConnection!.addCandidate(candidate);
+        if (_isRemoteDescriptionSet) {
+          _peerConnection!.addCandidate(candidate);
+        } else {
+          _pendingIceCandidates.add(candidate);
+        }
       }
     });
 
-    socket!.on('call-failed', (data) => onCallFailed?.call(data['reason'] ?? 'Fehler'));
+    socket!.on(
+      'call-failed',
+      (data) => onCallFailed?.call(data['reason'] ?? 'Fehler'),
+    );
     socket!.on('call-end', (_) {
       print('INFO: Event [call-end] erhalten -> Beende Anruf');
       onCallEnd?.call();
     });
-    socket!.on('call-rejected', (data) => onCallFailed?.call(data['reason'] ?? 'Abgelehnt'));
+    socket!.on(
+      'call-rejected',
+      (data) => onCallFailed?.call(data['reason'] ?? 'Abgelehnt'),
+    );
 
     socket!.connect();
   }
@@ -124,7 +143,9 @@ class WebRTCService {
   void toggleCamera() {
     if (localStream != null) {
       isCameraOn = !isCameraOn;
-      localStream!.getVideoTracks().forEach((track) => track.enabled = isCameraOn);
+      localStream!.getVideoTracks().forEach(
+        (track) => track.enabled = isCameraOn,
+      );
     }
   }
 
@@ -153,7 +174,7 @@ class WebRTCService {
     try {
       if (_peerConnection != null) return;
       _peerConnection = await _createPeerConnection();
-      
+
       // Tracks hinzufügen BEVOR das Offer erstellt wird
       if (localStream != null) {
         for (var track in localStream!.getTracks()) {
@@ -168,17 +189,18 @@ class WebRTCService {
         'offerToReceiveVideo': true,
       });
       await _peerConnection!.setLocalDescription(offer);
-      
+
       print('INFO: Sende call-request und call-offer');
       socket!.emit('call-request', {
-        'from': selfId, 
-        'to': targetId, 
-        'metadata': {
-          'type': 'emergency',
-          'location': _currentLocation
-        }
+        'from': selfId,
+        'to': targetId,
+        'metadata': {'type': 'emergency', 'location': _currentLocation},
       });
-      socket!.emit('call-offer', {'from': selfId, 'to': targetId, 'sdp': offer.toMap()});
+      socket!.emit('call-offer', {
+        'from': selfId,
+        'to': targetId,
+        'sdp': offer.toMap(),
+      });
     } catch (e) {
       print('ERROR in _startCall: $e');
       onCallFailed?.call(e.toString());
@@ -191,7 +213,7 @@ class WebRTCService {
         {'urls': 'stun:stun.l.google.com:19302'},
         {'urls': 'stun:stun1.l.google.com:19302'},
       ],
-      'sdpSemantics': 'unified-plan'
+      'sdpSemantics': 'unified-plan',
     };
 
     RTCPeerConnection pc = await createPeerConnection(configuration);
@@ -201,7 +223,11 @@ class WebRTCService {
     };
 
     pc.onIceCandidate = (candidate) {
-      socket!.emit('ice-candidate', {'from': selfId, 'to': targetId, 'candidate': candidate.toMap()});
+      socket!.emit('ice-candidate', {
+        'from': selfId,
+        'to': targetId,
+        'candidate': candidate.toMap(),
+      });
     };
 
     pc.onTrack = (event) {
@@ -220,6 +246,8 @@ class WebRTCService {
     localStream = null;
     _peerConnection?.close();
     _peerConnection = null;
+    _pendingIceCandidates.clear();
+    _isRemoteDescriptionSet = false;
     localRenderer.srcObject = null;
     remoteRenderer.srcObject = null;
     socket?.disconnect();

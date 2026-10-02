@@ -29,13 +29,12 @@ export interface EmergencyProtocol {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EmergencyService implements OnDestroy {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
 
-  
   // State Signals
   isActive = signal<boolean>(false);
   protocol = signal<EmergencyProtocol>(this.getDefaultProtocol());
@@ -72,12 +71,12 @@ export class EmergencyService implements OnDestroy {
       alarmedRD: false,
       alarmedNA: false,
       alarmedPol: false,
-      alarmedFW: false
+      alarmedFW: false,
     };
   }
 
   updateProtocol(data: Partial<EmergencyProtocol>) {
-    this.protocol.update(p => ({ ...p, ...data }));
+    this.protocol.update((p) => ({ ...p, ...data }));
     this.saveProtocol();
   }
 
@@ -85,11 +84,13 @@ export class EmergencyService implements OnDestroy {
     // Create an empty emergency
     const emergencyPayload = {
       startedAt: new Date().toISOString(),
-      status: 0 // e.g. 0 = Active, adapt to your EmergencyStatus enum
+      status: 0, // e.g. 0 = Active, adapt to your EmergencyStatus enum
     };
-    
+
     try {
-      const res = await firstValueFrom(this.http.post<any>(`${environment.apiUrl}/Emergency`, emergencyPayload));
+      const res = await firstValueFrom(
+        this.http.post<any>(`${environment.apiUrl}/Emergency`, emergencyPayload),
+      );
       this.activeEmergencyId.set(res.id);
       if (res.protocol) {
         this.activeProtocolId.set(res.protocol.id);
@@ -116,32 +117,34 @@ export class EmergencyService implements OnDestroy {
     }
 
     const payload = {
-      ...this.protocol()
+      ...this.protocol(),
     };
 
-    this.http.put(`${environment.apiUrl}/EmergencyProtocol/${protocolId}`, payload)
-      .subscribe({
-        next: () => console.log('Protocol saved successfully'),
-        error: (err) => console.error('Error saving protocol', err)
-      });
+    this.http.put(`${environment.apiUrl}/EmergencyProtocol/${protocolId}`, payload).subscribe({
+      next: () => console.log('Protocol saved successfully'),
+      error: (err) => console.error('Error saving protocol', err),
+    });
   }
 
   endEmergency() {
     this.executeSaveProtocol();
     const emergencyId = this.activeEmergencyId();
     if (emergencyId) {
-      this.http.put(`${environment.apiUrl}/Emergency/${emergencyId}/close`, {})
-        .subscribe({
-          next: () => console.log('Emergency ended in backend'),
-          error: (err) => console.error('Error ending emergency', err)
-        });
+      this.http.put(`${environment.apiUrl}/Emergency/${emergencyId}/close`, {}).subscribe({
+        next: () => console.log('Emergency ended in backend'),
+        error: (err) => console.error('Error ending emergency', err),
+      });
     }
+    this.isActive.set(false);
+    this.activeEmergencyId.set(null);
+    this.activeProtocolId.set(null);
+    this.stopTimer();
   }
 
   startTimer() {
     if (this.timerInterval) return;
     this.timerInterval = setInterval(() => {
-      this.durationSeconds.update(s => s + 1);
+      this.durationSeconds.update((s) => s + 1);
     }, 1000);
   }
 

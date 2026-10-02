@@ -4,6 +4,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import '../logic/webrtc_service.dart';
+import '../logic/settings_service.dart';
 
 class ConnectingScreen extends StatefulWidget {
   const ConnectingScreen({super.key});
@@ -12,11 +13,13 @@ class ConnectingScreen extends StatefulWidget {
   State<ConnectingScreen> createState() => _ConnectingScreenState();
 }
 
-class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerProviderStateMixin {
+class _ConnectingScreenState extends State<ConnectingScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late WebRTCService _webRTCService;
-  
+
   bool _isCallAccepted = false;
+  bool _allowExit = false;
   int _seconds = 0;
   Timer? _timer;
 
@@ -56,7 +59,9 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
       _exitCall('Notruf wurde beendet');
     };
 
-    await _webRTCService.init('http://192.168.6.10:3000');
+    final settings = await SettingsService.init();
+    if (!mounted) return;
+    await _webRTCService.init(settings.serverUrl.trim());
   }
 
   Future<void> _determinePosition() async {
@@ -66,7 +71,8 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     try {
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        if (mounted) setState(() => _currentAddress = "Standortdienst deaktiviert");
+        if (mounted)
+          setState(() => _currentAddress = "Standortdienst deaktiviert");
         return;
       }
 
@@ -74,20 +80,24 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          if (mounted) setState(() => _currentAddress = "Standortberechtigung verweigert");
+          if (mounted)
+            setState(() => _currentAddress = "Standortberechtigung verweigert");
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        if (mounted) setState(() => _currentAddress = "Standortberechtigung dauerhaft verweigert");
+        if (mounted)
+          setState(
+            () => _currentAddress = "Standortberechtigung dauerhaft verweigert",
+          );
         return;
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high
+        desiredAccuracy: LocationAccuracy.high,
       );
-      
+
       _getAddressFromLatLng(position);
     } catch (e) {
       if (mounted) setState(() => _currentAddress = "Standortfehler");
@@ -98,27 +108,29 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
-        position.longitude
+        position.longitude,
       );
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
         if (!mounted) return;
         setState(() {
-          _currentAddress = "${place.street}, ${place.postalCode} ${place.locality}";
+          _currentAddress =
+              "${place.street}, ${place.postalCode} ${place.locality}";
         });
-        
+
         // Standort an den Service übergeben
         _webRTCService.setLocation(
-          position.latitude, 
-          position.longitude, 
-          _currentAddress
+          position.latitude,
+          position.longitude,
+          _currentAddress,
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _currentAddress = "Koordinaten: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}";
+          _currentAddress =
+              "Koordinaten: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}";
         });
       }
     }
@@ -136,17 +148,33 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
   }
 
   void _showErrorAndExit(String reason) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Fehler: $reason')),
-    );
-    Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Fehler: $reason')));
+    setState(() => _allowExit = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).popUntil((route) => route.isFirst);
+      }
+    });
   }
 
   void _exitCall(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.blueGrey),
     );
-    Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+    setState(() => _allowExit = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).popUntil((route) => route.isFirst);
+      }
+    });
   }
 
   @override
@@ -165,9 +193,12 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _isCallAccepted ? _buildEmergencyUI() : _buildConnectingUI(),
+    return PopScope<void>(
+      canPop: !_isCallAccepted || _allowExit,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: _isCallAccepted ? _buildEmergencyUI() : _buildConnectingUI(),
+      ),
     );
   }
 
@@ -184,11 +215,18 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
           const SizedBox(height: 30),
           const Text(
             'Verbindung zur Leitstelle wird aufgebaut…',
-            style: TextStyle(fontSize: 18, color: Colors.blueGrey, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.blueGrey,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
-          const Text('Bitte bleiben Sie ruhig.', style: TextStyle(fontSize: 16, color: Colors.grey)),
+          const Text(
+            'Bitte bleiben Sie ruhig.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
         ],
       ),
     );
@@ -228,7 +266,10 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
               Flexible(
                 child: Text(
                   _currentAddress,
-                  style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -268,7 +309,9 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _circleButton(
-            icon: _webRTCService.isTorchOn ? Icons.flashlight_on : Icons.flashlight_off,
+            icon: _webRTCService.isTorchOn
+                ? Icons.flashlight_on
+                : Icons.flashlight_off,
             active: _webRTCService.isTorchOn,
             onPressed: () async {
               await _webRTCService.toggleTorch();
@@ -285,7 +328,9 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
             },
           ),
           _circleButton(
-            icon: _webRTCService.isCameraOn ? Icons.videocam : Icons.videocam_off,
+            icon: _webRTCService.isCameraOn
+                ? Icons.videocam
+                : Icons.videocam_off,
             active: _webRTCService.isCameraOn,
             onPressed: () {
               _webRTCService.toggleCamera();
@@ -305,14 +350,24 @@ class _ConnectingScreenState extends State<ConnectingScreen> with SingleTickerPr
     );
   }
 
-  Widget _circleButton({required IconData icon, required bool active, required VoidCallback onPressed, bool enabled = true}) {
+  Widget _circleButton({
+    required IconData icon,
+    required bool active,
+    required VoidCallback onPressed,
+    bool enabled = true,
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: enabled ? (active ? Colors.red.shade100 : Colors.grey.shade100) : Colors.grey.shade300,
+        color: enabled
+            ? (active ? Colors.red.shade100 : Colors.grey.shade100)
+            : Colors.grey.shade300,
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        icon: Icon(icon, color: enabled ? (active ? Colors.red : Colors.black87) : Colors.grey),
+        icon: Icon(
+          icon,
+          color: enabled ? (active ? Colors.red : Colors.black87) : Colors.grey,
+        ),
         onPressed: enabled ? onPressed : null,
         iconSize: 28,
         padding: const EdgeInsets.all(12),
