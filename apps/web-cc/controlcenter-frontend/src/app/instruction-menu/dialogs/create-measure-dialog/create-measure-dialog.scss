@@ -1,21 +1,31 @@
+﻿// ── Shared Dialog Tokens ──────────────────────────────────────────────
+$accent:  #a31d58;
+$danger:  #b42355;
+$text:    #1f2328;
+$muted:   #74777d;
+$border:  #e1e2e5;
+
+// ── Dialog Title ──────────────────────────────────────────────────────
 .dialog-title {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #2b2d42;
-  padding: 20px 24px 10px 24px;
+  color: $text;
+  padding: 18px 24px 14px;
   margin: 0;
+  border-bottom: 1px solid $border;
 
   .title-icon {
-    color: #e63946; // Rescue-Rot
-    font-size: 28px;
-    height: 28px;
-    width: 28px;
+    color: $accent;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
   }
 }
 
+// ── Content area ──────────────────────────────────────────────────────
 .custom-dialog-content {
   padding: 16px 24px !important;
   max-height: 70vh;
@@ -38,78 +48,65 @@
   }
 }
 
-.full-width {
-  width: 100%;
+.full-width { width: 100%; }
+
+// ── Read-only fields ──────────────────────────────────────────────────
+::ng-deep .read-only-field {
+  .mat-mdc-text-field-wrapper { background: #f5f6f8 !important; }
+  input[readonly] { color: $muted !important; cursor: default; }
+  mat-icon[matPrefix] { color: #b0b4bb !important; }
 }
 
-// Spezielles Styling für gesperrte, informative Form-Fields
-::v-deep .read-only-field {
-  .mat-mdc-text-field-wrapper {
-    background-color: #f8f9fa !important;
-  }
-  .mat-mdc-form-field-flex {
-    cursor: not-allowed;
-  }
-  input[readonly] {
-    color: #6c757d !important;
-  }
-  mat-icon[matPrefix] {
-    color: #94a3b8 !important;
-  }
+// ── Form field icon color ─────────────────────────────────────────────
+::ng-deep mat-form-field mat-icon[matPrefix] {
+  color: $muted;
+  margin-right: 4px;
 }
 
-::v-deep mat-form-field {
-  mat-icon[matPrefix] {
-    color: #7d8597;
-    margin-right: 4px;
-  }
-}
-
+// ── File upload ───────────────────────────────────────────────────────
 .file-upload-section {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 4px;
 
   .upload-btn {
-    border-color: #cbd5e1;
-    color: #475569;
-    padding: 20px 16px;
+    border-color: $border;
+    color: $muted;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    padding: 0 16px;
+    height: 40px;
 
-    mat-icon {
-      color: #64748b;
-    }
+    mat-icon { color: $muted; margin-right: 6px; }
 
     &.has-file {
-      border-color: rgba(230, 57, 70, 0.4);
-      background-color: #fff5f5;
-      color: #e63946;
+      border-color: rgba(163,29,88,.4);
+      background: #fdf2f6;
+      color: $accent;
+      mat-icon { color: $accent; }
+    }
 
-      mat-icon {
-        color: #e63946;
-      }
+    &:hover {
+      border-color: $accent;
+      color: $accent;
+      background: #fdf2f6;
     }
   }
 
   .file-status-text {
-    font-size: 0.85rem;
-    color: #10b981; // Angenehmes Grün für Bestätigung
+    font-size: 0.8rem;
+    color: #16a34a;
     font-weight: 600;
   }
 }
 
+// ── Image preview ─────────────────────────────────────────────────────
 .preview-container {
-  margin-top: 8px;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid $border;
   display: flex;
   justify-content: center;
-  background-color: #f8fafc;
+  background: #f9fafb;
   padding: 8px;
 }
 
@@ -120,31 +117,43 @@
   border-radius: 4px;
 }
 
+// ── Dialog actions ────────────────────────────────────────────────────
 .dialog-actions-row {
-  padding: 16px 24px 20px 24px !important;
-  border-top: 1px solid #f1f3f5;
+  padding: 12px 24px 16px !important;
+  border-top: 1px solid $border;
   gap: 8px;
+  background: #fafbfc;
 
   .cancel-btn {
-    color: #64748b;
-    border-radius: 8px;
+    color: $muted;
+    border-radius: 999px;
     padding: 0 16px;
+    font-weight: 500;
+
+    &:hover { background: #f0f1f3; }
   }
 
   .submit-btn {
-    background-color: #e63946 !important;
-    color: white !important;
-    border-radius: 8px;
-    padding: 0 20px;
-    font-weight: 600;
+    background: $accent !important;
+    color: #fff !important;
+    border-radius: 999px !important;
+    padding: 0 22px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 6px rgba(163,29,88,.2) !important;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.15s !important;
 
-    &[disabled] {
-      background-color: #f1f3f5 !important;
-      color: #94a3b8 !important;
+    mat-icon { margin-right: 5px; font-size: 17px; }
+
+    &:not([disabled]):hover {
+      background: #8c164a !important;
+      box-shadow: 0 4px 10px rgba(163,29,88,.3) !important;
+      transform: translateY(-1px) !important;
     }
 
-    mat-icon {
-      margin-right: 4px;
+    &[disabled] {
+      background: #e8e9eb !important;
+      color: #b0b4bb !important;
+      box-shadow: none !important;
     }
   }
 }

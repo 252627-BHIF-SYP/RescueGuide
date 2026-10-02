@@ -1,5 +1,7 @@
 import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 import { CallContextService } from '../services/call-context.service';
@@ -8,12 +10,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconButton, MatIcon],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss'],
 })
 export class VideoCall implements OnInit, OnDestroy {
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('videoWrapper') videoWrapper!: ElementRef<HTMLDivElement>;
 
   private pc?: RTCPeerConnection;
   public localStream?: MediaStream;
@@ -25,6 +28,9 @@ export class VideoCall implements OnInit, OnDestroy {
   activeCallId: string | null = null;
   pendingOffer: any = null;
 
+  // TEMP: Preview-Modus für Styling – auf false setzen wenn fertig
+  private readonly PREVIEW_MODE = false;
+
   // Lokale Warteschlange
   private iceCandidateQueue: any[] = [];
   private isRemoteDescriptionSet = false;
@@ -34,6 +40,24 @@ export class VideoCall implements OnInit, OnDestroy {
   private router = inject(Router);
 
   ngOnInit() {
+    if (this.PREVIEW_MODE) {
+      // TEMP: Zeige eigene Webcam als Platzhalter für das Styling
+      this.activeCallId = 'VORSCHAU – Echtzeit-Stream';
+      navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(stream => {
+          setTimeout(() => {
+            if (this.remoteVideo?.nativeElement) {
+              this.remoteVideo.nativeElement.srcObject = stream;
+              this.remoteVideo.nativeElement.play().catch(() => {});
+            }
+          }, 100);
+        })
+        .catch(() => {
+          console.warn('[PREVIEW] Kein Kamera-Zugriff – Video bleibt leer.');
+        });
+      return;
+    }
+
     this.initSignaling();
 
     this.callContext.getPendingOffer$().subscribe((offer) => {
@@ -217,6 +241,18 @@ export class VideoCall implements OnInit, OnDestroy {
     }
     this.callContext.clearPendingOffer();
     this.closeConnection();
+  }
+
+  toggleVideoFullscreen() {
+    const el = this.videoWrapper?.nativeElement;
+    if (!el) return;
+    if (!document.fullscreenElement) {
+      el.requestFullscreen().catch((err: any) => {
+        console.error(`Vollbild-Fehler: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
   }
 
   endCall() {

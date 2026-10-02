@@ -26,52 +26,47 @@
       <!-- Video-Call-Bereich -->
       <app-video-call></app-video-call>
 
-      <!-- Standort- & GPS-Daten -->
-      <mat-card class="status-card info-card-padding">
-        <mat-card-header>
-          <mat-card-title style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <div>
-              <mat-icon class="card-icon">location_on</mat-icon>
-              Echtzeit-Standort & GPS
-            </div>
-            @if (mapUrl !== null) {
-              <button mat-icon-button (click)="toggleMapFullscreen()" color="primary" aria-label="Karte als Vollbild" title="Karte als Vollbild">
-                <mat-icon>fullscreen</mat-icon>
-              </button>
-            }
-          </mat-card-title>
-        </mat-card-header>
-        
-        <mat-card-content>
-          <div class="map-container">
-            <p class="status-text">
-              <span class="status-dot" [class.active]="mapUrl !== null"></span>
-              {{ status() }}
-            </p>
+      <!-- Standort & GPS -->
+      <div class="map-widget">
 
-            @if (mapUrl !== null) {
-              <div class="google-maps-frame">
-                <iframe #mapIframe [src]="mapUrl!" width="100%" height="280" style="border:0; border-radius: 8px;" loading="lazy"></iframe>
-              </div>
-              <div class="coordinates">
-                <div class="coord-item">
-                  <span class="coord-label">Breitengrad:</span>
-                  <span class="coord-value">{{ latitude() }}°</span>
-                </div>
-                <div class="coord-item">
-                  <span class="coord-label">Längengrad:</span>
-                  <span class="coord-value">{{ longitude() }}°</span>
-                </div>
-              </div>
-            } @else {
-              <div class="no-location-box">
-                <mat-icon class="search-icon animate-spin">autorenew</mat-icon>
-                <p>Warte auf GPS-Koordinaten des Ersthelfers…</p>
-              </div>
-            }
+        <!-- Karte oder Placeholder -->
+        @if (mapUrl !== null) {
+          <div class="map-wrapper">
+
+            <!-- Status-Overlay oben links -->
+            <div class="map-overlay-left">
+              <span class="gps-badge">GPS</span>
+              <span class="gps-status">Live-Standort</span>
+            </div>
+
+            <!-- Koordinaten-Overlay unten links -->
+            <div class="map-overlay-bottom">
+              <span class="coord-chip">
+                <mat-icon class="coord-chip-icon">my_location</mat-icon>
+                {{ latitude() }}°, {{ longitude() }}°
+              </span>
+            </div>
+
+            <!-- Fullscreen Button -->
+            <button
+              class="map-fullscreen-btn"
+              (click)="toggleMapFullscreen()"
+              aria-label="Karte als Vollbild"
+              title="Vollbild">
+              <mat-icon>fullscreen</mat-icon>
+            </button>
+
+            <iframe #mapIframe [src]="mapUrl!" width="100%" height="100%"
+              style="border:0; display:block;" loading="lazy"></iframe>
           </div>
-        </mat-card-content>
-      </mat-card>
+        } @else {
+          <div class="map-wrapper map-waiting">
+            <mat-icon class="waiting-icon animate-spin">autorenew</mat-icon>
+            <p>Warte auf GPS-Koordinaten des Ersthelfers…</p>
+          </div>
+        }
+
+      </div>
 
     </div>
 
