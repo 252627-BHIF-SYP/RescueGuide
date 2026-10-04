@@ -52,6 +52,8 @@ class WebRTCService {
     socket = IO.io(serverUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
+      'forceNew': true,
+      'multiplex': false,
     });
 
     socket!.onAny((event, data) {
