@@ -6,6 +6,7 @@ import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
 import { CallContextService } from '../services/call-context.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-video-call',
@@ -34,6 +35,26 @@ export class VideoCall implements OnInit, OnDestroy {
   // Lokale Warteschlange
   private iceCandidateQueue: any[] = [];
   private isRemoteDescriptionSet = false;
+  private pendingOfferSubscription?: Subscription;
+  private acceptSubscription?: Subscription;
+  private readonly onIceCandidate = async (p: any) => {
+    if (!p.candidate) return;
+    if (this.pc && this.isRemoteDescriptionSet) {
+      try {
+        await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
+        console.log('🧊 [WebRTC] ICE Candidate von Gegenseite erfolgreich verarbeitet.');
+      } catch (e) {
+        console.warn('⚠️ [WebRTC] Fehler beim Hinzufügen des ICE Candidates:', e);
+      }
+    } else {
+      console.log('⏳ [WebRTC] PC noch nicht bereit. Candidate in lokale Warteschlange gelegt.');
+      this.iceCandidateQueue.push(p.candidate);
+    }
+  };
+  private readonly onCallEnd = () => {
+    console.log('🛑 [Signal] Gegenseite (Handy) hat den Anruf beendet.');
+    this.closeConnection();
+  };
 
   private signaling = inject(SignalingService);
   private callContext = inject(CallContextService);
@@ -61,7 +82,7 @@ export class VideoCall implements OnInit, OnDestroy {
 
     this.initSignaling();
 
-    this.callContext.getPendingOffer$().subscribe((offer) => {
+    this.pendingOfferSubscription = this.callContext.getPendingOffer$().subscribe((offer) => {
       if (offer) {
         console.log('📡 [Signal] Neues Angebot im Context Service gefunden von:', offer.from);
         this.incomingFrom = offer.from;
@@ -75,7 +96,7 @@ export class VideoCall implements OnInit, OnDestroy {
       }
     });
 
-    this.callContext.getAccept$().subscribe(() => {
+    this.acceptSubscription = this.callContext.getAccept$().subscribe(() => {
       console.log('✅ [CallContext] Anruf wurde extern via Service angenommen.');
       const pending = this.callContext.getPendingOffer();
       if (pending) this.startAcceptedOffer(pending);
@@ -83,35 +104,22 @@ export class VideoCall implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.endCall();
+    this.pendingOfferSubscription?.unsubscribe();
+    this.acceptSubscription?.unsubscribe();
+    this.signaling.off('ice-candidate', this.onIceCandidate);
+    this.signaling.off('call-end', this.onCallEnd);
+    if (this.activeCallId) {
+      this.signaling.emit('call-end', { to: this.activeCallId, from: this.myId });
+    }
+    this.closeConnection();
   }
 
   private initSignaling() {
     console.log('🔌 [Signal] Verbinde mit Signaling-Server:', this.serverUrl);
     this.signaling.connect(this.serverUrl, this.myId);
 
-    this.signaling.on('ice-candidate', async (p: any) => {
-      if (p.candidate) {
-        if (this.pc && this.isRemoteDescriptionSet) {
-          try {
-            await this.pc.addIceCandidate(new RTCIceCandidate(p.candidate));
-            console.log('🧊 [WebRTC] ICE Candidate von Gegenseite erfolgreich verarbeitet.');
-          } catch (e) {
-            console.warn('⚠️ [WebRTC] Fehler beim Hinzufügen des ICE Candidates:', e);
-          }
-        } else {
-          console.log(
-            '⏳ [WebRTC] PC noch nicht bereit. Candidate in lokale Warteschlange gelegt.',
-          );
-          this.iceCandidateQueue.push(p.candidate);
-        }
-      }
-    });
-
-    this.signaling.on('call-end', () => {
-      console.log('🛑 [Signal] Gegenseite (Handy) hat den Anruf beendet.');
-      this.closeConnection();
-    });
+    this.signaling.on('ice-candidate', this.onIceCandidate);
+    this.signaling.on('call-end', this.onCallEnd);
   }
 
   async acceptCall() {
