@@ -43,8 +43,9 @@ export class VideoCall implements OnInit, OnDestroy {
     if (this.PREVIEW_MODE) {
       // TEMP: Zeige eigene Webcam als Platzhalter für das Styling
       this.activeCallId = 'VORSCHAU – Echtzeit-Stream';
-      navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        .then(stream => {
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: false })
+        .then((stream) => {
           setTimeout(() => {
             if (this.remoteVideo?.nativeElement) {
               this.remoteVideo.nativeElement.srcObject = stream;
@@ -130,12 +131,20 @@ export class VideoCall implements OnInit, OnDestroy {
 
   async processOffer(from: string, sdp: any) {
     try {
-      console.log('🎙️ [Media] Fordere reines Audio-Mikrofon an (kein lokales Video)...');
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: false,
-        audio: true,
-      });
-      console.log('✅ [Media] Mikrofon-Stream erfolgreich initialisiert.');
+      if (navigator.mediaDevices?.getUserMedia) {
+        try {
+          console.log('🎙️ [Media] Fordere Audio-Mikrofon an...');
+          this.localStream = await navigator.mediaDevices.getUserMedia({
+            video: false,
+            audio: true,
+          });
+          console.log('✅ [Media] Mikrofon-Stream erfolgreich initialisiert.');
+        } catch (err) {
+          console.warn('⚠️ [Media] Mikrofon nicht verfügbar; empfange den Stream nur.', err);
+        }
+      } else {
+        console.warn('⚠️ [Media] Unsicherer Seitenkontext; empfange den Stream ohne Mikrofon.');
+      }
 
       console.log('🌐 [WebRTC] Erstelle PeerConnection...');
       this.pc = new RTCPeerConnection({
@@ -148,7 +157,7 @@ export class VideoCall implements OnInit, OnDestroy {
         );
       };
 
-      this.localStream.getTracks().forEach((t) => {
+      this.localStream?.getTracks().forEach((t) => {
         console.log(`📤 [WebRTC] Sende eigenen Track an Handy: ${t.kind}`);
         this.pc!.addTrack(t, this.localStream!);
       });
@@ -196,6 +205,14 @@ export class VideoCall implements OnInit, OnDestroy {
 
       console.log('🤝 [WebRTC] Setze Remote-Description (SDP-Offer vom Handy)...');
       await this.pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      const localMediaKinds = new Set(
+        this.localStream?.getTracks().map((track) => track.kind) ?? [],
+      );
+      this.pc.getTransceivers().forEach((transceiver) => {
+        transceiver.direction = localMediaKinds.has(transceiver.receiver.track.kind)
+          ? 'sendrecv'
+          : 'recvonly';
+      });
 
       // PC ist jetzt bereit für alle Candidates!
       this.isRemoteDescriptionSet = true;
@@ -230,6 +247,11 @@ export class VideoCall implements OnInit, OnDestroy {
       });
     } catch (err) {
       console.error('❌ [WebRTC] Fehler während des Verbindungsaufbaus:', err);
+      this.signaling.emit('call-end', {
+        to: from,
+        from: this.myId,
+        reason: 'media-setup-failed',
+      });
       this.closeConnection();
     }
   }
