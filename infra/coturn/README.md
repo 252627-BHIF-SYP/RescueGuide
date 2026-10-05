@@ -11,9 +11,16 @@ The GitHub Actions workflow builds and publishes the backend and Controlcenter i
 
 Commit and push the TURN changes to `main`, then wait for the `Build and Push Images` workflow to finish successfully. The mobile APK is built separately and installed on the phone.
 
-## 2. Update the VM's Compose configuration once
+## 2. Update the VM's Compose configuration
 
-The VM must have an updated Compose file that includes the `turn-server` service, passes `TURN_SHARED_SECRET` and the TURN URLs to the backend, and uses the GHCR image names above. Docker images do not contain or update this Compose configuration. Transfer the updated `infra/docker/docker-compose.yaml` and `infra/coturn/turn.conf` to the VM once, or make the same changes to the Compose/config files already used there.
+The Docker images do not contain the Compose file or Coturn configuration. From Windows PowerShell at the repository root, transfer the updated files to the VM:
+
+```powershell
+scp infra/docker/docker-compose.yaml rescueguide@rescueguide:~/RescueGuide/infra/docker/docker-compose.yaml
+scp infra/coturn/turn.conf rescueguide@rescueguide:~/RescueGuide/infra/coturn/turn.conf
+```
+
+The existing containers use Compose project name `rescueguide` and Docker network `rescueguide_default`; the Compose file declares that network as external to avoid creating a second network. Always pass `-p rescueguide` when running Compose from the nested directory.
 
 ## 3. Create the TURN secret on the VM
 
@@ -39,18 +46,18 @@ Apply the rules in the VPN route/ACL and any active VM firewall. The current VM 
 
 ## 5. Pull and restart services on the VM
 
-After the workflow has published the images, and after the Compose/config files and `.env` are in place:
+After GitHub Actions has published the images and the Compose/config files and `.env` are in place:
 
 ```bash
 cd ~/RescueGuide/infra/docker
-docker login ghcr.io
-docker compose --env-file .env config -q
-docker compose --env-file .env pull backend control-center signaling-server turn-server
-docker compose --env-file .env up -d --no-build backend control-center signaling-server turn-server
-docker compose logs --tail=100 turn-server backend
+docker compose -p rescueguide --env-file .env config -q
+docker compose -p rescueguide --env-file .env pull backend control-center signaling-server turn-server
+docker compose -p rescueguide --env-file .env up -d --no-build --no-deps backend control-center signaling-server turn-server
+docker compose -p rescueguide --env-file .env ps
+docker compose -p rescueguide --env-file .env logs --tail=100 turn-server backend
 ```
 
-Authenticate with a GitHub token that can read the package if GHCR prompts for login. Coturn uses host networking and binds to `192.168.6.10`. Check the logs for address-binding or authentication errors.
+The Compose file attaches to the existing external Docker network `rescueguide_default`. Authenticate with `docker login ghcr.io` using a GitHub token that can read the package if GHCR prompts for login. The update deliberately omits `db` and `client-app`: the existing database must not be recreated, and the client image does not need rebuilding. Coturn uses host networking and binds to `192.168.6.10`. Check the logs for address-binding or authentication errors.
 
 ## 6. Install the APK and verify
 

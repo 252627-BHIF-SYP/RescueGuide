@@ -2,7 +2,7 @@ services:
     # PostgreSQL Database
     db:
         image: postgres:15-alpine
-        container_name: rescueguide-db
+        container_name: RescueGuide-DB
         restart: unless-stopped
         environment:
             POSTGRES_USER: postgres
@@ -18,10 +18,7 @@ services:
     # ASP.NET Core Backend API
     backend:
         image: ghcr.io/252627-bhif-syp/rescueguide-backend:latest
-        build:
-            context: ../../apps/backend
-            dockerfile: RescueGuideDB.WebApp/Dockerfile
-        container_name: rescueguide-backend
+        container_name: RescueGuide-Backend
         depends_on:
             - db
         environment:
@@ -40,10 +37,7 @@ services:
     # WebRTC Signaling Server
     signaling-server:
         image: ghcr.io/252627-bhif-syp/rescueguide-signaling:latest
-        build:
-            context: ../../apps/signaling
-            dockerfile: Dockerfile
-        container_name: rescueguide-signaling
+        container_name: rescue-signaling
         ports:
             - "3000:3000"
         restart: unless-stopped
@@ -69,10 +63,8 @@ services:
 
     # Client App Frontend
     client-app:
-        build:
-            context: ../../apps/web-ca/clientapp-frontend
-            dockerfile: Dockerfile
-        container_name: rescueguide-client
+        image: ghcr.io/252627-bhif-syp/rescueguide-client:latest
+        container_name: rescue-client
         ports:
             - "80:80"
         depends_on:
@@ -88,10 +80,7 @@ services:
     # Control Center Frontend
     control-center:
         image: ghcr.io/252627-bhif-syp/rescueguide-controlcenter:latest
-        build:
-            context: ../../apps/web-cc/controlcenter-frontend
-            dockerfile: Dockerfile
-        container_name: rescueguide-control-center
+        container_name: rescue-control
         ports:
             - "81:80"
         depends_on:
@@ -110,4 +99,5 @@ volumes:
 
 networks:
     rescueguide-network:
-        driver: bridge
+        external: true
+        name: rescueguide_default
