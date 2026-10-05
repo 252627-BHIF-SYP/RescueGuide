@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:developer';
+import 'dart:io';
 
 class WebRTCService {
   IO.Socket? socket;
@@ -24,6 +26,7 @@ class WebRTCService {
   Function()? onCallAccepted;
 
   Map<String, dynamic>? _currentLocation;
+  late String _serverUrl;
 
   void setLocation(double lat, double lng, String address) {
     _currentLocation = {'latitude': lat, 'longitude': lng, 'address': address};
@@ -38,6 +41,7 @@ class WebRTCService {
   }
 
   Future<void> init(String serverUrl) async {
+    _serverUrl = serverUrl;
     await localRenderer.initialize();
     await remoteRenderer.initialize();
 
@@ -210,10 +214,12 @@ class WebRTCService {
   }
 
   Future<RTCPeerConnection> _createPeerConnection() async {
+    final turnIceServers = await _fetchTurnIceServers();
     Map<String, dynamic> configuration = {
       'iceServers': [
         {'urls': 'stun:stun.l.google.com:19302'},
         {'urls': 'stun:stun1.l.google.com:19302'},
+        ...turnIceServers,
       ],
       'sdpSemantics': 'unified-plan',
     };
@@ -237,6 +243,34 @@ class WebRTCService {
     };
 
     return pc;
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchTurnIceServers() async {
+    final signalingUri = Uri.parse(_serverUrl);
+    final credentialsUri = signalingUri.replace(
+      port: 5001,
+      path: '/api/turn/credentials',
+      query: null,
+      fragment: null,
+    );
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 8);
+
+    try {
+      final request = await client.getUrl(credentialsUri);
+      final response = await request.close();
+      if (response.statusCode != HttpStatus.ok) {
+        throw HttpException(
+          'TURN credentials request failed with status ${response.statusCode}',
+          uri: credentialsUri,
+        );
+      }
+
+      final responseBody = await response.transform(utf8.decoder).join();
+      final payload = jsonDecode(responseBody) as Map<String, dynamic>;
+      return List<Map<String, dynamic>>.from(payload['iceServers'] as List);
+    } finally {
+      client.close(force: true);
+    }
   }
 
   void dispose() {

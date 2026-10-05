@@ -7,6 +7,12 @@ import { environment } from '../../environments/environment';
 import { CallContextService } from '../services/call-context.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+
+interface TurnCredentialsResponse {
+  iceServers: RTCIceServer[];
+}
 
 @Component({
   selector: 'app-video-call',
@@ -59,6 +65,7 @@ export class VideoCall implements OnInit, OnDestroy {
   private signaling = inject(SignalingService);
   private callContext = inject(CallContextService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   ngOnInit() {
     if (this.PREVIEW_MODE) {
@@ -154,9 +161,13 @@ export class VideoCall implements OnInit, OnDestroy {
         console.warn('⚠️ [Media] Unsicherer Seitenkontext; empfange den Stream ohne Mikrofon.');
       }
 
+      const turnCredentials = await firstValueFrom(
+        this.http.get<TurnCredentialsResponse>(`${environment.apiUrl}/turn/credentials`),
+      );
+
       console.log('🌐 [WebRTC] Erstelle PeerConnection...');
       this.pc = new RTCPeerConnection({
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, ...turnCredentials.iceServers],
       });
 
       this.pc.oniceconnectionstatechange = () => {

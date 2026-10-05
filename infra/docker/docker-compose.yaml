@@ -1,92 +1,110 @@
 services:
-  # PostgreSQL Database
-  db:
-    image: postgres:15-alpine
-    container_name: rescueguide-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: RescueGuideDB
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - rescueguide-network
+    # PostgreSQL Database
+    db:
+        image: postgres:15-alpine
+        container_name: rescueguide-db
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: RescueGuideDB
+        ports:
+            - "5432:5432"
+        volumes:
+            - db_data:/var/lib/postgresql/data
+        networks:
+            - rescueguide-network
 
-  # ASP.NET Core Backend API
-  backend:
-    build:
-      context: ../../apps/backend
-      dockerfile: RescueGuideDB.WebApp/Dockerfile
-    container_name: rescueguide-backend
-    depends_on:
-      - db
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:80
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
-    ports:
-      - "5001:80"
-    restart: unless-stopped
-    networks:
-      - rescueguide-network
+    # ASP.NET Core Backend API
+    backend:
+        build:
+            context: ../../apps/backend
+            dockerfile: RescueGuideDB.WebApp/Dockerfile
+        container_name: rescueguide-backend
+        depends_on:
+            - db
+        environment:
+            ASPNETCORE_ENVIRONMENT: Production
+            ASPNETCORE_URLS: http://+:80
+            ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=RescueGuideDB;Username=postgres;Password=postgres
+            Turn__SharedSecret: ${TURN_SHARED_SECRET:?Set TURN_SHARED_SECRET in infra/docker/.env}
+            Turn__Urls__0: turn:192.168.6.10:3478?transport=udp
+            Turn__Urls__1: turn:192.168.6.10:3478?transport=tcp
+        ports:
+            - "5001:80"
+        restart: unless-stopped
+        networks:
+            - rescueguide-network
 
-  # WebRTC Signaling Server
-  signaling-server:
-    build:
-      context: ../../apps/signaling
-      dockerfile: Dockerfile
-    container_name: rescueguide-signaling
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-    networks:
-      - rescueguide-network
-    environment:
-      NODE_ENV: production
+    # WebRTC Signaling Server
+    signaling-server:
+        build:
+            context: ../../apps/signaling
+            dockerfile: Dockerfile
+        container_name: rescueguide-signaling
+        ports:
+            - "3000:3000"
+        restart: unless-stopped
+        networks:
+            - rescueguide-network
+        environment:
+            NODE_ENV: production
 
-  # Client App Frontend
-  client-app:
-    build:
-      context: ../../apps/web-ca/clientapp-frontend
-      dockerfile: Dockerfile
-    container_name: rescueguide-client
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-      - signaling-server
-    restart: unless-stopped
-    networks:
-      - rescueguide-network
-    environment:
-      NGINX_HOST: localhost
-      NGINX_PORT: 80
+    # VPN-only TURN relay for WebRTC media
+    turn-server:
+        image: coturn/coturn:4.6.3
+        container_name: rescueguide-turn
+        network_mode: host
+        restart: unless-stopped
+        volumes:
+            - ../coturn/turn.conf:/etc/coturn/turn.conf:ro
+        command:
+            - -c
+            - /etc/coturn/turn.conf
+            - --static-auth-secret=${TURN_SHARED_SECRET:?Set TURN_SHARED_SECRET in infra/docker/.env}
+            - --no-cli
+            - --log-file=stdout
 
-  # Control Center Frontend
-  control-center:
-    build:
-      context: ../../apps/web-cc/controlcenter-frontend
-      dockerfile: Dockerfile
-    container_name: rescueguide-control-center
-    ports:
-      - "81:80"
-    depends_on:
-      - backend
-      - signaling-server
-    restart: unless-stopped
-    networks:
-      - rescueguide-network
-    environment:
-      NGINX_HOST: localhost
-      NGINX_PORT: 80
+    # Client App Frontend
+    client-app:
+        build:
+            context: ../../apps/web-ca/clientapp-frontend
+            dockerfile: Dockerfile
+        container_name: rescueguide-client
+        ports:
+            - "80:80"
+        depends_on:
+            - backend
+            - signaling-server
+        restart: unless-stopped
+        networks:
+            - rescueguide-network
+        environment:
+            NGINX_HOST: localhost
+            NGINX_PORT: 80
+
+    # Control Center Frontend
+    control-center:
+        build:
+            context: ../../apps/web-cc/controlcenter-frontend
+            dockerfile: Dockerfile
+        container_name: rescueguide-control-center
+        ports:
+            - "81:80"
+        depends_on:
+            - backend
+            - signaling-server
+        restart: unless-stopped
+        networks:
+            - rescueguide-network
+        environment:
+            NGINX_HOST: localhost
+            NGINX_PORT: 80
 
 volumes:
-  db_data:
-    driver: local
+    db_data:
+        driver: local
 
 networks:
-  rescueguide-network:
-    driver: bridge
+    rescueguide-network:
+        driver: bridge
