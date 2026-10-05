@@ -45,7 +45,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC Frontend + Backend (AuthController) |
+| **Komponente** | CC Frontend + Backend |
 | **Akzeptanzkriterien** | Registrierungsformular vorhanden; JWT-Token wird ausgestellt; Fehler bei doppelter E-Mail |
 
 ---
@@ -59,7 +59,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC Frontend + Backend (AuthController, JWT) |
+| **Komponente** | CC Frontend + Backend |
 | **Akzeptanzkriterien** | Login-Seite vorhanden; JWT-Token gespeichert; Route-Guard schützt gesicherte Seiten |
 
 ---
@@ -73,7 +73,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC Frontend (logout-Komponente) |
+| **Komponente** | CC Frontend |
 | **Akzeptanzkriterien** | Token wird gelöscht; Weiterleitung zur Login-Seite |
 
 ---
@@ -86,8 +86,8 @@ RescueGuide besteht aus drei Hauptkomponenten:
 | Feld | Wert |
 |------|------|
 | **Priorität** | 🟠 Hoch |
-| **Status** | ✅ Fertig |
-| **Komponente** | Mobile App (login-Screen), Backend |
+| **Status** | 📋 Geplant |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Login-Screen vorhanden; Token wird gespeichert |
 
 ---
@@ -100,8 +100,8 @@ RescueGuide besteht aus drei Hauptkomponenten:
 | Feld | Wert |
 |------|------|
 | **Priorität** | 🟡 Mittel |
-| **Status** | 🔄 In Arbeit |
-| **Komponente** | Mobile App (profile-Screen), Backend (ClientController) |
+| **Status** | 📋 Geplant |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Felder: Name, Geburtsdatum, Blutgruppe, Allergien, Vorerkrankungen, Medikamente; Daten werden gespeichert und abrufbar |
 
 ---
@@ -110,14 +110,14 @@ RescueGuide besteht aus drei Hauptkomponenten:
 
 ### 🔴 US-010 – Notfallmodus starten
 **Als** Ersthelfer  
-**möchte ich** den Notfallmodus mit einem einzigen Klick starten,  
+**möchte ich** den Notfallmodus möglichst schnell starten,  
 **damit** im Stressfall keine Zeit verloren geht.
 
 | Feld | Wert |
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Mobile App (panic_screen, panic_controller) |
+| **Komponente** | Mobile App |
 | **Akzeptanzkriterien** | Panic-Button auf Startscreen; Notfall wird im Backend angelegt; Connecting-Screen wird angezeigt |
 
 ---
@@ -131,7 +131,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Mobile App (connecting_screen, webrtc_service), Signaling-Server |
+| **Komponente** | Mobile App, Signaling-Server |
 | **Akzeptanzkriterien** | WebRTC-Verbindung wird aufgebaut; Connecting-Screen informiert über Status; Weiterleitung zur Emergency-Page |
 
 ---
@@ -145,7 +145,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Mobile App + CC (webrtc_service, video-call), Signaling + COTURN |
+| **Komponente** | Mobile App + CC, Signaling + COTURN |
 | **Akzeptanzkriterien** | Bidirektionale Audioverbindung; Mikrofon-Stummschaltung möglich |
 
 ---
@@ -159,7 +159,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Mobile App + CC (webrtc_service, video-call-Komponente), COTURN-Server |
+| **Komponente** | Mobile App + CC, COTURN-Server |
 | **Akzeptanzkriterien** | Kamera-Stream wird an Leitstelle übertragen; Kamera kann deaktiviert werden |
 
 ---
@@ -173,7 +173,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Mobile App (gps-Komponente), Backend (LocationController) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | GPS-Koordinaten werden beim Notfallstart an Backend gesendet; Standort im CC sichtbar |
 
 ---
@@ -187,7 +187,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | Mobile App (emergency_screen), Backend (InstructionStepController) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Anweisungen werden in Echtzeit angezeigt; Fortschritt ist erkennbar |
 
 ---
@@ -201,7 +201,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | CC (emergency-checklist-Komponente), Mobile App |
+| **Komponente** | CC, Mobile App |
 | **Akzeptanzkriterien** | Schritte können als erledigt markiert werden; Fortschrittsanzeige vorhanden |
 
 ---
@@ -215,7 +215,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Mobile App, Backend (EmergencyController → Close-Endpoint) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Notfall wird als "Completed" markiert; EndedAt-Zeitstempel gesetzt |
 
 ---
@@ -243,7 +243,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟢 Niedrig |
 | **Status** | 📋 Geplant |
-| **Komponente** | Mobile App, Backend (InstructionStep-Entity mit Bild-URL) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Animationen/Bilder können pro Schritt hinterlegt und angezeigt werden |
 
 ---
@@ -259,7 +259,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (dashboard-Komponente), Backend (GET /api/emergency/dashboard) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Liste aller Notfälle mit Status, Zeit, Einsatzart, Adresse und Disponenten-Name; nach Datum sortiert |
 
 ---
@@ -273,7 +273,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (emergency-page-Komponente, alarm-notification-Komponente) |
+| **Komponente** | CC |
 | **Akzeptanzkriterien** | Benachrichtigung bei neuem Notfall; Weiterleitung auf Emergency-Page möglich |
 
 ---
@@ -287,7 +287,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (emergency-page), Backend (EmergencyProtocolController) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Felder: Einsatzart, Anrufername, Anrufertyp, Rückrufnummer, Adresse, Anzahl Verletzte, Beschreibung, Disponenten-Name, Datum/Zeit, alarmierte Kräfte (RD/NA/Pol/FW) |
 
 ---
@@ -301,7 +301,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (Kartenintegration), Backend (LocationController, Reverse-Geocoding via Nominatim) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Koordinaten werden im Backend gespeichert; Adresse wird per Reverse-Geocoding ermittelt und im CC angezeigt |
 
 ---
@@ -315,7 +315,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | CC (instruction-menu-Komponente), Backend (PlansController, MeasuresController) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Pläne mit geordneten Maßnahmen können ausgewählt und gesendet werden |
 
 ---
@@ -329,7 +329,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (video-call-Komponente), WebRTC, COTURN |
+| **Komponente** | CC, WebRTC, COTURN |
 | **Akzeptanzkriterien** | Video-Stream wird in der Emergency-Page angezeigt; Fenstergröße ist anpassbar; korrekte Darstellung in der UI |
 
 ---
@@ -343,7 +343,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC, Backend (PUT /api/emergency/{id}/close) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Status auf "Completed"; EndedAt gesetzt; Einsatzart aus Protokoll übernommen |
 
 ---
@@ -357,7 +357,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (instruction-menu), Backend (MeasuresController) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Vollständiges CRUD für Maßnahmen; Maßnahmen haben Name, Beschreibung und optionales Bild |
 
 ---
@@ -371,7 +371,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (instruction-menu), Backend (PlansController mit PlanMeasure.Order) |
+| **Komponente** | CC, Backend |
 | **Akzeptanzkriterien** | Maßnahmen können per Drag-and-Drop oder Pfeil-Buttons sortiert werden; Reihenfolge wird korrekt gespeichert |
 
 ---
@@ -385,7 +385,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟡 Mittel |
 | **Status** | ✅ Fertig |
-| **Komponente** | CC (alarm-notification-Komponente, alarm.service) |
+| **Komponente** | CC |
 | **Akzeptanzkriterien** | Benachrichtigung erscheint; Alarm-Sound wird abgespielt; Klick leitet auf Notfall-Seite |
 
 ---
@@ -415,7 +415,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | Mobile App (fasthelp-Screen) |
+| **Komponente** | Mobile App |
 | **Akzeptanzkriterien** | FastHelp-Modus ist ohne Login/Internet zugänglich; häufige Notfallszenarien verfügbar |
 
 ---
@@ -429,7 +429,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | Mobile App (fasthelp), Backend (FirstHelpController, InstructionCategoryController) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Kategoriebaum mit Ja/Nein-Entscheidungen; Führt zu konkreter Schritt-für-Schritt-Anleitung |
 
 ---
@@ -473,7 +473,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | Mobile App (quiz-Screen, quiz-service), Backend (QuizController, QuestionController) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | Quizauswahl nach Thema; Multiple-Choice-Fragen mit sofortigem Feedback |
 
 ---
@@ -487,7 +487,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | Mobile App (quiz-Screen, quiz-service) |
+| **Komponente** | Mobile App |
 | **Akzeptanzkriterien** | Punktestand angezeigt; richtige Antworten für falsch beantwortete Fragen sichtbar |
 
 ---
@@ -559,7 +559,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Signaling-Server (apps/signaling), CC (signaling.service) |
+| **Komponente** | Signaling-Server, CC |
 | **Akzeptanzkriterien** | WebSocket-basiertes Signaling; SDP-Austausch und ICE-Kandidaten-Weiterleitung funktionieren |
 
 ---
@@ -573,7 +573,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Infra (infra/), COTURN |
+| **Komponente** | Infra, COTURN |
 | **Akzeptanzkriterien** | TURN-Relay für Verbindungen ohne direkten Peer-Kontakt; STUN für NAT-Erkennung |
 
 ---
@@ -587,7 +587,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🔴 Kritisch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Backend (ASP.NET Core, PostgreSQL) |
+| **Komponente** | Backend |
 | **Akzeptanzkriterien** | Alle Controller implementiert; JWT-Auth; OpenAPI/Scalar-Dokumentation vorhanden |
 
 ---
@@ -601,7 +601,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Alle Komponenten (Dockerfiles), Infra |
+| **Komponente** | Alle Komponenten, Infra |
 | **Akzeptanzkriterien** | Docker-Images für Backend, CC-Frontend, CA-Frontend, Signaling; docker-compose vorhanden |
 
 ---
@@ -629,7 +629,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟡 Mittel |
 | **Status** | ✅ Fertig |
-| **Komponente** | Backend (ReverseGeocodingService, Nominatim OpenStreetMap) |
+| **Komponente** | Backend |
 | **Akzeptanzkriterien** | GPS-Koordinaten werden via Nominatim in eine Adresse umgewandelt; gecacht zur Vermeidung von API-Limits |
 
 ---
@@ -645,7 +645,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ In Arbeit |
-| **Komponente** | Mobile App (UI-Design) |
+| **Komponente** | Mobile App |
 | **Akzeptanzkriterien** | WCAG 2.1 AA Kontrastverhältnis; Buttons mindestens 48x48 dp |
 
 ---
@@ -731,7 +731,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | ✅ Fertig |
-| **Komponente** | Gesamte Infrastruktur (HTTPS, DTLS für WebRTC) |
+| **Komponente** | Gesamte Infrastruktur |
 | **Akzeptanzkriterien** | HTTPS für alle API-Calls; WebRTC nutzt DTLS/SRTP-Verschlüsselung |
 
 ---
@@ -761,7 +761,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟠 Hoch |
 | **Status** | 📋 Geplant |
-| **Komponente** | Inhalt (Maßnahmen-Datenbank im Backend) |
+| **Komponente** | Inhalt |
 | **Akzeptanzkriterien** | Quellen für alle Anleitungen dokumentiert; regelmäßige Review-Zyklen definiert |
 
 ---
@@ -805,7 +805,7 @@ RescueGuide besteht aus drei Hauptkomponenten:
 |------|------|
 | **Priorität** | 🟢 Niedrig |
 | **Status** | 💡 Idee |
-| **Komponente** | Mobile App, Backend (KI-Integration) |
+| **Komponente** | Mobile App, Backend |
 | **Akzeptanzkriterien** | KI-Einschätzung mit klarem Disclaimer; Vorschlag von passender Anleitung; KI ersetzt keine Leitstelle |
 
 ---
@@ -823,41 +823,3 @@ RescueGuide besteht aus drei Hauptkomponenten:
 | **Akzeptanzkriterien** | Prominenter Disclaimer; muss aktiv bestätigt werden |
 
 ---
-
-## Zusammenfassung nach Status
-
-| Status | Anzahl |
-|--------|--------|
-| ✅ Fertig | 22 |
-| 🔄 In Arbeit | 4 |
-| 📋 Geplant | 16 |
-| 💡 Idee | 3 |
-| **Gesamt** | **45** |
-
-## Zusammenfassung nach Priorität
-
-| Priorität | Anzahl |
-|-----------|--------|
-| 🔴 Kritisch | 11 |
-| 🟠 Hoch | 18 |
-| 🟡 Mittel | 13 |
-| 🟢 Niedrig | 5 |
-
----
-
-## Technischer Stack (Referenz)
-
-| Komponente | Technologie |
-|-----------|------------|
-| Mobile App (Flutter) | Dart / Flutter |
-| Client Web-App (CA) | Angular 19 |
-| Control Center (CC) | Angular 19 |
-| Backend | ASP.NET Core 9, C# |
-| Datenbank | PostgreSQL (EF Core) |
-| Authentifizierung | JWT Bearer Tokens |
-| Echtzeit-Kommunikation | WebRTC (Audio/Video) |
-| Signaling | Custom WebSocket-Server |
-| NAT-Traversal | COTURN (STUN/TURN) |
-| Deployment | Docker, GitHub Actions |
-| Reverse Geocoding | Nominatim (OpenStreetMap) |
-| API-Dokumentation | Scalar / OpenAPI |
