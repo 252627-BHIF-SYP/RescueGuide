@@ -17,6 +17,7 @@ services:
 
     # ASP.NET Core Backend API
     backend:
+        image: ghcr.io/252627-bhif-syp/rescueguide-backend:latest
         build:
             context: ../../apps/backend
             dockerfile: RescueGuideDB.WebApp/Dockerfile
@@ -38,6 +39,7 @@ services:
 
     # WebRTC Signaling Server
     signaling-server:
+        image: ghcr.io/252627-bhif-syp/rescueguide-signaling:latest
         build:
             context: ../../apps/signaling
             dockerfile: Dockerfile
@@ -85,6 +87,7 @@ services:
 
     # Control Center Frontend
     control-center:
+        image: ghcr.io/252627-bhif-syp/rescueguide-controlcenter:latest
         build:
             context: ../../apps/web-cc/controlcenter-frontend
             dockerfile: Dockerfile

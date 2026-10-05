@@ -1,47 +1,59 @@
-# VPN-only TURN deployment
+# VPN-only TURN deployment with pulled images
 
-Coturn relays WebRTC media between the mobile app and Controlcenter. This deployment binds it to the RescueGuide VM at `192.168.6.10` and is intended to be reachable only through the existing VPN route. Do not add public router forwarding.
+Coturn relays WebRTC media between the mobile app and Controlcenter. It binds to the RescueGuide VM at `192.168.6.10` and is intended to be reachable only through the existing VPN route. Do not add public router forwarding.
 
-## 1. Create the shared secret on the VM
+## 1. Publish the updated application images
 
-From the repository's `infra/docker` directory, create an ignored environment file and generate a secret locally:
+The GitHub Actions workflow builds and publishes the backend and Controlcenter images to GHCR when changes are pushed to `main`:
+
+- `ghcr.io/252627-bhif-syp/rescueguide-backend:latest`
+- `ghcr.io/252627-bhif-syp/rescueguide-controlcenter:latest`
+
+Commit and push the TURN changes to `main`, then wait for the `Build and Push Images` workflow to finish successfully. The mobile APK is built separately and installed on the phone.
+
+## 2. Update the VM's Compose configuration once
+
+The VM must have an updated Compose file that includes the `turn-server` service, passes `TURN_SHARED_SECRET` and the TURN URLs to the backend, and uses the GHCR image names above. Docker images do not contain or update this Compose configuration. Transfer the updated `infra/docker/docker-compose.yaml` and `infra/coturn/turn.conf` to the VM once, or make the same changes to the Compose/config files already used there.
+
+## 3. Create the TURN secret on the VM
+
+In the VM's `infra/docker` directory:
 
 ```bash
-cp turn.env.example .env
+if [ ! -f .env ]; then cp turn.env.example .env; fi
 openssl rand -hex 32
+nano .env
 ```
 
-Put the generated value after `TURN_SHARED_SECRET=` in `infra/docker/.env`. Keep this file on the VM and do not commit or share it. Coturn uses the secret to validate time-limited credentials; the backend uses the same value to generate them.
+Replace the example value after `TURN_SHARED_SECRET=` with the generated value. Keep `.env` on the VM; never commit or share it. Coturn validates temporary credentials with this secret, while the backend uses the same value to issue them. Do not change it independently in only one service.
 
-## 2. Allow VPN traffic to the VM
+## 4. Allow the VPN traffic
 
-The VM must receive these inbound ports from the VPN clients:
+Allow inbound traffic from the VPN clients to `192.168.6.10`:
 
 - UDP `3478` for TURN
-- UDP `49152-49252` for relayed media
 - TCP `3478` as a fallback TURN transport
+- UDP `49152-49252` for relayed media
 
-Allow these ports in the VM firewall and the VPN route/ACL. Restrict access to the VPN client network. No public DNS record, TLS listener, or router port forwarding is used. The current VM has UFW disabled; do not enable it without adding the required VPN-scoped rules first.
+Apply the rules in the VPN route/ACL and any active VM firewall. The current VM has UFW disabled. No public DNS record, TLS listener, or router port forwarding is needed.
 
-## 3. Start the services
+## 5. Pull and restart services on the VM
 
-On the VM:
+After the workflow has published the images, and after the Compose/config files and `.env` are in place:
 
 ```bash
 cd ~/RescueGuide/infra/docker
+docker login ghcr.io
 docker compose --env-file .env config -q
-docker compose --env-file .env up -d --build backend turn-server
-docker compose logs -f turn-server backend
+docker compose --env-file .env pull backend control-center signaling-server turn-server
+docker compose --env-file .env up -d --no-build backend control-center signaling-server turn-server
+docker compose logs --tail=100 turn-server backend
 ```
 
-The backend needs the shared secret and TURN URLs from Compose. Coturn runs with host networking and binds to `192.168.6.10`. Confirm it starts without address-binding or configuration errors.
+Authenticate with a GitHub token that can read the package if GHCR prompts for login. Coturn uses host networking and binds to `192.168.6.10`. Check the logs for address-binding or authentication errors.
 
-## 4. Deploy the clients
+## 6. Install the APK and verify
 
-Build and deploy the Controlcenter with the repository's normal Compose deployment. Build a new Flutter APK after pulling the change; the mobile app calls the backend on `192.168.6.10:5001` for short-lived TURN credentials before creating its peer connection.
+Install the newly built Flutter APK. Ensure the phone and Controlcenter are connected to the VPN, then start a call. In Firefox `about:webrtc`, the selected candidate pair should contain a relay candidate and ICE should reach `connected` or `completed`. If it remains failed, check VPN ACL/firewall access to UDP `3478` and `49152-49252`, then inspect `docker compose logs turn-server`.
 
-Both clients receive the same TURN URLs and temporary username/credential from `GET /api/turn/credentials`. The API limits this endpoint to 10 requests per minute per source IP. The shared secret is never sent to either client.
-
-## 5. Verify
-
-Make sure both devices are connected to the VPN. Start a call and inspect Firefox `about:webrtc`; the selected candidate pair should include a relay candidate. The ICE state should become `connected` or `completed`. If it stays failed, check the VPN ACL/firewall for UDP `3478` and `49152-49252`, then inspect `docker compose logs turn-server`.
+Both clients request short-lived credentials from `GET /api/turn/credentials`; the API limits requests to 10 per minute per source IP. The shared secret is never sent to either client.
