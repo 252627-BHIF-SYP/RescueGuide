@@ -382,6 +382,75 @@ $shadow-md:   0 2px 6px rgba(0,0,0,.10);
 }
 
 
+// ── Tab Switcher ──────────────────────────────────────────────────────
+.tab-switcher {
+  display: flex;
+  gap: 0;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  flex-shrink: 0;
+
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: $text-muted;
+    transition: all 0.2s ease;
+    position: relative;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover:not(.active) {
+      background: #f8f9fa;
+      color: $text;
+    }
+
+    &.active {
+      color: $accent;
+      background: #fdf2f6;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        width: 80%;
+        height: 2.5px;
+        background: $accent;
+        border-radius: 2px 2px 0 0;
+      }
+    }
+
+    // Trennlinie zwischen den Tabs
+    &:not(:last-child) {
+      border-right: 1px solid $border;
+    }
+  }
+}
+
+// ── Tab Content ───────────────────────────────────────────────────────
+.tab-content-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 // ── Checklist wrapper ─────────────────────────────────────────────────
 .checklist-wrapper {
   flex: 1;
@@ -390,6 +459,19 @@ $shadow-md:   0 2px 6px rgba(0,0,0,.10);
   flex-direction: column;
 
   app-emergency-checklist {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+// ── Plan selector wrapper ─────────────────────────────────────────────
+.plan-selector-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  app-plan-selector {
     flex: 1;
     min-height: 0;
   }

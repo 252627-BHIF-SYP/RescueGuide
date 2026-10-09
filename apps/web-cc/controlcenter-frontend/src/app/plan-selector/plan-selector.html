@@ -1,0 +1,109 @@
+<mat-card class="plan-selector-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon class="card-icon">send</mat-icon>
+      Maßnahmen & Pläne senden
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+
+    <!-- Search / Filter -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Suchen…</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Plan oder Maßnahme suchen">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- Plans Section -->
+    <div class="section">
+      <div class="section-header">
+        <mat-icon class="section-icon">playlist_play</mat-icon>
+        <span class="section-title">Pläne</span>
+        <span class="badge">{{ filteredPlans.length }}</span>
+      </div>
+
+      @if (filteredPlans.length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <span>Keine Pläne vorhanden</span>
+        </div>
+      }
+
+      @for (plan of filteredPlans; track plan.id) {
+        <div class="selectable-item plan-item" [class.selected]="isPlanSelected(plan)">
+          <div class="item-main" (click)="togglePlanSelection(plan)">
+            <mat-checkbox
+              [checked]="isPlanSelected(plan)"
+              (change)="togglePlanSelection(plan)"
+              (click)="$event.stopPropagation()"
+              color="primary">
+            </mat-checkbox>
+            <div class="item-info">
+              <span class="item-name">{{ plan.name }}</span>
+              <span class="item-meta">{{ plan.measures.length }} Maßnahmen</span>
+            </div>
+            <button mat-icon-button class="expand-btn" (click)="togglePlanExpand(plan.id); $event.stopPropagation()" aria-label="Details anzeigen">
+              <mat-icon>{{ expandedPlans[plan.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </div>
+          @if (expandedPlans[plan.id]) {
+            <div class="plan-measures-preview">
+              @for (measure of plan.measures; track measure.id; let i = $index) {
+                <div class="preview-measure">
+                  <span class="step-number">{{ i + 1 }}</span>
+                  <span class="step-name">{{ measure.name }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Measures Section -->
+    <div class="section">
+      <div class="section-header">
+        <mat-icon class="section-icon">healing</mat-icon>
+        <span class="section-title">Einzelne Maßnahmen</span>
+        <span class="badge">{{ filteredMeasures.length }}</span>
+      </div>
+
+      @if (filteredMeasures.length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <span>Keine Maßnahmen vorhanden</span>
+        </div>
+      }
+
+      @for (measure of filteredMeasures; track measure.id) {
+        <div class="selectable-item measure-item" [class.selected]="isMeasureSelected(measure)" (click)="toggleMeasureSelection(measure)">
+          <div class="item-main">
+            <mat-checkbox
+              [checked]="isMeasureSelected(measure)"
+              (change)="toggleMeasureSelection(measure)"
+              (click)="$event.stopPropagation()"
+              color="primary">
+            </mat-checkbox>
+            <div class="item-info">
+              <span class="item-name">{{ measure.name }}</span>
+              <span class="item-description">{{ measure.description }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Selection summary + Send -->
+    <div class="send-section">
+      <div class="selection-summary">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ selectedPlans.length }} Pläne, {{ selectedMeasures.length }} Maßnahmen ausgewählt</span>
+      </div>
+      <button mat-flat-button class="btn-send" [disabled]="!hasSelection()" (click)="sendSelection()">
+        <mat-icon>send</mat-icon>
+        An Ersthelfer senden
+      </button>
+    </div>
+
+  </mat-card-content>
+</mat-card>

@@ -70,12 +70,38 @@
 
     </div>
 
-    <!-- Rechter Bereich: Protokoll / Checkliste & Schnellzugriff -->
+    <!-- Rechter Bereich: Protokoll / Plan-Auswahl mit Tab-Switch -->
     <div class="right-column flex-column-gap">
-      
-      <!-- Checkliste / Notfallprotokoll (nimmt vollen Platz ein) -->
-      <div class="checklist-wrapper">
-        <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
+
+      <!-- Tab-Switcher -->
+      <div class="tab-switcher">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'checklist'"
+          (click)="activeTab = 'checklist'">
+          <mat-icon>fact_check</mat-icon>
+          Protokoll
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'plans'"
+          (click)="activeTab = 'plans'">
+          <mat-icon>send</mat-icon>
+          Pläne senden
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content-wrapper">
+        @if (activeTab === 'checklist') {
+          <div class="checklist-wrapper">
+            <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
+          </div>
+        } @else {
+          <div class="plan-selector-wrapper">
+            <app-plan-selector></app-plan-selector>
+          </div>
+        }
       </div>
 
     </div>

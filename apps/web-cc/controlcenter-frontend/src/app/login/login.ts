@@ -39,7 +39,7 @@ export class Login {
   onLogin() {
     // Werte werden bei Signals über () ausgelesen
     this.auth.login(this.username(), this.password()).subscribe({
-      next: () => this.router.navigate(['/emergency-page']),
+      next: () => this.router.navigate(['/dashboard']),
       error: () => this.error.set('Login fehlgeschlagen')
     });
   }

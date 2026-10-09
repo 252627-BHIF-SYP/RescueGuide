@@ -1,0 +1,327 @@
+// ── Design Tokens (matching existing design system) ──────────────────
+$surface:     #ffffff;
+$border:      #e1e2e5;
+$accent:      #a31d58;
+$text:        #1f2328;
+$text-muted:  #74777d;
+$radius:      10px;
+$shadow-sm:   0 1px 3px rgba(0,0,0,.07);
+$shadow-md:   0 2px 6px rgba(0,0,0,.10);
+
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.plan-selector-card {
+  height: 100%;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  overflow-y: auto;
+  background: $surface;
+  transition: box-shadow 0.18s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  mat-card-header {
+    padding: 14px 18px 8px;
+    border-bottom: 1px solid #f0f1f3;
+    flex-shrink: 0;
+
+    mat-card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $text;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      mat-icon,
+      .card-icon {
+        color: $accent;
+        font-size: 19px;
+        width: 19px;
+        height: 19px;
+      }
+    }
+  }
+
+  mat-card-content {
+    padding: 12px 18px 18px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+}
+
+// ── Search field ─────────────────────────────────────────────────────
+.search-field {
+  width: 100%;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// ── Sections ─────────────────────────────────────────────────────────
+.section {
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #f0f1f3;
+
+  .section-icon {
+    color: $accent;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex: 1;
+  }
+
+  .badge {
+    background: #fce7f0;
+    color: $accent;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    min-width: 18px;
+    text-align: center;
+  }
+}
+
+// ── Empty state ──────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 12px;
+  color: $text-muted;
+  font-size: 0.84rem;
+  font-style: italic;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+  }
+}
+
+// ── Selectable Items ─────────────────────────────────────────────────
+.selectable-item {
+  border: 1px solid $border;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: all 0.15s ease;
+  background: $surface;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #c8c9cd;
+    box-shadow: $shadow-sm;
+  }
+
+  &.selected {
+    border-color: $accent;
+    background: #fdf2f6;
+    box-shadow: 0 0 0 1px rgba($accent, 0.15);
+  }
+
+  .item-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .item-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-meta {
+    font-size: 0.75rem;
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  .item-description {
+    font-size: 0.76rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .expand-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: $text-muted;
+    }
+  }
+}
+
+// ── Expanded plan preview ────────────────────────────────────────────
+.plan-measures-preview {
+  padding: 0 12px 10px 46px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: slideDown 0.15s ease-out;
+
+  .preview-measure {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(0,0,0,.025);
+
+    .step-number {
+      background: $accent;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-name {
+      font-size: 0.8rem;
+      color: $text;
+      font-weight: 500;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Checkbox override for accent color ───────────────────────────────
+::ng-deep .mat-mdc-checkbox {
+  .mdc-checkbox__background {
+    border-color: $accent !important;
+  }
+  &.mat-mdc-checkbox-checked .mdc-checkbox__background {
+    background-color: $accent !important;
+  }
+}
+
+// ── Send section (sticky bottom) ─────────────────────────────────────
+.send-section {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selection-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $text-muted;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    color: $accent;
+  }
+}
+
+.btn-send {
+  width: 100%;
+  background-color: $accent !important;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+  box-shadow: 0 2px 6px rgba($accent, 0.25);
+  letter-spacing: 0.02em;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: #8c164a !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($accent, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
