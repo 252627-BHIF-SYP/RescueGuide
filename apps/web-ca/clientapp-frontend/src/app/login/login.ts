@@ -77,9 +77,24 @@ export class Login {
   }
 
   onRegister() {
-    // Einfache Validierung
-    if (!this.username || !this.password) {
+    const trimmedUsername = this.username.trim();
+    if (!trimmedUsername || !this.password) {
       this.error.set('Bitte Name und Passwort vergeben.');
+      return;
+    }
+
+    if (trimmedUsername.length < 3 || trimmedUsername.length > 30) {
+      this.error.set('Der Name muss zwischen 3 und 30 Zeichen lang sein.');
+      return;
+    }
+
+    if (this.password.length < 8) {
+      this.error.set('Das Passwort muss mindestens 8 Zeichen lang sein.');
+      return;
+    }
+
+    if (!/[A-Z]/.test(this.password) || !/[a-z]/.test(this.password) || !/[0-9]/.test(this.password)) {
+      this.error.set('Das Passwort muss mindestens einen Groß-, einen Kleinbuchstaben und eine Zahl enthalten.');
       return;
     }
 

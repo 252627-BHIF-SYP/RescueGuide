@@ -1,69 +1,117 @@
-<div class="signup-wrapper">
-  <div class="signup-container">
-
-    <div class="brand-section">
-      <div class="logo-icon">
-        <mat-icon>person_add</mat-icon>
-      </div>
-      <h1>Konto erstellen</h1>
-      <br>
-      <p>RescueGuide Leitstellen-Portal</p>
-    </div>
-
-    <mat-card class="signup-card" appearance="outlined">
-      <mat-card-content>
-        <form (ngSubmit)="onSignup()" class="form-container">
-
-          <mat-form-field appearance="outline">
-            <mat-label>Benutzername / Leitstellen-ID</mat-label>
-            <mat-icon matPrefix>badge</mat-icon>
-            <input matInput
-                   [ngModel]="username()"
-                   (ngModelChange)="username.set($event)"
-                   name="username"
-                   autocomplete="off"
-                   required>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Passwort</mat-label>
-            <mat-icon matPrefix>lock</mat-icon>
-            <input matInput
-                   [type]="hidePassword() ? 'password' : 'text'"
-                   [ngModel]="password()"
-                   (ngModelChange)="password.set($event)"
-                   name="password"
-                   required>
-            <button mat-icon-button matSuffix
-                    type="button"
-                    (click)="hidePassword.set(!hidePassword())"
-                    [attr.aria-label]="'Passwort anzeigen'"
-                    [attr.aria-pressed]="!hidePassword()">
-              <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-          </mat-form-field>
-
-          @if (error()) {
-            <div class="error-box">
-              <mat-icon>error_outline</mat-icon>
-              <span>{{ error() }}</span>
-            </div>
-          }
-
-          <div class="action-container">
-            <button mat-flat-button color="primary" class="submit-btn" type="submit">
-              <mat-icon>how_to_reg</mat-icon>
-              Registrieren
-            </button>
-
-            <button mat-button class="login-btn" type="button" (click)="goToLogin()">
-              Schon ein Account? Zum Login
-            </button>
+<div class="auth-wrapper">
+  <mat-card class="auth-card" appearance="outlined">
+    <mat-card-header>
+      <div class="auth-header">
+        <div class="auth-brand-row">
+          <div class="auth-brand-left">
+            <mat-icon class="auth-brand-icon">emergency</mat-icon>
+            <span class="auth-brand-title">RescueGuide</span>
           </div>
+          <h1 class="auth-title">Konto erstellen</h1>
+        </div>
+      </div>
+    </mat-card-header>
 
-        </form>
-      </mat-card-content>
-    </mat-card>
+    <mat-card-content>
+      <form (ngSubmit)="onSignup()" class="auth-form">
 
-  </div>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Benutzername / Leitstellen-ID</mat-label>
+          <input matInput
+                 [ngModel]="username()"
+                 (ngModelChange)="username.set($event)"
+                 name="username"
+                 autocomplete="off"
+                 required>
+        </mat-form-field>
+        @if (username().length > 0 && !isUsernameValid()) {
+          <div class="auth-hint hint-warning">
+            @if (!hasUsernameValidLength()) {
+              <span>Benutzername muss 3–30 Zeichen lang sein</span>
+            } @else if (!hasUsernameValidChars()) {
+              <span>Nur Buchstaben, Ziffern, '.', '-' und '_' erlaubt</span>
+            }
+          </div>
+        }
+
+        <hr class="auth-divider">
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Passwort</mat-label>
+          <input matInput
+                 [type]="hidePassword() ? 'password' : 'text'"
+                 [ngModel]="password()"
+                 (ngModelChange)="password.set($event)"
+                 name="password"
+                 autocomplete="new-password"
+                 required>
+          <button mat-icon-button matSuffix
+                  type="button"
+                  (click)="hidePassword.set(!hidePassword())"
+                  [attr.aria-label]="'Passwort anzeigen'"
+                  [attr.aria-pressed]="!hidePassword()">
+            <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Passwort wiederholen</mat-label>
+          <input matInput
+                 [type]="hideConfirmPassword() ? 'password' : 'text'"
+                 [ngModel]="confirmPassword()"
+                 (ngModelChange)="confirmPassword.set($event)"
+                 name="confirmPassword"
+                 autocomplete="new-password"
+                 required>
+          <button mat-icon-button matSuffix
+                  type="button"
+                  (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+                  [attr.aria-label]="'Passwort anzeigen'"
+                  [attr.aria-pressed]="!hideConfirmPassword()">
+            <mat-icon>{{hideConfirmPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <!-- Dynamische Anforderungen: Erst ab erster Eingabe & nur was noch fehlt -->
+        @if (password().length > 0 && missingPasswordRequirements().length > 0) {
+          <div class="password-checklist">
+            <div class="checklist-title">Noch erforderlich:</div>
+            <ul class="checklist-items">
+              @for (item of missingPasswordRequirements(); track item) {
+                <li class="missing">
+                  <mat-icon class="check-icon">radio_button_unchecked</mat-icon>
+                  <span>{{ item }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (passwordMismatch()) {
+          <div class="password-mismatch-box">
+            <mat-icon class="mismatch-icon">error_outline</mat-icon>
+            <span>Passwörter stimmen nicht überein</span>
+          </div>
+        }
+
+        @if (error()) {
+          <div class="auth-error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <div class="auth-actions">
+          <button mat-flat-button class="auth-submit-btn" type="submit" [disabled]="!isFormValid()">
+            Registrieren
+          </button>
+
+          <button mat-button class="auth-switch-btn" type="button" (click)="goToLogin()">
+            Schon ein Account? Zum Login
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>
