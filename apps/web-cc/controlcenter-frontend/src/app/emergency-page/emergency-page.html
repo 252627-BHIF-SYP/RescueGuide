@@ -93,15 +93,12 @@
 
       <!-- Tab Content -->
       <div class="tab-content-wrapper">
-        @if (activeTab === 'checklist') {
-          <div class="checklist-wrapper">
-            <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
-          </div>
-        } @else {
-          <div class="plan-selector-wrapper">
-            <app-plan-selector></app-plan-selector>
-          </div>
-        }
+        <div class="checklist-wrapper" [class.tab-hidden]="activeTab !== 'checklist'">
+          <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
+        </div>
+        <div class="plan-selector-wrapper" [class.tab-hidden]="activeTab !== 'plans'">
+          <app-plan-selector></app-plan-selector>
+        </div>
       </div>
 
     </div>

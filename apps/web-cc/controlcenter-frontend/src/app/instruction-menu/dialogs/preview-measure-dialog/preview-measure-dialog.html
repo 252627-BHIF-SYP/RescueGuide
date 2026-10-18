@@ -1,0 +1,67 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon class="title-icon">healing</mat-icon>
+  <span>Vorschau: {{ data.measure.name }}</span>
+</h2>
+
+<mat-dialog-content class="custom-dialog-content">
+  @if (data.measure.author || data.measure.createdAt) {
+    <div class="measure-meta-banner">
+      @if (data.measure.author) {
+        <div class="meta-item">
+          <mat-icon>person</mat-icon>
+          <span><strong>Ersteller:</strong> {{ data.measure.author }}</span>
+        </div>
+      }
+      @if (data.measure.createdAt) {
+        <div class="meta-item">
+          <mat-icon>calendar_today</mat-icon>
+          <span><strong>Erstellt am:</strong> {{ data.measure.createdAt | date:'medium' }}</span>
+        </div>
+      }
+      @if (data.measure.isUserCreated) {
+        <div class="meta-item custom-tag">
+          <mat-icon>verified_user</mat-icon>
+          <span>Benutzerdefiniert</span>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="measure-detail-card">
+    <div class="section-heading">
+      <mat-icon>description</mat-icon>
+      <h3>Handlungsanweisung & Beschreibung</h3>
+    </div>
+    <div class="measure-description">
+      {{ data.measure.description || 'Keine Beschreibung für diese Maßnahme vorhanden.' }}
+    </div>
+
+    @if (data.measure.imageUrl) {
+      <div class="section-heading media-heading">
+        <mat-icon>photo_camera</mat-icon>
+        <h3>Anleitung & Bildmaterial</h3>
+      </div>
+      <div class="measure-media-container">
+        <img class="measure-image" [src]="data.measure.imageUrl" alt="{{ data.measure.name }}">
+      </div>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions-row">
+  @if (data.toggleSelection) {
+    <button
+      mat-stroked-button
+      type="button"
+      class="select-toggle-btn"
+      [class.selected]="data.isSelected"
+      (click)="onToggle()">
+      <mat-icon>{{ data.isSelected ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+      <span>{{ data.isSelected ? 'Ausgewählt' : 'Maßnahme auswählen' }}</span>
+    </button>
+  }
+  <button mat-flat-button color="primary" mat-dialog-close class="close-btn" type="button">
+    <mat-icon>close</mat-icon>
+    <span>Schließen</span>
+  </button>
+</mat-dialog-actions>

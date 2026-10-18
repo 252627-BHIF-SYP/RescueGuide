@@ -1,109 +1,368 @@
 <mat-card class="plan-selector-card">
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon class="card-icon">send</mat-icon>
-      Maßnahmen & Pläne senden
-    </mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
+  <!-- Dispatch Notice Toast / Banner -->
+  @if (dispatchNotice) {
+    <div class="dispatch-notice-banner animate-slide-down">
+      <div class="notice-inner">
+        <mat-icon class="notice-icon">check_circle</mat-icon>
+        <span class="notice-text">{{ dispatchNotice }}</span>
+      </div>
+      <button mat-icon-button class="notice-close-btn" (click)="dismissNotice()" aria-label="Benachrichtigung schließen">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
 
-    <!-- Search / Filter -->
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Suchen…</mat-label>
-      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" placeholder="Plan oder Maßnahme suchen">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+  <!-- 2. STICKY CONTROLS: COMPACT SEARCH & SEGMENTED TABS -->
+  <div class="sticky-controls-bar">
+    <!-- Compact Search Box -->
+    <div class="compact-search-box">
+      <mat-icon class="search-prefix">search</mat-icon>
+      <input
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilter()"
+        placeholder="Plan oder Maßnahme suchen..."
+        aria-label="Plan oder Maßnahme suchen">
+      @if (searchTerm) {
+        <button
+          mat-icon-button
+          type="button"
+          class="search-clear-btn"
+          (click)="clearSearch()"
+          matTooltip="Suche leeren (Esc)"
+          aria-label="Suche zurücksetzen">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
 
-    <!-- Plans Section -->
-    <div class="section">
-      <div class="section-header">
-        <mat-icon class="section-icon">playlist_play</mat-icon>
-        <span class="section-title">Pläne</span>
-        <span class="badge">{{ filteredPlans.length }}</span>
+    <!-- Segmented Filter Pills -->
+    <div class="filter-pills-row">
+      <div class="pills-group">
+        <button
+          type="button"
+          class="filter-pill"
+          [class.active]="activeFilterTab === 'all'"
+          (click)="setFilterTab('all')">
+          <span>Alle</span>
+          <span class="pill-count">{{ filteredPlans.length + filteredMeasures.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="filter-pill"
+          [class.active]="activeFilterTab === 'plans'"
+          (click)="setFilterTab('plans')">
+          <mat-icon class="pill-icon">playlist_play</mat-icon>
+          <span>Pläne</span>
+          <span class="pill-count">{{ filteredPlans.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="filter-pill"
+          [class.active]="activeFilterTab === 'measures'"
+          (click)="setFilterTab('measures')">
+          <mat-icon class="pill-icon">healing</mat-icon>
+          <span>Maßnahmen</span>
+          <span class="pill-count">{{ filteredMeasures.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="filter-pill selected-pill"
+          [class.active]="activeFilterTab === 'selected'"
+          [class.has-selection]="totalSelectedCount > 0"
+          (click)="setFilterTab('selected')">
+          <mat-icon class="pill-icon">done_all</mat-icon>
+          <span>Ausgewählt</span>
+          <span class="pill-count" [class.highlight]="totalSelectedCount > 0">{{ totalSelectedCount }}</span>
+        </button>
       </div>
 
-      @if (filteredPlans.length === 0) {
-        <div class="empty-state">
-          <mat-icon>inbox</mat-icon>
-          <span>Keine Pläne vorhanden</span>
-        </div>
+      @if (totalSelectedCount > 0) {
+        <button
+          type="button"
+          class="btn-clear-selection"
+          (click)="clearAllSelection()"
+          matTooltip="Alle Auswahlen aufheben">
+          <mat-icon>remove_done</mat-icon>
+          <span>Alles abwählen</span>
+        </button>
       }
+    </div>
+  </div>
 
-      @for (plan of filteredPlans; track plan.id) {
-        <div class="selectable-item plan-item" [class.selected]="isPlanSelected(plan)">
-          <div class="item-main" (click)="togglePlanSelection(plan)">
-            <mat-checkbox
-              [checked]="isPlanSelected(plan)"
-              (change)="togglePlanSelection(plan)"
-              (click)="$event.stopPropagation()"
-              color="primary">
-            </mat-checkbox>
-            <div class="item-info">
-              <span class="item-name">{{ plan.name }}</span>
-              <span class="item-meta">{{ plan.measures.length }} Maßnahmen</span>
-            </div>
-            <button mat-icon-button class="expand-btn" (click)="togglePlanExpand(plan.id); $event.stopPropagation()" aria-label="Details anzeigen">
-              <mat-icon>{{ expandedPlans[plan.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
-            </button>
+  <!-- 3. SCROLLABLE LIST CONTAINER (ONLY THIS SCROLLS!) -->
+  <mat-card-content class="plan-selector-body">
+
+    <!-- PLANS SECTION -->
+    @if (shouldShowPlans && displayedPlans.length > 0) {
+      <div class="list-section">
+        <div class="section-header">
+          <div class="section-title-left">
+            <mat-icon class="section-icon">playlist_play</mat-icon>
+            <span class="section-title">Einsatzpläne</span>
           </div>
-          @if (expandedPlans[plan.id]) {
-            <div class="plan-measures-preview">
-              @for (measure of plan.measures; track measure.id; let i = $index) {
-                <div class="preview-measure">
-                  <span class="step-number">{{ i + 1 }}</span>
-                  <span class="step-name">{{ measure.name }}</span>
+          <span class="badge">{{ displayedPlans.length }}</span>
+        </div>
+
+        <div class="items-list">
+          @for (plan of displayedPlans; track plan.id) {
+            <div
+              class="selectable-card plan-card"
+              [class.selected]="isPlanSelected(plan)"
+              (click)="togglePlanSelection(plan)">
+              <div class="card-main-row">
+                <mat-checkbox
+                  [checked]="isPlanSelected(plan)"
+                  (change)="togglePlanSelection(plan)"
+                  (click)="$event.stopPropagation()"
+                  color="primary">
+                </mat-checkbox>
+
+                <div class="item-text-content">
+                  <div class="item-title-row">
+                    <span class="item-title">{{ plan.name }}</span>
+                    <span class="badge-steps">
+                      <mat-icon class="badge-icon">format_list_numbered</mat-icon>
+                      {{ plan.measures.length }} Schritte
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Action Buttons: Full Preview & Inline Expand -->
+                <div class="item-actions-group" (click)="$event.stopPropagation()">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="action-btn preview-btn"
+                    (click)="previewPlan(plan, $event)"
+                    matTooltip="Vorschau des Plans öffnen (wie im Menü)"
+                    aria-label="Vorschau des Plans">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="action-btn expand-btn"
+                    (click)="togglePlanExpand(plan.id, $event)"
+                    [matTooltip]="expandedPlans[plan.id] ? 'Schritte einklappen' : 'Schritte anzeigen'"
+                    aria-label="Schritte anzeigen">
+                    <mat-icon>{{ expandedPlans[plan.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Compact Inline Steps Preview -->
+              @if (expandedPlans[plan.id]) {
+                <div class="inline-preview-container animate-expand" (click)="$event.stopPropagation()">
+                  <div class="inline-timeline-header">
+                    <span>Enthaltene Maßnahmen in Ablaufreihenfolge:</span>
+                    <button
+                      mat-button
+                      type="button"
+                      class="inline-fullpreview-link"
+                      (click)="previewPlan(plan, $event)">
+                      <mat-icon>open_in_new</mat-icon>
+                      Große Vorschau
+                    </button>
+                  </div>
+
+                  @if (plan.measures && plan.measures.length > 0) {
+                    <div class="inline-steps-list">
+                      @for (measure of plan.measures; track measure.id; let i = $index) {
+                        <div class="inline-step-item" (click)="previewMeasure(measure, $event)" matTooltip="Maßnahme Vorschau anzeigen">
+                          <span class="step-badge">{{ i + 1 }}</span>
+                          <div class="step-info">
+                            <span class="step-name">{{ measure.name }}</span>
+                            @if (measure.description) {
+                              <span class="step-desc-snippet">{{ measure.description }}</span>
+                            }
+                          </div>
+                          @if (measure.imageUrl) {
+                            <span class="image-indicator" title="Enthält Abbildung">
+                              <mat-icon>image</mat-icon>
+                            </span>
+                          }
+                          <mat-icon class="step-preview-arrow">chevron_right</mat-icon>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="inline-empty-steps">Keine Maßnahmen in diesem Plan hinterlegt.</div>
+                  }
                 </div>
               }
             </div>
           }
         </div>
-      }
-    </div>
-
-    <!-- Measures Section -->
-    <div class="section">
-      <div class="section-header">
-        <mat-icon class="section-icon">healing</mat-icon>
-        <span class="section-title">Einzelne Maßnahmen</span>
-        <span class="badge">{{ filteredMeasures.length }}</span>
       </div>
+    }
 
-      @if (filteredMeasures.length === 0) {
-        <div class="empty-state">
-          <mat-icon>inbox</mat-icon>
-          <span>Keine Maßnahmen vorhanden</span>
-        </div>
-      }
-
-      @for (measure of filteredMeasures; track measure.id) {
-        <div class="selectable-item measure-item" [class.selected]="isMeasureSelected(measure)" (click)="toggleMeasureSelection(measure)">
-          <div class="item-main">
-            <mat-checkbox
-              [checked]="isMeasureSelected(measure)"
-              (change)="toggleMeasureSelection(measure)"
-              (click)="$event.stopPropagation()"
-              color="primary">
-            </mat-checkbox>
-            <div class="item-info">
-              <span class="item-name">{{ measure.name }}</span>
-              <span class="item-description">{{ measure.description }}</span>
-            </div>
+    <!-- MEASURES SECTION -->
+    @if (shouldShowMeasures && displayedMeasures.length > 0) {
+      <div class="list-section">
+        <div class="section-header">
+          <div class="section-title-left">
+            <mat-icon class="section-icon">healing</mat-icon>
+            <span class="section-title">Einzelne Sofortmaßnahmen</span>
           </div>
+          <span class="badge">{{ displayedMeasures.length }}</span>
         </div>
-      }
-    </div>
 
-    <!-- Selection summary + Send -->
-    <div class="send-section">
-      <div class="selection-summary">
-        <mat-icon>check_circle</mat-icon>
-        <span>{{ selectedPlans.length }} Pläne, {{ selectedMeasures.length }} Maßnahmen ausgewählt</span>
+        <div class="items-list">
+          @for (measure of displayedMeasures; track measure.id) {
+            <div
+              class="selectable-card measure-card"
+              [class.selected]="isMeasureSelected(measure)"
+              (click)="toggleMeasureSelection(measure)">
+              <div class="card-main-row">
+                <mat-checkbox
+                  [checked]="isMeasureSelected(measure)"
+                  (change)="toggleMeasureSelection(measure)"
+                  (click)="$event.stopPropagation()"
+                  color="primary">
+                </mat-checkbox>
+
+                <div class="item-text-content">
+                  <div class="item-title-row">
+                    <span class="item-title">{{ measure.name }}</span>
+
+                    @if (isMeasureInSelectedPlan(measure.id)) {
+                      <span class="badge-in-plan" matTooltip="Bereits in einem deiner ausgewählten Pläne enthalten">
+                        <mat-icon class="badge-icon">check</mat-icon>
+                        Im Plan
+                      </span>
+                    }
+
+                    @if (measure.imageUrl) {
+                      <span class="badge-image" matTooltip="Enthält visuelle Anleitung">
+                        <mat-icon class="badge-icon">image</mat-icon>
+                        Bild
+                      </span>
+                    }
+                  </div>
+
+                  @if (measure.description) {
+                    <span class="item-desc-preview">{{ measure.description }}</span>
+                  }
+                </div>
+
+                <!-- Action Buttons: Full Preview & Inline Expand -->
+                <div class="item-actions-group" (click)="$event.stopPropagation()">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="action-btn preview-btn"
+                    (click)="previewMeasure(measure, $event)"
+                    matTooltip="Maßnahme Vorschau öffnen (wie im Menü)"
+                    aria-label="Vorschau der Maßnahme">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+
+                  @if (measure.description || measure.imageUrl) {
+                    <button
+                      mat-icon-button
+                      type="button"
+                      class="action-btn expand-btn"
+                      (click)="toggleMeasureExpand(measure.id, $event)"
+                      [matTooltip]="expandedMeasures[measure.id] ? 'Details einklappen' : 'Details ausklappen'"
+                      aria-label="Details ein-/ausklappen">
+                      <mat-icon>{{ expandedMeasures[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Compact Inline Measure Details Preview -->
+              @if (expandedMeasures[measure.id]) {
+                <div class="inline-preview-container animate-expand" (click)="$event.stopPropagation()">
+                  @if (measure.description) {
+                    <div class="inline-measure-desc">
+                      {{ measure.description }}
+                    </div>
+                  }
+
+                  @if (measure.imageUrl) {
+                    <div class="inline-measure-media">
+                      <img [src]="measure.imageUrl" alt="{{ measure.name }}" class="inline-measure-img">
+                    </div>
+                  }
+
+                  <div class="inline-measure-footer">
+                    <button
+                      mat-button
+                      type="button"
+                      class="inline-fullpreview-link"
+                      (click)="previewMeasure(measure, $event)">
+                      <mat-icon>open_in_new</mat-icon>
+                      Vollbild-Vorschau
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
       </div>
-      <button mat-flat-button class="btn-send" [disabled]="!hasSelection()" (click)="sendSelection()">
-        <mat-icon>send</mat-icon>
-        An Ersthelfer senden
-      </button>
-    </div>
+    }
+
+    <!-- EMPTY STATES -->
+    @if (isCurrentTabEmpty) {
+      <div class="empty-state-card animate-fade-in">
+        @if (activeFilterTab === 'selected') {
+          <mat-icon class="empty-icon">checklist</mat-icon>
+          <div class="empty-title">Keine Elemente ausgewählt</div>
+          <div class="empty-desc">
+            Wähle Einsatzpläne oder einzelne Sofortmaßnahmen aus der Liste aus, um sie sofort per Klick oder <kbd>Ctrl+Enter</kbd> an den Ersthelfer zu übermitteln.
+          </div>
+          <button mat-stroked-button color="primary" class="empty-action-btn" (click)="setFilterTab('all')">
+            <mat-icon>playlist_add_check</mat-icon>
+            Zu allen Elementen wechseln
+          </button>
+        } @else if (searchTerm) {
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <div class="empty-title">Keine Treffer für „{{ searchTerm }}“</div>
+          <div class="empty-desc">Versuche einen anderen Suchbegriff oder setze den Suchfilter zurück.</div>
+          <button mat-stroked-button color="primary" class="empty-action-btn" (click)="clearSearch()">
+            <mat-icon>backspace</mat-icon>
+            Suche zurücksetzen
+          </button>
+        } @else {
+          <mat-icon class="empty-icon">inbox</mat-icon>
+          <div class="empty-title">Keine Einträge vorhanden</div>
+          <div class="empty-desc">In dieser Kategorie sind derzeit keine Daten hinterlegt.</div>
+        }
+      </div>
+    }
 
   </mat-card-content>
+
+  <!-- 4. STICKY SELECTION TRAY / BOTTOM DOCK (ALWAYS ACCESSIBLE WHEN SELECTED) -->
+  @if (hasSelection) {
+    <div class="selection-dock animate-slide-up">
+      <div class="dock-summary">
+        <mat-icon class="dock-summary-icon">send</mat-icon>
+        <span class="dock-text">
+          <strong>{{ selectedPlans.length }}</strong> {{ selectedPlans.length === 1 ? 'Plan' : 'Pläne' }} &
+          <strong>{{ selectedMeasures.length }}</strong> {{ selectedMeasures.length === 1 ? 'Maßnahme' : 'Maßnahmen' }}
+        </span>
+      </div>
+
+      <button
+        mat-flat-button
+        type="button"
+        class="dock-send-btn"
+        (click)="sendSelection()"
+        matTooltip="Sofort an Ersthelfer übermitteln (Strg + Enter)"
+        aria-label="Auswahl jetzt an Ersthelfer senden">
+        <mat-icon class="send-icon">send</mat-icon>
+        <span class="send-label">Jetzt senden</span>
+        <span class="dock-shortcut-tag">Ctrl+↵</span>
+      </button>
+    </div>
+  }
 </mat-card>
