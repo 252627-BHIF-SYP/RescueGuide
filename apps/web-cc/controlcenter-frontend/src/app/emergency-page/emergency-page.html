@@ -1,97 +1,153 @@
 <div class="container">
-  <!-- Top Unified Header Bar -->
-  <div class="page-header-bar">
+  <!-- Top Unified Header Bar with integrated Location & Controls -->
+  <header class="page-header-bar">
     <div class="header-left">
-      <mat-icon class="emergency-icon animate-pulse">emergency</mat-icon>
-      <h2>Laufender Notfalleinsatz</h2>
+      <div class="emergency-badge">
+        <mat-icon class="emergency-icon animate-pulse">emergency</mat-icon>
+      </div>
+      <div class="header-text-group">
+        <h2 class="header-title">Laufender Notfalleinsatz</h2>
+        <span class="header-sub">Leitstelle &bull; Echtzeit-Disposition</span>
+      </div>
     </div>
+
+    <!-- Center: Prominent Location & Coordinates Bar -->
+    <!-- Center: Kompakter, zusammengefasster Einsatzort & Koordinaten -->
+    <div class="header-location-center">
+      <div class="compact-loc-pill">
+        <div class="loc-icon-bubble">
+          <mat-icon>location_on</mat-icon>
+        </div>
+        
+        <div class="loc-content">
+          <div class="loc-address-line" [title]="displayAddress()">
+            {{ displayAddress() }}
+          </div>
+          <div class="loc-meta-line">
+            @if (latitude() !== null && longitude() !== null) {
+              <span class="coords-text">{{ formattedCoordinates() }}</span>
+            }
+          </div>
+        </div>
+
+        @if (latitude() !== null && longitude() !== null) {
+          <button
+            type="button"
+            class="loc-copy-btn"
+            (click)="copyCoordinates()"
+            [class.copied]="copiedCoords()"
+            title="GPS-Koordinaten in Zwischenablage kopieren">
+            <mat-icon>{{ copiedCoords() ? 'check' : 'content_copy' }}</mat-icon>
+            <span>{{ copiedCoords() ? 'Kopiert' : 'Kopieren' }}</span>
+          </button>
+        }
+
+        <div class="loc-pill-divider"></div>
+
+        <button
+          type="button"
+          class="loc-map-toggle"
+          [class.active]="showMap()"
+          (click)="toggleMap()"
+          [disabled]="mapUrl === null">
+          <mat-icon>{{ showMap() ? 'layers_clear' : 'map' }}</mat-icon>
+          <span>{{ showMap() ? 'Karte schließen' : 'Karte' }}</span>
+        </button>
+      </div>
+    </div>
+
     <div class="header-right">
       <div class="timer-box">
         <mat-icon class="timer-icon">schedule</mat-icon>
-        <span class="timer-label">Einsatzdauer:</span>
-        <span class="timer-value">{{ formatTime(durationSeconds()) }}</span>
+        <div class="timer-details">
+          <span class="timer-label">Einsatzdauer</span>
+          <span class="timer-value">{{ formatTime(durationSeconds()) }}</span>
+        </div>
       </div>
-      <button mat-flat-button color="warn" class="btn-end-call" (click)="endCall()">
+
+      <button mat-flat-button color="warn" class="btn-end-call" (click)="requestEndCall()">
         <mat-icon>call_end</mat-icon>
-        Einsatz beenden
+        <span>Einsatz beenden</span>
       </button>
     </div>
-  </div>
+  </header>
 
-  <div class="content">
-    
-    <!-- Linker Bereich: Video-Stream & Echtzeit-Standort / Karte -->
-    <div class="left-column flex-column-gap">
-      
-      <!-- Video-Call-Bereich -->
-      <app-video-call></app-video-call>
+  <!-- Main Content Layout -->
+  <main class="content">
 
-      <!-- Standort & GPS -->
-      <div class="map-widget">
+    <!-- LINKER BEREICH: Medien & Lage (Video + optional Karte nebeneinander) -->
+    <section class="media-section" [class.map-open]="showMap()">
 
-        <!-- Karte oder Placeholder -->
-        @if (mapUrl !== null) {
-          <div class="map-wrapper">
+      <!-- Video Feed im Hochformat (9:16) -->
+      <div class="video-container">
+        <app-video-call></app-video-call>
+      </div>
 
-            <!-- Status-Overlay oben links -->
-            <div class="map-overlay-left">
-              <span class="gps-badge">GPS</span>
-              <span class="gps-status">Live-Standort</span>
+      <!-- Aufgeklappte Karte nebeneinander (drängt weder Protokoll noch Pläne ab!) -->
+      @if (showMap() && mapUrl !== null) {
+        <div class="map-panel">
+          <div class="map-panel-header">
+            <div class="map-title-left">
+              <mat-icon class="map-icon">map</mat-icon>
+              <span class="map-heading">Einsatzort-Karte</span>
+              <span class="map-addr-hint" [title]="displayAddress()">{{ displayAddress() }}</span>
             </div>
-
-            <!-- Koordinaten-Overlay unten links -->
-            <div class="map-overlay-bottom">
-              <span class="coord-chip">
-                <mat-icon class="coord-chip-icon">my_location</mat-icon>
-                {{ latitude() }}°, {{ longitude() }}°
-              </span>
+            <div class="map-controls">
+              <button
+                type="button"
+                class="map-header-btn"
+                (click)="toggleMapFullscreen()"
+                aria-label="Karte Vollbild"
+                title="Vollbild">
+                <mat-icon>fullscreen</mat-icon>
+              </button>
+              <button
+                type="button"
+                class="map-header-btn close-btn"
+                (click)="toggleMap()"
+                aria-label="Karte schließen"
+                title="Karte schließen">
+                <mat-icon>close</mat-icon>
+              </button>
             </div>
-
-            <!-- Fullscreen Button -->
-            <button
-              class="map-fullscreen-btn"
-              (click)="toggleMapFullscreen()"
-              aria-label="Karte als Vollbild"
-              title="Vollbild">
-              <mat-icon>fullscreen</mat-icon>
-            </button>
-
+          </div>
+          <div class="map-frame-wrapper">
             <iframe #mapIframe [src]="mapUrl!" width="100%" height="100%"
               style="border:0; display:block;" loading="lazy"></iframe>
           </div>
-        } @else {
-          <div class="map-wrapper map-waiting">
-            <mat-icon class="waiting-icon animate-spin">autorenew</mat-icon>
-            <p>Warte auf GPS-Koordinaten des Ersthelfers…</p>
-          </div>
-        }
+        </div>
+      }
 
-      </div>
+    </section>
 
-    </div>
+    <!-- RECHTER BEREICH: Feste, kompakte Arbeitsspalte (Protokoll / Pläne) -->
+    <section class="sidebar-workspace">
 
-    <!-- Rechter Bereich: Protokoll / Plan-Auswahl mit Tab-Switch -->
-    <div class="right-column flex-column-gap">
-
-      <!-- Tab-Switcher -->
+      <!-- Tab Switcher -->
       <div class="tab-switcher">
         <button
           class="tab-btn"
           [class.active]="activeTab === 'checklist'"
           (click)="activeTab = 'checklist'">
           <mat-icon>fact_check</mat-icon>
-          Protokoll
+          <div class="tab-text-group">
+            <span class="tab-title">Notfall-Protokoll</span>
+            <span class="tab-sub">Stammdaten &amp; Vitalparameter</span>
+          </div>
         </button>
         <button
           class="tab-btn"
           [class.active]="activeTab === 'plans'"
           (click)="activeTab = 'plans'">
           <mat-icon>send</mat-icon>
-          Pläne senden
+          <div class="tab-text-group">
+            <span class="tab-title">Maßnahmen &amp; Pläne</span>
+            <span class="tab-sub">An Ersthelfer übertragen</span>
+          </div>
         </button>
       </div>
 
-      <!-- Tab Content -->
+      <!-- Tab Content Area (bleibt IMMER stabil und wird NIE verdrängt!) -->
       <div class="tab-content-wrapper">
         <div class="checklist-wrapper" [class.tab-hidden]="activeTab !== 'checklist'">
           <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
@@ -101,7 +157,39 @@
         </div>
       </div>
 
-    </div>
+    </section>
 
-  </div>
+  </main>
+
+  <!-- Confirmation Modal for Ending Emergency Call -->
+  @if (showEndConfirm()) {
+    <div class="modal-backdrop" (click)="cancelEndCall()">
+      <div class="confirm-dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <div class="warn-bubble">
+            <mat-icon>warning_amber</mat-icon>
+          </div>
+          <div class="dialog-titles">
+            <h3>Notfalleinsatz beenden?</h3>
+            <p>Möchten Sie diesen laufenden Einsatz wirklich abschließen?</p>
+          </div>
+        </div>
+        <div class="dialog-body">
+          <p>
+            Die Videoverbindung zum Ersthelfer wird sofort getrennt, das erfasste Notfallprotokoll
+            wird final im System archiviert und Sie werden zur Übersicht weitergeleitet.
+          </p>
+        </div>
+        <div class="dialog-actions">
+          <button mat-button class="btn-cancel" (click)="cancelEndCall()">
+            Abbrechen
+          </button>
+          <button mat-flat-button color="warn" class="btn-confirm-end" (click)="confirmEndCall()">
+            <mat-icon>call_end</mat-icon>
+            Ja, Einsatz beenden
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

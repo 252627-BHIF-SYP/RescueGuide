@@ -1,88 +1,302 @@
-// ── Design Tokens (identisch zum Dashboard) ──────────────────────────
-$bg:          #f5f6f8;
+// ── Design Tokens ─────────────────────────────────────────────────────
+$bg:          #f4f6f9;
 $surface:     #ffffff;
-$border:      #e1e2e5;
+$border:      #e2e4e9;
+$border-light:#edf0f4;
 $accent:      #a31d58;
+$accent-soft: #fce7f0;
 $danger:      #b42355;
-$text:        #1f2328;
-$text-muted:  #74777d;
-$radius:      10px;
-$shadow-sm:   0 1px 3px rgba(0,0,0,.07);
-$shadow-md:   0 2px 6px rgba(0,0,0,.10);
+$danger-soft: #fde8ef;
+$success:     #16a34a;
+$success-soft:#ecfdf5;
+$text:        #191c21;
+$text-muted:  #68707d;
+$radius:      12px;
+$shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.06);
+$shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 
-// ── Page Shell ────────────────────────────────────────────────────────
+// ── Root Page Container ───────────────────────────────────────────────
 .container {
   height: 93vh;
   display: flex;
   flex-direction: column;
   background: $bg;
+  overflow: hidden;
+  font-family: inherit;
 }
 
-// ── Header Bar ────────────────────────────────────────────────────────
+// ── Top Page Header Bar ───────────────────────────────────────────────
 .page-header-bar {
   flex-shrink: 0;
-  padding: 12px clamp(14px, 3vw, 40px);
+  height: 66px;
+  padding: 0 20px;
   background: $surface;
   border-bottom: 1px solid $border;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   box-shadow: $shadow-sm;
+  z-index: 20;
 
+  // 1. Header Left (Titel & Status)
   .header-left {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
 
-    .emergency-icon {
-      color: $danger;
-      font-size: 26px;
-      width: 26px;
-      height: 26px;
+    .emergency-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: $danger-soft;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .emergency-icon {
+        color: $danger;
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+      }
     }
 
-    h2 {
-      margin: 0;
-      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
-      font-weight: 700;
-      color: $text;
-      letter-spacing: 0.3px;
+    .header-text-group {
+      display: flex;
+      flex-direction: column;
+
+      .header-title {
+        margin: 0;
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: $text;
+        line-height: 1.2;
+      }
+
+      .header-sub {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: $text-muted;
+      }
     }
   }
 
+  // 2. Header Center (Kompakt zusammengefasster Einsatzort & Koordinaten)
+  .header-location-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    flex: 1;
+
+    .compact-loc-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      border: 1px solid #dce1e8;
+      border-radius: 999px;
+      padding: 4px 6px 4px 6px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      max-width: 540px;
+      min-width: 0;
+
+      .loc-icon-bubble {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #fee2e2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .loc-content {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.15;
+
+        .loc-address-line {
+          font-size: 0.84rem;
+          font-weight: 700;
+          color: $text;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 240px;
+        }
+
+        .loc-meta-line {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.7rem;
+          color: $text-muted;
+
+          .coords-text {
+            font-weight: 600;
+            color: #475569;
+            font-variant-numeric: tabular-nums;
+          }
+
+          .gps-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            color: $success;
+            font-weight: 700;
+            font-size: 0.65rem;
+
+            .gps-dot {
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: $success;
+              animation: gpsPulse 1.8s infinite;
+            }
+          }
+
+          .gps-waiting {
+            font-size: 0.65rem;
+            color: #94a3b8;
+          }
+        }
+      }
+
+      .loc-copy-btn {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #475569;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: 13px;
+          width: 13px;
+          height: 13px;
+        }
+
+        &:hover {
+          background: #e2e8f0;
+          color: $text;
+        }
+
+        &.copied {
+          background: $success;
+          color: #ffffff;
+          border-color: $success;
+        }
+      }
+
+      .loc-pill-divider {
+        width: 1px;
+        height: 22px;
+        background: #e2e8f0;
+        flex-shrink: 0;
+      }
+
+      .loc-map-toggle {
+        appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        background: transparent;
+        color: $accent;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+
+        &:hover {
+          background: $accent-soft;
+        }
+
+        &.active {
+          background: $accent;
+          color: #ffffff;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  // 3. Header Right (Timer & Beenden)
   .header-right {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    flex-shrink: 0;
 
     .timer-box {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: #fce7f0;
-      padding: 5px 14px;
+      gap: 8px;
+      background: $accent-soft;
+      padding: 5px 12px;
       border-radius: 999px;
-      border: 1px solid #f8dce8;
+      border: 1px solid rgba(163, 29, 88, 0.16);
 
       .timer-icon {
         color: $accent;
-        font-size: 17px;
-        width: 17px;
-        height: 17px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
       }
 
-      .timer-label {
-        font-size: 0.82rem;
-        font-weight: 500;
-        color: $text-muted;
-      }
+      .timer-details {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.05;
 
-      .timer-value {
-        font-size: 1rem;
-        font-weight: 700;
-        color: $accent;
-        font-variant-numeric: tabular-nums;
-        letter-spacing: 0.04em;
+        .timer-label {
+          font-size: 0.64rem;
+          font-weight: 700;
+          color: $text-muted;
+          text-transform: uppercase;
+        }
+
+        .timer-value {
+          font-size: 0.95rem;
+          font-weight: 800;
+          color: $accent;
+          font-variant-numeric: tabular-nums;
+        }
       }
     }
 
@@ -90,15 +304,15 @@ $shadow-md:   0 2px 6px rgba(0,0,0,.10);
       background-color: $danger !important;
       color: #fff !important;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       border-radius: 999px;
-      padding: 5px 18px;
+      padding: 6px 18px;
+      height: 36px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
-      box-shadow: 0 2px 6px rgba(180,35,85,.25);
-      letter-spacing: 0.02em;
+      box-shadow: 0 2px 6px rgba(180, 35, 85, 0.28);
+      transition: all 0.18s ease;
 
       mat-icon {
         font-size: 17px;
@@ -109,283 +323,179 @@ $shadow-md:   0 2px 6px rgba(0,0,0,.10);
       &:hover {
         background-color: #8c164a !important;
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(180,35,85,.35);
+        box-shadow: 0 4px 10px rgba(180, 35, 85, 0.38);
       }
     }
   }
 }
 
-// ── Content Area ──────────────────────────────────────────────────────
+// ── Main Content Area ─────────────────────────────────────────────────
 .content {
   display: flex;
   flex: 1;
-  padding: 20px clamp(14px, 3vw, 40px);
-  gap: 20px;
+  min-height: 0;
+  padding: 14px 20px 18px;
+  gap: 16px;
   background: $bg;
   overflow: hidden;
 }
 
-// ── Columns ───────────────────────────────────────────────────────────
-.left-column {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.right-column {
+// ── Left: Media & Map Section ─────────────────────────────────────────
+.media-section {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  min-width: 0;
   height: 100%;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.flex-column-gap { gap: 18px; }
-
-// ── Cards ─────────────────────────────────────────────────────────────
-.status-card {
-  border: 1px solid $border;
-  border-radius: $radius;
-  background: $surface;
-  box-shadow: $shadow-sm;
-  transition: box-shadow 0.18s ease;
-
-  &:hover { box-shadow: $shadow-md; }
-
-  mat-card-header {
-    padding: 14px 18px 8px;
-
-    mat-card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: $text;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-
-      mat-icon { color: $accent; font-size: 19px; }
-    }
-  }
-}
-
-.info-card-padding mat-card-content {
-  padding: 6px 18px 18px;
-}
-
-// ── Status line & dot ─────────────────────────────────────────────────
-.status-text {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: $text-muted;
-  margin: 0 0 14px;
-
-  .status-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #d2d4d8;
-    flex-shrink: 0;
-    transition: background 0.3s;
-
-    &.active {
-      background: #22c55e;
-      box-shadow: 0 0 7px rgba(34,197,94,.65);
-      animation: heartbeat 1.6s infinite;
-    }
-  }
-}
-
-// ── Map Widget (identisch zum Video-Stil) ────────────────────────────
-.map-widget {
-  width: 100%;
-}
-
-.map-wrapper {
-  position: relative;
-  background: #111316;
-  border-radius: 8px;
-  overflow: hidden;
-  width: 100%;
-  aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #2a2d31;
-  box-shadow: inset 0 0 40px rgba(0,0,0,.6);
+  gap: 16px;
+  overflow: hidden;
 
-  iframe {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    border: 0;
-    display: block;
+  // Wenn Karte offen ist: zentriert Video + Karte nebeneinander
+  &.map-open {
+    justify-content: flex-start;
   }
 
-  // GPS Badge oben links (wie LIVE-Badge beim Video)
-  .map-overlay-left {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    pointer-events: none;
-
-    .gps-badge {
-      background: #22c55e;
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.08em;
-      box-shadow: 0 0 8px rgba(34,197,94,.5);
-      animation: livePulse 2s infinite;
-    }
-
-    .gps-status {
-      background: rgba(0,0,0,.55);
-      color: #fff;
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 2px 10px;
-      border-radius: 4px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,.12);
-    }
-  }
-
-  // Koordinaten-Chip unten links
-  .map-overlay-bottom {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    z-index: 10;
-    pointer-events: none;
-
-    .coord-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(0,0,0,.6);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 500;
-      padding: 3px 10px 3px 6px;
-      border-radius: 4px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,.12);
-      font-variant-numeric: tabular-nums;
-
-      .coord-chip-icon {
-        font-size: 13px;
-        width: 13px;
-        height: 13px;
-        color: #22c55e;
-      }
-    }
-  }
-
-  // Fullscreen Button (identisch zum Video)
-  .map-fullscreen-btn {
-    appearance: none;
-    -webkit-appearance: none;
-    border: none;
-    outline: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    line-height: 1;
-
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 10;
-
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
+  .video-container {
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 
-    background: transparent;
-    color: rgba(255,255,255,0.9);
-    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7));
+    app-video-call {
+      height: 100%;
+      display: flex;
+    }
+  }
 
-    opacity: 0;
-    transition: opacity 0.2s ease, color 0.15s ease, background 0.15s ease;
+  // Aufgeklappte Google Maps Karte (nebeneinander, niemals über das Protokoll!)
+  .map-panel {
+    flex: 1;
+    min-width: 320px;
+    height: 100%;
+    max-height: calc(100vh - 100px);
+    background: #ffffff;
+    border: 1px solid $border;
+    border-radius: 16px;
+    box-shadow: $shadow-md;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeInSlide 0.22s ease-out;
 
-    mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
+    .map-panel-header {
+      height: 42px;
+      background: #fafbfc;
+      border-bottom: 1px solid $border;
+      padding: 0 14px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+
+      .map-title-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+
+        .map-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: $accent;
+        }
+
+        .map-heading {
+          font-size: 0.84rem;
+          font-weight: 700;
+          color: $text;
+          flex-shrink: 0;
+        }
+
+        .map-addr-hint {
+          font-size: 0.76rem;
+          color: $text-muted;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .map-controls {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+
+        .map-header-btn {
+          appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          background: transparent;
+          color: $text-muted;
+          width: 28px;
+          height: 28px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+
+          &:hover {
+            background: #e2e8f0;
+            color: $text;
+          }
+
+          &.close-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+          }
+        }
+      }
     }
 
-    &:hover {
-      color: #1f2328;
-      background: rgba(255,255,255,0.92);
-      filter: none;
-    }
-  }
+    .map-frame-wrapper {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      background: #0f1115;
 
-  &:hover .map-fullscreen-btn {
-    opacity: 1;
-  }
-
-  // Fullscreen state
-  &:fullscreen,
-  &:-webkit-full-screen {
-    border-radius: 0;
-
-    iframe { border-radius: 0; }
-  }
-
-  // Warte-Zustand
-  &.map-waiting {
-    flex-direction: column;
-    gap: 12px;
-    color: $text-muted;
-
-    .waiting-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: #22c55e;
-      opacity: 0.7;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.88rem;
-      font-weight: 500;
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
     }
   }
 }
 
-@keyframes livePulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.65; }
+// ── Right: Sidebar Workspace (Protokoll & Pläne) ───────────────────────
+.sidebar-workspace {
+  flex: 0 0 460px;
+  width: 460px;
+  max-width: 480px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
 }
-
 
 // ── Tab Switcher ──────────────────────────────────────────────────────
 .tab-switcher {
   display: flex;
-  gap: 0;
   background: $surface;
   border: 1px solid $border;
   border-radius: $radius;
@@ -398,86 +508,220 @@ $shadow-md:   0 2px 6px rgba(0,0,0,.10);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 10px 14px;
+    gap: 8px;
+    padding: 8px 12px;
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: $text-muted;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
     position: relative;
 
     mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 19px;
+      width: 19px;
+      height: 19px;
+      color: $text-muted;
+      transition: color 0.18s ease;
+    }
+
+    .tab-text-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.15;
+
+      .tab-title {
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: $text-muted;
+      }
+
+      .tab-sub {
+        font-size: 0.68rem;
+        font-weight: 500;
+        color: #8c939f;
+      }
     }
 
     &:hover:not(.active) {
-      background: #f8f9fa;
-      color: $text;
+      background: #fafbfc;
+
+      mat-icon, .tab-title {
+        color: $text;
+      }
     }
 
     &.active {
-      color: $accent;
-      background: #fdf2f6;
+      background: #fdf4f7;
+
+      mat-icon {
+        color: $accent;
+      }
+
+      .tab-title {
+        color: $accent;
+      }
+
+      .tab-sub {
+        color: rgba(163, 29, 88, 0.7);
+      }
 
       &::after {
         content: '';
         position: absolute;
         bottom: 0;
-        left: 10%;
-        width: 80%;
-        height: 2.5px;
+        left: 8%;
+        width: 84%;
+        height: 3px;
         background: $accent;
-        border-radius: 2px 2px 0 0;
+        border-radius: 3px 3px 0 0;
       }
     }
 
-    // Trennlinie zwischen den Tabs
     &:not(:last-child) {
       border-right: 1px solid $border;
     }
   }
 }
 
-// ── Tab Content ───────────────────────────────────────────────────────
+// ── Tab Content Area ──────────────────────────────────────────────────
 .tab-content-wrapper {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   .tab-hidden {
     display: none !important;
   }
 }
 
-// ── Checklist wrapper ─────────────────────────────────────────────────
-.checklist-wrapper {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-
-  app-emergency-checklist {
-    flex: 1;
-    min-height: 0;
-  }
-}
-
-// ── Plan selector wrapper ─────────────────────────────────────────────
+.checklist-wrapper,
 .plan-selector-wrapper {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
+  app-emergency-checklist,
   app-plan-selector {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+}
+
+// ── Confirmation Modal ────────────────────────────────────────────────
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 21, 0.65);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+
+  .confirm-dialog {
+    width: 90%;
+    max-width: 480px;
+    background: $surface;
+    border-radius: 16px;
+    border: 1px solid $border;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .dialog-header {
+      padding: 20px 24px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+
+      .warn-bubble {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: $danger-soft;
+        color: $danger;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: 26px;
+          width: 26px;
+          height: 26px;
+        }
+      }
+
+      .dialog-titles {
+        h3 {
+          margin: 0;
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: $text;
+        }
+
+        p {
+          margin: 4px 0 0;
+          font-size: 0.84rem;
+          color: $text-muted;
+        }
+      }
+    }
+
+    .dialog-body {
+      padding: 0 24px 20px;
+
+      p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #4b5563;
+        line-height: 1.5;
+        background: #f8fafc;
+        border: 1px solid #eef2f6;
+        padding: 12px 14px;
+        border-radius: 8px;
+      }
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 24px;
+      background: #fafbfc;
+      border-top: 1px solid $border-light;
+
+      .btn-cancel {
+        font-weight: 600;
+        color: $text-muted;
+      }
+
+      .btn-confirm-end {
+        background-color: $danger !important;
+        color: #fff !important;
+        font-weight: 700;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
   }
 }
 
@@ -486,33 +730,60 @@ $shadow-md:   0 2px 6px rgba(0,0,0,.10);
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.animate-spin {
-  animation: spin 2s linear infinite;
-}
-
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes gpsPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
 }
 
-@keyframes heartbeat {
-  0%, 40%, 80%, 100% { transform: scale(1); }
-  20%, 60%           { transform: scale(1.2); }
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-// ── Responsive ────────────────────────────────────────────────────────
-@media (max-width: 1024px) {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+// ── Responsive Adjustments ────────────────────────────────────────────
+@media (max-width: 1150px) {
+  .page-header-bar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+
+    .header-location-center {
+      order: 3;
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 6px;
+    }
+  }
+
   .content {
     flex-direction: column;
     overflow-y: auto;
   }
 
-  .left-column, .right-column {
-    height: auto;
-    overflow-y: visible;
+  .sidebar-workspace {
+    width: 100%;
+    flex: auto;
+    max-width: none;
   }
 }

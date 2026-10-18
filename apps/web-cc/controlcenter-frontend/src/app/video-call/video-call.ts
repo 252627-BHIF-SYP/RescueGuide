@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { SignalingService } from '../services/signaling.service';
 import { environment } from '../../environments/environment';
@@ -17,7 +17,7 @@ interface TurnCredentialsResponse {
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule, MatIconButton, MatIcon],
+  imports: [CommonModule, MatButton, MatIcon],
   templateUrl: './video-call.html',
   styleUrls: ['./video-call.scss'],
 })
@@ -36,7 +36,7 @@ export class VideoCall implements OnInit, OnDestroy {
   pendingOffer: any = null;
 
   // TEMP: Preview-Modus für Styling – auf false setzen wenn fertig
-  private readonly PREVIEW_MODE = false;
+  private readonly PREVIEW_MODE = true;
 
   // Lokale Warteschlange
   private iceCandidateQueue: any[] = [];
