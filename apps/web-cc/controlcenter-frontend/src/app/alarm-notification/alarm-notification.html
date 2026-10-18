@@ -8,13 +8,14 @@
       <div class="alarm-content">
         <div class="data-row">
           <span class="label">Einsatzart:</span>
-          <span class="value"><strong>{{ activeAlarm()?.type }}</strong></span>
+          <span class="value"
+            ><strong>{{ activeAlarm()?.type }}</strong></span
+          >
         </div>
-        <hr>
+        <hr />
         <div class="data-row">
           <span class="label">Standort:</span>
-          <!--<span class="value">{{ activeAlarm()?.location }}</span>-->
-          <span class="value">Limesstraße 14, 4060 Leonding</span>
+          <span class="value">{{ activeAlarm()?.location }}</span>
         </div>
         <div class="data-row">
           <span class="label">Anrufer:</span>
@@ -23,12 +24,8 @@
       </div>
 
       <div class="alarm-actions">
-        <button class="btn-reject" (click)="onReject()">
-          Ablehnen
-        </button>
-        <button class="btn-accept" (click)="onAccept()">
-          Einsatz annehmen
-        </button>
+        <button class="btn-reject" (click)="onReject()">Ablehnen</button>
+        <button class="btn-accept" (click)="onAccept()">Einsatz annehmen</button>
       </div>
     </div>
   </div>

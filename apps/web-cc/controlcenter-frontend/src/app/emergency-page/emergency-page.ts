@@ -1,4 +1,13 @@
-import { Component, OnInit, signal, inject, OnDestroy, computed, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  signal,
+  inject,
+  OnDestroy,
+  computed,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -13,14 +22,7 @@ import { EmergencyService } from '../services/emergency.service';
 @Component({
   selector: 'app-emergency-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatIcon,
-    MatButton,
-    VideoCall,
-    EmergencyChecklist,
-    PlanSelector
-  ],
+  imports: [CommonModule, MatIcon, MatButton, VideoCall, EmergencyChecklist, PlanSelector],
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
 })
@@ -43,7 +45,7 @@ export class EmergencyPage implements OnInit, OnDestroy {
   public emergencyService = inject(EmergencyService);
 
   lastLocation = signal<Notruf | null>(null);
-  status = computed(() => this.lastLocation() ? 'Aktueller Notruf' : 'Kein Standort verfügbar');
+  status = computed(() => (this.lastLocation() ? 'Aktueller Notruf' : 'Kein Standort verfügbar'));
   latitude = computed(() => this.lastLocation()?.latitude ?? null);
   longitude = computed(() => this.lastLocation()?.longitude ?? null);
 
@@ -104,14 +106,17 @@ export class EmergencyPage implements OnInit, OnDestroy {
     if (lat === null || lng === null) return;
 
     const text = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    navigator.clipboard.writeText(text).then(() => {
-      this.copiedCoords.set(true);
-      setTimeout(() => this.copiedCoords.set(false), 2500);
-    }).catch(() => {
-      // Fallback falls Clipboard API blockiert ist
-      this.copiedCoords.set(true);
-      setTimeout(() => this.copiedCoords.set(false), 2500);
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        this.copiedCoords.set(true);
+        setTimeout(() => this.copiedCoords.set(false), 2500);
+      })
+      .catch(() => {
+        // Fallback falls Clipboard API blockiert ist
+        this.copiedCoords.set(true);
+        setTimeout(() => this.copiedCoords.set(false), 2500);
+      });
   }
 
   requestEndCall() {
@@ -136,18 +141,17 @@ export class EmergencyPage implements OnInit, OnDestroy {
   }
 
   fetchLatestLocation() {
+    const activeCallerId = this.emergencyService.activeCallerId();
+    const activeLocation = this.emergencyService.currentLocation();
+    if (activeCallerId) {
+      if (activeLocation) this.applyLocation(activeLocation);
+      return;
+    }
+
     this.locationService.getLocations().subscribe({
       next: (locations) => {
         if (locations && locations.length > 0) {
-          const loc = locations[locations.length - 1];
-          this.lastLocation.set(loc);
-          // Nur wenn sich die Koordinaten ändern, mapUrl neu setzen und Adresse auflösen
-          if (loc.latitude !== this.lastLat || loc.longitude !== this.lastLng) {
-            this.lastLat = loc.latitude;
-            this.lastLng = loc.longitude;
-            this._mapUrl = this.createMapUrl(loc.latitude, loc.longitude);
-            this.reverseGeocode(loc.latitude, loc.longitude);
-          }
+          this.applyLocation(locations[locations.length - 1]);
         } else {
           this.lastLocation.set(null);
           this._mapUrl = null;
@@ -160,8 +164,18 @@ export class EmergencyPage implements OnInit, OnDestroy {
         this._mapUrl = null;
         this.lastLat = null;
         this.lastLng = null;
-      }
+      },
     });
+  }
+
+  private applyLocation(location: Notruf) {
+    this.lastLocation.set(location);
+    if (location.latitude !== this.lastLat || location.longitude !== this.lastLng) {
+      this.lastLat = location.latitude;
+      this.lastLng = location.longitude;
+      this._mapUrl = this.createMapUrl(location.latitude, location.longitude);
+      this.reverseGeocode(location.latitude, location.longitude);
+    }
   }
 
   private reverseGeocode(lat: number, lng: number) {
@@ -193,7 +207,7 @@ export class EmergencyPage implements OnInit, OnDestroy {
       },
       error: () => {
         // Stiller Fallback bei Netzwerk- oder Rate-Limit-Fehlern
-      }
+      },
     });
   }
 

@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [],
   templateUrl: './alarm-notification.html',
-  styleUrls: ['./alarm-notification.scss']
+  styleUrls: ['./alarm-notification.scss'],
 })
 export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private alarmService = inject(AlarmService);
@@ -30,7 +30,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // 1. Abonniere den zentralen Alarm-Stream (inkl. GPS-Updates vom Mobile)
-    this.alarmSub = this.alarmService.alarmStream$.subscribe(data => {
+    this.alarmSub = this.alarmService.alarmStream$.subscribe((data) => {
       this.activeAlarm.set(data);
       if (data) {
         this.playAlarm();
@@ -42,19 +42,6 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
     // Registriere als 'controlcenter' am Signaling Server
     this.signaling.connect(environment.signalingUrl, 'controlcenter');
-
-    // Auf echte eingehende Notrufe hören (für Legacy-Support / direkte Anrufe)
-    this.signaling.on('incoming-call', (p: any) => {
-      console.log('Echter eingehender Notruf empfangen von:', p.from);
-      this.activeAlarm.set({
-        id: p.from,
-        caller: p.metadata?.caller || p.from,
-        location: p.metadata?.location || 'Unbekannter Standort',
-        type: p.metadata?.type || 'Notfall'
-      });
-      this.playAlarm();
-      this.cdr.detectChanges();
-    });
 
     // Fallback: Einige mobile Clients senden 'call-request' zuerst (wird primär vom AlarmService verarbeitet, hier für CallContext)
     this.signaling.on('call-request', (p: any) => {
@@ -79,7 +66,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
   private playAlarm() {
     this.audio.loop = true;
-    this.audio.play().catch(err => console.log('Audio Playback blocked by browser', err));
+    this.audio.play().catch((err) => console.log('Audio Playback blocked by browser', err));
   }
 
   onAccept() {
@@ -89,21 +76,40 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
 
       // Notfall in DB anlegen und Protokoll mit Startdaten vorbelegen
       const now = new Date();
+      const initialAddress =
+        alarm.location === 'Unbekannter Standort' ||
+        alarm.location === 'Standort wird ermittelt...' ||
+        alarm.location.startsWith('Koordinaten:')
+          ? ''
+          : alarm.location;
+      this.emergencyService.setActiveCallerLocation(alarm.id, alarm.lat, alarm.lng);
       this.emergencyService.createEmergency({
         date: now.toISOString().split('T')[0],
         time: now.toTimeString().split(' ')[0].substring(0, 5),
-        address: alarm.location !== 'Unbekannter Standort' ? alarm.location : '',
-        type: ['Medizinischer Notfall', 'Verkehrsunfall', 'Brand', 'Polizeilicher Notfall', 'Technische Hilfeleistung'].includes(alarm.type) ? alarm.type : 'Sonstiges'
+        address: initialAddress,
+        type: [
+          'Medizinischer Notfall',
+          'Verkehrsunfall',
+          'Brand',
+          'Polizeilicher Notfall',
+          'Technische Hilfeleistung',
+        ].includes(alarm.type)
+          ? alarm.type
+          : 'Sonstiges',
       });
 
       // Sende Akzeptanz-Event an den Ersthelfer
       this.signaling.emit('call-accepted', {
         to: alarm.id,
-        from: 'controlcenter'
+        from: 'controlcenter',
       });
 
       // Informiere lokale Komponenten (z.B. VideoCall) dass der User akzeptiert hat
-      try { this.callContext.acceptCall(); } catch (e) { /* best-effort */ }
+      try {
+        this.callContext.acceptCall();
+      } catch (e) {
+        /* best-effort */
+      }
 
       this.emergencyService.isActive.set(true);
 
@@ -111,11 +117,10 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
       this.alarmService.clearAlarm();
       this.cdr.detectChanges();
 
-      this.router.navigate(['/emergency-page'])
-        .catch(() => {
-          console.warn('Zielseite /emergency-page konnte nicht geladen werden.');
-          this.alarmService.clearAlarm();
-        });
+      this.router.navigate(['/emergency-page']).catch(() => {
+        console.warn('Zielseite /emergency-page konnte nicht geladen werden.');
+        this.alarmService.clearAlarm();
+      });
     }
   }
 
@@ -128,7 +133,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
       this.signaling.emit('call-rejected', {
         to: alarm.id,
         from: 'controlcenter',
-        reason: 'declined'
+        reason: 'declined',
       });
 
       // Alarm komplett abbrechen

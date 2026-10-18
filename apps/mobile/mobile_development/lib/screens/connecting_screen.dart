@@ -158,6 +158,14 @@ class _ConnectingScreenState extends State<ConnectingScreen>
         desiredAccuracy: LocationAccuracy.high,
       );
 
+      final coordinatesAddress =
+          'Koordinaten: ${position.latitude.toStringAsFixed(5)}, ${position.longitude.toStringAsFixed(5)}';
+      if (mounted) setState(() => _currentAddress = coordinatesAddress);
+      _webRTCService.setLocation(
+        position.latitude,
+        position.longitude,
+        coordinatesAddress,
+      );
       _getAddressFromLatLng(position);
     } catch (e) {
       if (mounted) setState(() => _currentAddress = "Standortfehler");
@@ -179,7 +187,6 @@ class _ConnectingScreenState extends State<ConnectingScreen>
               "${place.street}, ${place.postalCode} ${place.locality}";
         });
 
-        // Standort an den Service übergeben
         _webRTCService.setLocation(
           position.latitude,
           position.longitude,

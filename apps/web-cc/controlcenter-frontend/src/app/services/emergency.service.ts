@@ -41,6 +41,8 @@ export class EmergencyService implements OnDestroy {
   durationSeconds = signal<number>(0);
   activeEmergencyId = signal<number | null>(null);
   activeProtocolId = signal<number | null>(null);
+  activeCallerId = signal<string | null>(null);
+  currentLocation = signal<Notruf | null>(null);
 
   private timerInterval: any;
   private saveSubject = new Subject<void>();
@@ -78,6 +80,20 @@ export class EmergencyService implements OnDestroy {
   updateProtocol(data: Partial<EmergencyProtocol>) {
     this.protocol.update((p) => ({ ...p, ...data }));
     this.saveProtocol();
+  }
+
+  setActiveCallerLocation(callerId: string, latitude?: number, longitude?: number) {
+    this.activeCallerId.set(callerId);
+    this.currentLocation.set(
+      Number.isFinite(latitude) && Number.isFinite(longitude)
+        ? { userId: callerId, latitude: latitude!, longitude: longitude! }
+        : null,
+    );
+  }
+
+  updateActiveCallerLocation(callerId: string, latitude: number, longitude: number) {
+    if (this.activeCallerId() !== callerId) return;
+    this.currentLocation.set({ userId: callerId, latitude, longitude });
   }
 
   async createEmergency(initialData?: Partial<EmergencyProtocol>) {
@@ -138,6 +154,8 @@ export class EmergencyService implements OnDestroy {
     this.isActive.set(false);
     this.activeEmergencyId.set(null);
     this.activeProtocolId.set(null);
+    this.activeCallerId.set(null);
+    this.currentLocation.set(null);
     this.stopTimer();
   }
 
