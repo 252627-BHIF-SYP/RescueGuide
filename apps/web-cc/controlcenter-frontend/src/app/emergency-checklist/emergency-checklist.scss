@@ -1,4 +1,17 @@
-﻿:host {
+// ── Design Tokens ─────────────────────────────────────────────────────
+$accent:        #a31d58;
+$accent-soft:   #fce7f0;
+$accent-hover:  #8b1649;
+$surface:       #ffffff;
+$border:        #e2e4e9;
+$border-light:  #edf0f4;
+$border-input:  #cbd5e1;
+$text:          #191c21;
+$text-muted:    #64748b;
+$success:       #16a34a;
+$success-soft:  #ecfdf5;
+
+:host {
   display: block;
   height: 100%;
   overflow: hidden;
@@ -6,105 +19,401 @@
 
 .checklist-card {
   height: 100%;
-  border: 1px solid #e1e2e5;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.07);
-  overflow-y: auto;
-  background: #ffffff;
-  transition: box-shadow 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  border: 1px solid $border;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 
-  &:hover {
-    box-shadow: 0 2px 6px rgba(0,0,0,.10);
-  }
+  // ── Header Bar with Progress ───────────────────────────────────────
+  .protocol-header {
+    padding: 12px 18px 8px;
+    border-bottom: 1px solid $border;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 
-  // Card header: icon + titel
-  mat-card-header {
-    padding: 14px 18px 8px;
-    border-bottom: 1px solid #f0f1f3;
-
-    mat-card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #1f2328;
+    .header-main-row {
+      width: 100%;
       display: flex;
       align-items: center;
-      gap: 7px;
+      justify-content: space-between;
 
-      mat-icon,
-      .card-icon {
-        color: #a31d58;
-        font-size: 19px;
-        width: 19px;
-        height: 19px;
+      .protocol-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .card-icon {
+          color: $accent;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 0.98rem;
+          font-weight: 700;
+          color: $text;
+        }
+      }
+
+      .fill-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid #cbd5e1;
+        transition: all 0.2s ease;
+
+        .badge-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+          color: #64748b;
+        }
+
+        &.completed {
+          background: $success-soft;
+          color: #065f46;
+          border-color: #a7f3d0;
+
+          .badge-icon {
+            color: $success;
+          }
+        }
+      }
+    }
+
+    .protocol-progress-track {
+      width: 100%;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+
+      .protocol-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        border-radius: 999px;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
     }
   }
 
-  mat-card-content {
-    padding: 6px 18px 18px;
+  // ── Scrollable Protocol Content ────────────────────────────────────
+  .protocol-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 14px;
   }
 }
 
-// Form layout
-.checklist-items,
-.checklist-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 10px 0;
-}
-
-.form-row {
-  display: flex;
-  gap: 12px;
-
-  mat-form-field { flex: 1; }
-}
-
-.full-width { width: 100%; }
-
-// Divider spacing
-mat-divider {
-  margin: 4px 0 8px;
-}
-
-// Prozess-Tracking section
-.tracking-section {
-  h4 {
-    margin: 0 0 10px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #74777d;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-}
-
-.tracking-grid {
+// ── Two-Panel Grid ──────────────────────────────────────────────────
+.protocol-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 1020px;
+  margin: 0 auto;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Card Panel Container ────────────────────────────────────────────
+.form-card-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 
-  // Checkboxen in Dashboard-Akzentfarbe
-  ::ng-deep .mat-mdc-checkbox {
-    .mdc-checkbox__background {
-      border-color: #a31d58 !important;
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+
+    .panel-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: $accent;
     }
-    &.mat-mdc-checkbox-checked .mdc-checkbox__background {
-      background-color: #a31d58 !important;
+
+    .panel-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #334155;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
+  }
+
+  .panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
   }
 }
 
-.checklist-item {
-  ::ng-deep .mat-mdc-checkbox { width: 100%; }
+// ── Form Input Groups & Rows ────────────────────────────────────────
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 
-  ::ng-deep .mdc-label {
-    font-size: 0.88rem;
-    color: #1f2328;
-    white-space: normal;
-    line-height: 1.4;
+  .input-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.01em;
   }
 }
 
+.input-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 
+// ── Inputs & Selects Wrappers with Icons ────────────────────────────
+.input-wrapper,
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .field-icon {
+    position: absolute;
+    left: 9px;
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    color: #94a3b8;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 8px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #64748b;
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+.custom-input,
+.custom-select,
+.custom-textarea {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  font-size: 0.83rem;
+  color: $text;
+  background: #f8fafc;
+  border: 1px solid $border-input;
+  border-radius: 7px;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+
+  &::placeholder {
+    color: #94a3b8;
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    border-color: #94a3b8;
+    background: #ffffff;
+  }
+
+  &:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba(163, 29, 88, 0.12);
+  }
+}
+
+.custom-input {
+  height: 35px;
+  padding: 0 10px 0 32px;
+
+  &.no-icon {
+    padding-left: 10px;
+  }
+}
+
+.custom-select {
+  height: 35px;
+  padding: 0 28px 0 32px;
+  cursor: pointer;
+
+  option {
+    background: #ffffff;
+    color: $text;
+  }
+}
+
+.custom-textarea {
+  padding: 7px 10px;
+  line-height: 1.35;
+  resize: none;
+  height: 64px;
+}
+
+// ── Alarm Section (2x2 Grid) ────────────────────────────────────────
+.alarm-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.alarm-chip {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+
+  .chip-check-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid #94a3b8;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 13px;
+      width: 13px;
+      height: 13px;
+      color: inherit;
+    }
+  }
+
+  .chip-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.1;
+
+    .chip-code {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .chip-name {
+      font-size: 0.63rem;
+      font-weight: 500;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &:hover {
+    background: #edf2f7;
+    border-color: #94a3b8;
+  }
+
+  &.active {
+    .chip-check-box {
+      color: #ffffff;
+    }
+
+    &.rd {
+      background: #fef2f2;
+      border-color: #ef4444;
+
+      .chip-check-box {
+        background: #ef4444;
+        border-color: #ef4444;
+      }
+
+      .chip-code {
+        color: #b91c1c;
+      }
+    }
+
+    &.na {
+      background: #fffbeb;
+      border-color: #f59e0b;
+
+      .chip-check-box {
+        background: #d97706;
+        border-color: #d97706;
+      }
+
+      .chip-code {
+        color: #b45309;
+      }
+    }
+
+    &.pol {
+      background: #eff6ff;
+      border-color: #3b82f6;
+
+      .chip-check-box {
+        background: #2563eb;
+        border-color: #2563eb;
+      }
+
+      .chip-code {
+        color: #1d4ed8;
+      }
+    }
+
+    &.fw {
+      background: #fdf2f8;
+      border-color: #ec4899;
+
+      .chip-check-box {
+        background: #db2777;
+        border-color: #db2777;
+      }
+
+      .chip-code {
+        color: #be185d;
+      }
+    }
+  }
+}

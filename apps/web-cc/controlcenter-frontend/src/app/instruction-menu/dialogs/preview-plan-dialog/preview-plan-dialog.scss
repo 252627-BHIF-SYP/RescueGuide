@@ -1,84 +1,109 @@
+$accent: #a31d58;
+$accent-hover: #8c164a;
+$accent-soft: #fdf2f6;
+$border: #e2e8f0;
+$text: #1f2328;
+$text-muted: #64748b;
+
 .dialog-title {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #2b2d42;
-  padding: 20px 24px 12px 24px;
+  color: $text;
+  padding: 18px 24px 12px;
   margin: 0;
   border-bottom: 1px solid #f1f3f5;
 
   .title-icon {
-    color: #e63946; // Signalrot
-    font-size: 28px;
-    height: 28px;
-    width: 28px;
+    color: $accent;
+    font-size: 24px;
+    height: 24px;
+    width: 24px;
   }
 }
 
 .custom-dialog-content {
-  padding: 20px 24px !important;
-  max-height: 70vh;
-  background-color: #fafafa;
+  padding: 18px 24px !important;
+  max-height: 72vh;
+  background-color: #fafbfc;
   overflow-y: auto;
 }
 
 // Meta-Banner oben
 .plan-meta-banner {
   display: flex;
-  gap: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  padding: 12px 16px;
+  border: 1px solid $border;
+  padding: 10px 14px;
   border-radius: 8px;
-  margin-bottom: 20px;
-
-  @media (max-width: 500px) {
-    flex-direction: column;
-    gap: 8px;
-  }
+  margin-bottom: 16px;
 
   .meta-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    color: #475569;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: $text-muted;
 
     mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
       color: #94a3b8;
     }
   }
 }
 
-.section-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #2b2d42;
-  margin: 0 0 16px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+// Detail Card für Inhalt
+.plan-detail-card {
+  background-color: #ffffff;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: $accent;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: $text-muted;
+    }
+  }
 }
 
-// Die neue Timeline-Struktur
+// Timeline
 .plan-timeline {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   position: relative;
-  padding-left: 20px;
+  padding-left: 14px;
 
-  // Die senkrechte Linie im Hintergrund
   &::before {
     content: '';
     position: absolute;
-    left: 31px;
-    top: 20px;
-    bottom: 20px;
+    left: 25px;
+    top: 18px;
+    bottom: 18px;
     width: 2px;
     background-color: #e2e8f0;
     z-index: 0;
@@ -87,7 +112,7 @@
 
 .timeline-step {
   display: flex;
-  gap: 20px;
+  gap: 14px;
   align-items: flex-start;
   position: relative;
   z-index: 1;
@@ -96,31 +121,31 @@
 .step-badge {
   width: 24px;
   height: 24px;
-  background-color: #e63946; // Signalrot
+  background-color: $accent;
   color: #ffffff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   flex-shrink: 0;
-  margin-top: 14px;
-  box-shadow: 0 0 0 4px #ffffff, 0 2px 4px rgba(230, 57, 70, 0.2);
+  margin-top: 12px;
+  box-shadow: 0 0 0 4px #ffffff, 0 2px 4px rgba(163, 29, 88, 0.2);
 }
 
 .step-card {
   flex: 1;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  background-color: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .step-body {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   justify-content: space-between;
 
   @media (max-width: 600px) {
@@ -132,42 +157,42 @@
   flex: 1;
 
   h4 {
-    margin: 0 0 6px 0;
-    font-size: 1.1rem;
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
     font-weight: 700;
-    color: #e63946; // Titel rot
+    color: $accent;
   }
 
   .measure-description {
-    margin: 0 0 12px 0;
-    font-size: 0.95rem;
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
     color: #334155;
     line-height: 1.5;
     white-space: pre-wrap;
   }
 
   .measure-sub-meta {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #94a3b8;
     display: block;
   }
 }
 
 .step-media {
-  width: 140px;
-  height: 100px;
+  width: 120px;
+  height: 85px;
   flex-shrink: 0;
-  border: 1px solid #f1f3f5;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   overflow: hidden;
-  background-color: #f8fafc;
+  background-color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
 
   @media (max-width: 600px) {
     width: 100%;
-    height: 140px;
+    height: 130px;
   }
 
   .measure-image {
@@ -179,28 +204,32 @@
 
 .empty-state {
   text-align: center;
-  padding: 40px 20px;
+  padding: 36px 16px;
   color: #94a3b8;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #e2e8f0;
 
   mat-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-    margin-bottom: 8px;
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 6px;
+    color: #cbd5e1;
   }
 
   p {
     margin: 0;
     font-style: italic;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
+    color: #64748b;
   }
 }
 
 .dialog-actions-row {
-  padding: 16px 24px 20px 24px !important;
+  padding: 14px 24px 18px !important;
   border-top: 1px solid #f1f3f5;
   margin: 0;
-
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -209,8 +238,8 @@
   .select-toggle-btn {
     border-radius: 8px !important;
     font-weight: 600 !important;
-    color: #a31d58 !important;
-    border-color: #a31d58 !important;
+    color: $accent !important;
+    border-color: $accent !important;
     transition: all 0.15s ease;
 
     mat-icon {
@@ -221,23 +250,23 @@
     }
 
     &.selected {
-      background-color: #fdf2f6 !important;
-      border-color: #a31d58 !important;
+      background-color: $accent-soft !important;
+      border-color: $accent !important;
     }
 
     &:hover {
-      background-color: #fdf2f6 !important;
+      background-color: $accent-soft !important;
     }
   }
 
   .close-btn {
-    background-color: #e63946 !important;
+    background-color: $accent !important;
     color: #ffffff !important;
     border-radius: 8px !important;
     font-weight: 600 !important;
 
     &:hover {
-      background-color: #d62839 !important;
+      background-color: $accent-hover !important;
     }
 
     mat-icon {

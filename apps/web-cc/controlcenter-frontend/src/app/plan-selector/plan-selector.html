@@ -1,27 +1,32 @@
-<mat-card class="plan-selector-card">
-  <!-- Dispatch Notice Toast / Banner -->
+<div class="workspace-dual-column">
+  <!-- Feedback / Dispatch Notice Banner -->
   @if (dispatchNotice) {
     <div class="dispatch-notice-banner animate-slide-down" [class.error]="dispatchError">
       <div class="notice-inner">
-        <mat-icon class="notice-icon">check_circle</mat-icon>
+        <mat-icon class="notice-icon">{{ dispatchError ? 'error_outline' : 'check_circle' }}</mat-icon>
         <span class="notice-text">{{ dispatchNotice }}</span>
       </div>
       <button
         mat-icon-button
+        type="button"
         class="notice-close-btn"
         (click)="dismissNotice()"
-        aria-label="Benachrichtigung schließen"
+        aria-label="Schließen"
       >
         <mat-icon>close</mat-icon>
       </button>
     </div>
   }
 
+  <!-- Mobile / First Responder Progress Banner (if active) -->
   @if (dispatchProgress) {
-    <section class="dispatch-progress" aria-live="polite">
+    <section class="dispatch-progress-card animate-slide-down" aria-live="polite">
       <div class="progress-heading">
-        <strong>{{ dispatchProgress.complete ? 'Plan abgeschlossen' : 'Planfortschritt' }}</strong>
-        <span
+        <div class="progress-title-group">
+          <mat-icon class="pulse-icon">sync</mat-icon>
+          <strong>{{ dispatchProgress.complete ? 'Übermittlung abgeschlossen' : 'Ablauf beim Ersthelfer' }}</strong>
+        </div>
+        <span class="progress-step-text"
           >{{ dispatchProgress.completedCount }} / {{ dispatchProgress.totalSteps }} Schritte</span
         >
       </div>
@@ -35,420 +40,376 @@
         <span [style.width.%]="progressPercent"></span>
       </div>
       @if (!dispatchProgress.complete && dispatchProgress.currentTitle) {
-        <div class="progress-current">Aktuell: {{ dispatchProgress.currentTitle }}</div>
+        <div class="progress-current">
+          <span>Aktueller Schritt beim Ersthelfer:</span>
+          <strong>{{ dispatchProgress.currentTitle }}</strong>
+        </div>
       }
     </section>
   }
 
-  <!-- 2. STICKY CONTROLS: COMPACT SEARCH & SEGMENTED TABS -->
-  <div class="sticky-controls-bar">
-    <!-- Compact Search Box -->
-    <div class="compact-search-box">
-      <mat-icon class="search-prefix">search</mat-icon>
-      <input
-        type="text"
-        class="search-input"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="applyFilter()"
-        placeholder="Plan oder Maßnahme suchen..."
-        aria-label="Plan oder Maßnahme suchen"
-      />
-      @if (searchTerm) {
-        <button
-          mat-icon-button
-          type="button"
-          class="search-clear-btn"
-          (click)="clearSearch()"
-          matTooltip="Suche leeren (Esc)"
-          aria-label="Suche zurücksetzen"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </div>
-
-    <!-- Segmented Filter Pills -->
-    <div class="filter-pills-row">
-      <div class="pills-group">
-        <button
-          type="button"
-          class="filter-pill"
-          [class.active]="activeFilterTab === 'all'"
-          (click)="setFilterTab('all')"
-        >
-          <span>Alle</span>
-          <span class="pill-count">{{ filteredPlans.length + filteredMeasures.length }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="filter-pill"
-          [class.active]="activeFilterTab === 'plans'"
-          (click)="setFilterTab('plans')"
-        >
-          <mat-icon class="pill-icon">playlist_play</mat-icon>
-          <span>Pläne</span>
-          <span class="pill-count">{{ filteredPlans.length }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="filter-pill"
-          [class.active]="activeFilterTab === 'measures'"
-          (click)="setFilterTab('measures')"
-        >
-          <mat-icon class="pill-icon">healing</mat-icon>
-          <span>Maßnahmen</span>
-          <span class="pill-count">{{ filteredMeasures.length }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="filter-pill selected-pill"
-          [class.active]="activeFilterTab === 'selected'"
-          [class.has-selection]="totalSelectedCount > 0"
-          (click)="setFilterTab('selected')"
-        >
-          <mat-icon class="pill-icon">done_all</mat-icon>
-          <span>Ausgewählt</span>
-          <span class="pill-count" [class.highlight]="totalSelectedCount > 0">{{
-            totalSelectedCount
-          }}</span>
-        </button>
-      </div>
-
-      @if (totalSelectedCount > 0) {
-        <button
-          type="button"
-          class="btn-clear-selection"
-          (click)="clearAllSelection()"
-          matTooltip="Alle Auswahlen aufheben"
-        >
-          <mat-icon>remove_done</mat-icon>
-          <span>Alles abwählen</span>
-        </button>
-      }
-    </div>
-  </div>
-
-  <!-- 3. SCROLLABLE LIST CONTAINER (ONLY THIS SCROLLS!) -->
-  <mat-card-content class="plan-selector-body">
-    <!-- PLANS SECTION -->
-    @if (shouldShowPlans && displayedPlans.length > 0) {
-      <div class="list-section">
-        <div class="section-header">
-          <div class="section-title-left">
-            <mat-icon class="section-icon">playlist_play</mat-icon>
-            <span class="section-title">Einsatzpläne</span>
+  <div class="columns-grid">
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SPALTE 1: KATALOG (Pläne & Sofortmaßnahmen)                     -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="catalog-column">
+      <!-- Catalog Header & Search Controls -->
+      <div class="catalog-header-bar">
+        <div class="column-title-row">
+          <div class="title-with-icon">
+            <mat-icon class="col-icon">menu_book</mat-icon>
+            <h3>Katalog</h3>
           </div>
-          <span class="badge">{{ displayedPlans.length }}</span>
+          <span class="catalog-stats"
+            >{{ filteredPlans.length }} Pläne &bull; {{ filteredMeasures.length }} Maßnahmen</span
+          >
         </div>
 
-        <div class="items-list">
-          @for (plan of displayedPlans; track plan.id) {
-            <div
-              class="selectable-card plan-card"
-              [class.selected]="isPlanSelected(plan)"
-              (click)="togglePlanSelection(plan)"
+        <!-- Search Input -->
+        <div class="catalog-search-box">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            class="search-input"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="applyFilter()"
+            placeholder="Maßnahme oder Plan suchen..."
+            aria-label="Plan oder Maßnahme suchen"
+          />
+          @if (searchTerm) {
+            <button
+              mat-icon-button
+              type="button"
+              class="clear-btn"
+              (click)="clearSearch()"
+              matTooltip="Suche zurücksetzen (Esc)"
             >
-              <div class="card-main-row">
-                <mat-checkbox
-                  [checked]="isPlanSelected(plan)"
-                  (change)="togglePlanSelection(plan)"
-                  (click)="$event.stopPropagation()"
-                  color="primary"
-                >
-                </mat-checkbox>
-
-                <div class="item-text-content">
-                  <div class="item-title-row">
-                    <span class="item-title">{{ plan.name }}</span>
-                    <span class="badge-steps">
-                      <mat-icon class="badge-icon">format_list_numbered</mat-icon>
-                      {{ plan.measures.length }} Schritte
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Action Buttons: Full Preview & Inline Expand -->
-                <div class="item-actions-group" (click)="$event.stopPropagation()">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    class="action-btn preview-btn"
-                    (click)="previewPlan(plan, $event)"
-                    matTooltip="Vorschau des Plans öffnen (wie im Menü)"
-                    aria-label="Vorschau des Plans"
-                  >
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-
-                  <button
-                    mat-icon-button
-                    type="button"
-                    class="action-btn expand-btn"
-                    (click)="togglePlanExpand(plan.id, $event)"
-                    [matTooltip]="
-                      expandedPlans[plan.id] ? 'Schritte einklappen' : 'Schritte anzeigen'
-                    "
-                    aria-label="Schritte anzeigen"
-                  >
-                    <mat-icon>{{
-                      expandedPlans[plan.id] ? 'expand_less' : 'expand_more'
-                    }}</mat-icon>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Compact Inline Steps Preview -->
-              @if (expandedPlans[plan.id]) {
-                <div
-                  class="inline-preview-container animate-expand"
-                  (click)="$event.stopPropagation()"
-                >
-                  <div class="inline-timeline-header">
-                    <span>Enthaltene Maßnahmen in Ablaufreihenfolge:</span>
-                    <button
-                      mat-button
-                      type="button"
-                      class="inline-fullpreview-link"
-                      (click)="previewPlan(plan, $event)"
-                    >
-                      <mat-icon>open_in_new</mat-icon>
-                      Große Vorschau
-                    </button>
-                  </div>
-
-                  @if (plan.measures && plan.measures.length > 0) {
-                    <div class="inline-steps-list">
-                      @for (measure of plan.measures; track measure.id; let i = $index) {
-                        <div
-                          class="inline-step-item"
-                          (click)="previewMeasure(measure, $event)"
-                          matTooltip="Maßnahme Vorschau anzeigen"
-                        >
-                          <span class="step-badge">{{ i + 1 }}</span>
-                          <div class="step-info">
-                            <span class="step-name">{{ measure.name }}</span>
-                            @if (measure.description) {
-                              <span class="step-desc-snippet">{{ measure.description }}</span>
-                            }
-                          </div>
-                          @if (measure.imageUrl) {
-                            <span class="image-indicator" title="Enthält Abbildung">
-                              <mat-icon>image</mat-icon>
-                            </span>
-                          }
-                          <mat-icon class="step-preview-arrow">chevron_right</mat-icon>
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <div class="inline-empty-steps">Keine Maßnahmen in diesem Plan hinterlegt.</div>
-                  }
-                </div>
-              }
-            </div>
+              <mat-icon>close</mat-icon>
+            </button>
           }
         </div>
-      </div>
-    }
 
-    <!-- MEASURES SECTION -->
-    @if (shouldShowMeasures && displayedMeasures.length > 0) {
-      <div class="list-section">
-        <div class="section-header">
-          <div class="section-title-left">
-            <mat-icon class="section-icon">healing</mat-icon>
-            <span class="section-title">Einzelne Sofortmaßnahmen</span>
-          </div>
-          <span class="badge">{{ displayedMeasures.length }}</span>
+        <!-- Segmented Filter Pills -->
+        <div class="filter-pills">
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="filterCategory === 'all'"
+            (click)="setFilterCategory('all')"
+          >
+            <span>Alle</span>
+            <span class="pill-count">{{ filteredPlans.length + filteredMeasures.length }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="filterCategory === 'plans'"
+            (click)="setFilterCategory('plans')"
+          >
+            <mat-icon>playlist_play</mat-icon>
+            <span>Pläne</span>
+            <span class="pill-count">{{ filteredPlans.length }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="filterCategory === 'measures'"
+            (click)="setFilterCategory('measures')"
+          >
+            <mat-icon>healing</mat-icon>
+            <span>Sofortmaßnahmen</span>
+            <span class="pill-count">{{ filteredMeasures.length }}</span>
+          </button>
         </div>
+      </div>
 
-        <div class="items-list">
-          @for (measure of displayedMeasures; track measure.id) {
-            <div
-              class="selectable-card measure-card"
-              [class.selected]="isMeasureSelected(measure)"
-              (click)="toggleMeasureSelection(measure)"
-            >
-              <div class="card-main-row">
-                <mat-checkbox
-                  [checked]="isMeasureSelected(measure)"
-                  (change)="toggleMeasureSelection(measure)"
-                  (click)="$event.stopPropagation()"
-                  color="primary"
+      <!-- Catalog Scrollable List -->
+      <div
+        class="catalog-body"
+        cdkDropList
+        id="catalogDropList"
+        [cdkDropListConnectedTo]="['queueDropList']"
+        [cdkDropListSortingDisabled]="true"
+      >
+        <!-- ── SECTION: EINSATZPLÄNE ───────────────────────────────── -->
+        @if (filterCategory === 'all' || filterCategory === 'plans') {
+          <div class="category-block">
+            <div class="category-header">
+              <mat-icon class="cat-icon">playlist_play</mat-icon>
+              <span class="cat-title">Einsatzpläne</span>
+              <span class="cat-badge">{{ filteredPlans.length }}</span>
+            </div>
+
+            <div class="catalog-items-list">
+              @for (plan of filteredPlans; track plan.id) {
+                <div
+                  class="catalog-item-card plan-item"
+                  cdkDrag
+                  [cdkDragData]="plan"
                 >
-                </mat-checkbox>
+                  <div class="card-main-content">
+                    <div class="card-icon-box plan-bg">
+                      <mat-icon>playlist_play</mat-icon>
+                    </div>
 
-                <div class="item-text-content">
-                  <div class="item-title-row">
-                    <span class="item-title">{{ measure.name }}</span>
+                    <div class="card-details">
+                      <div class="card-name-line">
+                        <span class="item-name">{{ plan.name }}</span>
+                        @if (countInQueue('plan', plan.id) > 0) {
+                          <span class="in-queue-badge">
+                            <mat-icon>check</mat-icon>
+                            {{ countInQueue('plan', plan.id) }}x in Vorbereitung
+                          </span>
+                        }
+                      </div>
+                    </div>
 
-                    @if (isMeasureInSelectedPlan(measure.id)) {
-                      <span
-                        class="badge-in-plan"
-                        matTooltip="Bereits in einem deiner ausgewählten Pläne enthalten"
+                    <!-- Actions: Preview & Add -->
+                    <div class="card-actions">
+                      <button
+                        type="button"
+                        class="action-btn preview"
+                        (click)="previewPlan(plan, $event)"
+                        matTooltip="Vorschau des Plans öffnen"
+                        aria-label="Vorschau"
                       >
-                        <mat-icon class="badge-icon">check</mat-icon>
-                        Im Plan
-                      </span>
-                    }
+                        <mat-icon>visibility</mat-icon>
+                      </button>
 
-                    @if (measure.imageUrl) {
-                      <span class="badge-image" matTooltip="Enthält visuelle Anleitung">
-                        <mat-icon class="badge-icon">image</mat-icon>
-                        Bild
-                      </span>
-                    }
-                  </div>
-
-                  @if (measure.description) {
-                    <span class="item-desc-preview">{{ measure.description }}</span>
-                  }
-                </div>
-
-                <!-- Action Buttons: Full Preview & Inline Expand -->
-                <div class="item-actions-group" (click)="$event.stopPropagation()">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    class="action-btn preview-btn"
-                    (click)="previewMeasure(measure, $event)"
-                    matTooltip="Maßnahme Vorschau öffnen (wie im Menü)"
-                    aria-label="Vorschau der Maßnahme"
-                  >
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-
-                  @if (measure.description || measure.imageUrl) {
-                    <button
-                      mat-icon-button
-                      type="button"
-                      class="action-btn expand-btn"
-                      (click)="toggleMeasureExpand(measure.id, $event)"
-                      [matTooltip]="
-                        expandedMeasures[measure.id] ? 'Details einklappen' : 'Details ausklappen'
-                      "
-                      aria-label="Details ein-/ausklappen"
-                    >
-                      <mat-icon>{{
-                        expandedMeasures[measure.id] ? 'expand_less' : 'expand_more'
-                      }}</mat-icon>
-                    </button>
-                  }
-                </div>
-              </div>
-
-              <!-- Compact Inline Measure Details Preview -->
-              @if (expandedMeasures[measure.id]) {
-                <div
-                  class="inline-preview-container animate-expand"
-                  (click)="$event.stopPropagation()"
-                >
-                  @if (measure.description) {
-                    <div class="inline-measure-desc">
-                      {{ measure.description }}
+                      <button
+                        type="button"
+                        class="btn-add-to-queue"
+                        (click)="addToQueue('plan', plan, $event)"
+                        matTooltip="Zur Übertragung hinzufügen"
+                        aria-label="Hinzufügen"
+                      >
+                        <mat-icon>add</mat-icon>
+                      </button>
                     </div>
-                  }
-
-                  @if (measure.imageUrl) {
-                    <div class="inline-measure-media">
-                      <img
-                        [src]="measure.imageUrl"
-                        alt="{{ measure.name }}"
-                        class="inline-measure-img"
-                      />
-                    </div>
-                  }
-
-                  <div class="inline-measure-footer">
-                    <button
-                      mat-button
-                      type="button"
-                      class="inline-fullpreview-link"
-                      (click)="previewMeasure(measure, $event)"
-                    >
-                      <mat-icon>open_in_new</mat-icon>
-                      Vollbild-Vorschau
-                    </button>
                   </div>
                 </div>
               }
             </div>
-          }
-        </div>
-      </div>
-    }
+          </div>
+        }
 
-    <!-- EMPTY STATES -->
-    @if (isCurrentTabEmpty) {
-      <div class="empty-state-card animate-fade-in">
-        @if (activeFilterTab === 'selected') {
-          <mat-icon class="empty-icon">checklist</mat-icon>
-          <div class="empty-title">Keine Elemente ausgewählt</div>
-          <div class="empty-desc">
-            Wähle Einsatzpläne oder einzelne Sofortmaßnahmen aus der Liste aus, um sie sofort per
-            Klick oder <kbd>Ctrl+Enter</kbd> an den Ersthelfer zu übermitteln.
+        <!-- ── SECTION: SOFORTMASSNAHMEN ───────────────────────────── -->
+        @if (filterCategory === 'all' || filterCategory === 'measures') {
+          <div class="category-block">
+            <div class="category-header">
+              <mat-icon class="cat-icon">healing</mat-icon>
+              <span class="cat-title">Sofortmaßnahmen</span>
+              <span class="cat-badge">{{ filteredMeasures.length }}</span>
+            </div>
+
+            <div class="catalog-items-list">
+              @for (measure of filteredMeasures; track measure.id) {
+                <div
+                  class="catalog-item-card measure-item"
+                  cdkDrag
+                  [cdkDragData]="measure"
+                >
+                  <div class="card-main-content">
+                    <div class="card-icon-box measure-bg">
+                      <mat-icon>healing</mat-icon>
+                    </div>
+
+                    <div class="card-details">
+                      <div class="card-name-line">
+                        <span class="item-name">{{ measure.name }}</span>
+                        @if (countInQueue('measure', measure.id) > 0) {
+                          <span class="in-queue-badge">
+                            <mat-icon>check</mat-icon>
+                            {{ countInQueue('measure', measure.id) }}x in Vorbereitung
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Actions: Preview & Add -->
+                    <div class="card-actions">
+                      <button
+                        type="button"
+                        class="action-btn preview"
+                        (click)="previewMeasure(measure, $event)"
+                        matTooltip="Vorschau der Maßnahme öffnen"
+                        aria-label="Vorschau"
+                      >
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn-add-to-queue"
+                        (click)="addToQueue('measure', measure, $event)"
+                        matTooltip="Zur Übertragung hinzufügen"
+                        aria-label="Hinzufügen"
+                      >
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
-          <button
-            mat-stroked-button
-            color="primary"
-            class="empty-action-btn"
-            (click)="setFilterTab('all')"
-          >
-            <mat-icon>playlist_add_check</mat-icon>
-            Zu allen Elementen wechseln
-          </button>
-        } @else if (searchTerm) {
-          <mat-icon class="empty-icon">search_off</mat-icon>
-          <div class="empty-title">Keine Treffer für „{{ searchTerm }}“</div>
-          <div class="empty-desc">
-            Versuche einen anderen Suchbegriff oder setze den Suchfilter zurück.
+        }
+
+        <!-- Empty Filter State -->
+        @if (filteredPlans.length === 0 && filteredMeasures.length === 0) {
+          <div class="catalog-empty-state">
+            <mat-icon>search_off</mat-icon>
+            <p>Keine Einträge für „{{ searchTerm }}“ gefunden.</p>
+            <button mat-stroked-button color="primary" (click)="clearSearch()">
+              Suche leeren
+            </button>
           </div>
-          <button
-            mat-stroked-button
-            color="primary"
-            class="empty-action-btn"
-            (click)="clearSearch()"
-          >
-            <mat-icon>backspace</mat-icon>
-            Suche zurücksetzen
-          </button>
-        } @else {
-          <mat-icon class="empty-icon">inbox</mat-icon>
-          <div class="empty-title">Keine Einträge vorhanden</div>
-          <div class="empty-desc">In dieser Kategorie sind derzeit keine Daten hinterlegt.</div>
         }
       </div>
-    }
-  </mat-card-content>
+    </section>
 
-  <!-- 4. STICKY SELECTION TRAY / BOTTOM DOCK (ALWAYS ACCESSIBLE WHEN SELECTED) -->
-  @if (hasSelection) {
-    <div class="selection-dock animate-slide-up">
-      <div class="dock-summary">
-        <mat-icon class="dock-summary-icon">send</mat-icon>
-        <span class="dock-text">
-          <strong>{{ selectedPlans.length }}</strong>
-          {{ selectedPlans.length === 1 ? 'Plan' : 'Pläne' }} &
-          <strong>{{ selectedMeasures.length }}</strong>
-          {{ selectedMeasures.length === 1 ? 'Maßnahme' : 'Maßnahmen' }}
-        </span>
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- SPALTE 2: WARTESCHLANGE (Reihenfolge & Senden)                 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="queue-column">
+      <!-- Queue Header Bar -->
+      <div class="queue-header-bar">
+        <div class="queue-title-row">
+          <div class="title-with-icon">
+            <mat-icon class="queue-icon">playlist_add_check</mat-icon>
+            <h3>Vorbereitung zur Übertragung</h3>
+          </div>
+          <div class="queue-header-badges">
+            <span class="queue-count-pill" [class.has-items]="queue.length > 0">
+              {{ queue.length }} {{ queue.length === 1 ? 'Element' : 'Elemente' }}
+            </span>
+            @if (queue.length > 0) {
+              <button
+                type="button"
+                class="btn-clear-queue"
+                (click)="clearQueue()"
+                matTooltip="Vorbereitung vollständig leeren"
+              >
+                <mat-icon>delete_sweep</mat-icon>
+                <span>Leeren</span>
+              </button>
+            }
+          </div>
+        </div>
       </div>
 
-      <button
-        mat-flat-button
-        type="button"
-        class="dock-send-btn"
-        (click)="sendSelection()"
-        matTooltip="Sofort an Ersthelfer übermitteln (Strg + Enter)"
-        aria-label="Auswahl jetzt an Ersthelfer senden"
+      <!-- Queue Drag & Drop Dropzone / List -->
+      <div
+        class="queue-body"
+        cdkDropList
+        id="queueDropList"
+        [cdkDropListData]="queue"
+        [cdkDropListConnectedTo]="['catalogDropList']"
+        (cdkDropListDropped)="onQueueDrop($event)"
       >
-        <mat-icon class="send-icon">send</mat-icon>
-        <span class="send-label">Jetzt senden</span>
-        <span class="dock-shortcut-tag">Ctrl+↵</span>
-      </button>
-    </div>
-  }
-</mat-card>
+        <!-- EMPTY STATE: Dropzone -->
+        @if (queue.length === 0) {
+          <div class="queue-empty-dropzone">
+            <div class="dropzone-bubble">
+              <mat-icon>playlist_play</mat-icon>
+            </div>
+            <h4>Vorbereitung zur Übertragung ist leer</h4>
+          </div>
+        }
+
+        <!-- FILLED QUEUE: Draggable items list -->
+        @if (queue.length > 0) {
+          <div class="queue-items-container">
+            @for (item of queue; track item.uid; let i = $index) {
+              <div
+                class="queue-item-row"
+                cdkDrag
+              >
+                <!-- Drag Grip Handle -->
+                <div class="drag-handle" cdkDragHandle matTooltip="Ziehen zum Verschieben">
+                  <mat-icon>drag_indicator</mat-icon>
+                </div>
+
+                <!-- Position Number -->
+                <div class="queue-pos-badge">
+                  <span>{{ i + 1 }}.</span>
+                </div>
+
+                <!-- Type Icon & Pill -->
+                <div class="queue-type-badge" [class.plan]="item.type === 'plan'" [class.measure]="item.type === 'measure'">
+                  <mat-icon>{{ item.type === 'plan' ? 'playlist_play' : 'healing' }}</mat-icon>
+                  <span>{{ item.type === 'plan' ? 'Plan' : 'Maßnahme' }}</span>
+                </div>
+
+                <!-- Item Title -->
+                <div class="queue-item-info">
+                  <span class="queue-item-title">{{ item.name }}</span>
+                </div>
+
+                <!-- Row Actions: Preview & Remove [⊗] -->
+                <div class="queue-item-actions">
+                  @if (item.type === 'plan' && item.plan) {
+                    <button
+                      type="button"
+                      class="row-action-btn preview"
+                      (click)="previewPlan(item.plan, $event)"
+                      matTooltip="Vorschau des Plans"
+                      aria-label="Vorschau"
+                    >
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  } @else if (item.type === 'measure' && item.measure) {
+                    <button
+                      type="button"
+                      class="row-action-btn preview"
+                      (click)="previewMeasure(item.measure, $event)"
+                      matTooltip="Vorschau der Maßnahme"
+                      aria-label="Vorschau"
+                    >
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  }
+
+                  <button
+                    type="button"
+                    class="btn-remove-queue"
+                    (click)="removeFromQueue(i, $event)"
+                    matTooltip="Aus Vorbereitung entfernen"
+                    aria-label="Aus Vorbereitung entfernen"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Sticky Queue Bottom Action Dock -->
+      <div class="queue-bottom-dock">
+        <div class="dock-stats">
+          <span class="dock-summary-label">Bereit zum Übertragen:</span>
+          <span class="dock-summary-steps">
+            <strong>{{ queue.length }}</strong> {{ queue.length === 1 ? 'Paket' : 'Pakete' }} &bull;
+            <strong>{{ totalStepsInQueue }}</strong> Einzelschritte
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="btn-send-queue"
+          [disabled]="queue.length === 0"
+          (click)="sendQueue()"
+          matTooltip="Reihenfolge sofort an Ersthelfer übertragen (Ctrl + Enter)"
+        >
+          <mat-icon class="send-icon">play_arrow</mat-icon>
+          <span class="send-text">SENDEN</span>
+          <span class="shortcut-pill">Ctrl+↵</span>
+        </button>
+      </div>
+    </section>
+  </div>
+</div>

@@ -29,6 +29,6 @@ export const routes: Routes = [
   { path: 'logout', component: Logout },
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
   { path: 'instruction-menu', component: InstructionMenu, canActivate: [authGuard] },
-  { path: 'emergency-page', component: EmergencyPage, canActivate: [authGuard] }, // guard wieder einfügen
+  { path: 'emergency-page', component: EmergencyPage, canActivate: [authGuard, activeEmergencyGuard] }, 
   { path: '**', redirectTo: '' },
 ];

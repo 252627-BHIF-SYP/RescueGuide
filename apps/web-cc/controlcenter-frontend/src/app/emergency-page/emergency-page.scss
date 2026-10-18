@@ -17,7 +17,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 
 // ── Root Page Container ───────────────────────────────────────────────
 .container {
-  height: 93vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: $bg;
@@ -28,7 +28,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 // ── Top Page Header Bar ───────────────────────────────────────────────
 .page-header-bar {
   flex-shrink: 0;
-  height: 66px;
+  height: 64px;
   padding: 0 20px;
   background: $surface;
   border-bottom: 1px solid $border;
@@ -39,7 +39,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   box-shadow: $shadow-sm;
   z-index: 20;
 
-  // 1. Header Left (Titel & Status)
+  // 1. Header Left (★ Notfalleinsatz)
   .header-left {
     display: flex;
     align-items: center;
@@ -70,20 +70,14 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       .header-title {
         margin: 0;
         font-size: 1.08rem;
-        font-weight: 700;
+        font-weight: 800;
         color: $text;
         line-height: 1.2;
-      }
-
-      .header-sub {
-        font-size: 0.72rem;
-        font-weight: 500;
-        color: $text-muted;
       }
     }
   }
 
-  // 2. Header Center (Kompakt zusammengefasster Einsatzort & Koordinaten)
+  // 2. Header Center (📍 Adresse • Karte)
   .header-location-center {
     display: flex;
     align-items: center;
@@ -98,7 +92,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       background: #ffffff;
       border: 1px solid #dce1e8;
       border-radius: 999px;
-      padding: 4px 6px 4px 6px;
+      padding: 4px 6px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
       max-width: 540px;
       min-width: 0;
@@ -148,28 +142,6 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
             font-weight: 600;
             color: #475569;
             font-variant-numeric: tabular-nums;
-          }
-
-          .gps-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            color: $success;
-            font-weight: 700;
-            font-size: 0.65rem;
-
-            .gps-dot {
-              width: 5px;
-              height: 5px;
-              border-radius: 50%;
-              background: $success;
-              animation: gpsPulse 1.8s infinite;
-            }
-          }
-
-          .gps-waiting {
-            font-size: 0.65rem;
-            color: #94a3b8;
           }
         }
       }
@@ -256,7 +228,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     }
   }
 
-  // 3. Header Right (Timer & Beenden)
+  // 3. Header Right (⏱ Timer & ✕ Ende)
   .header-right {
     display: flex;
     align-items: center;
@@ -303,14 +275,14 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     button.btn-end-call {
       background-color: $danger !important;
       color: #fff !important;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.84rem;
       border-radius: 999px;
-      padding: 6px 18px;
+      padding: 6px 16px;
       height: 36px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       box-shadow: 0 2px 6px rgba(180, 35, 85, 0.28);
       transition: all 0.18s ease;
 
@@ -329,66 +301,187 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   }
 }
 
-// ── Main Content Area ─────────────────────────────────────────────────
-.content {
+// ── 2-COLUMN MAIN CONTENT: Video (~28%) + Workspace (~72%) ─────────────
+.content-2col {
   display: flex;
   flex: 1;
   min-height: 0;
-  padding: 14px 20px 18px;
-  gap: 16px;
+  padding: 12px 18px 16px;
+  gap: 14px;
   background: $bg;
   overflow: hidden;
 }
 
-// ── Left: Media & Map Section ─────────────────────────────────────────
-.media-section {
-  flex: 1;
-  min-width: 0;
+// ── SPALTE 1: Live-Video (~28% Breite, dauerhaft sichtbar) ────────────
+.video-column {
+  flex: 0 0 28%;
+  width: 28%;
+  max-width: 430px;
+  min-width: 270px;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
   overflow: hidden;
-
-  // Wenn Karte offen ist: zentriert Video + Karte nebeneinander
-  &.map-open {
-    justify-content: flex-start;
-  }
 
   .video-container {
     height: 100%;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 
     app-video-call {
       height: 100%;
+      width: 100%;
       display: flex;
     }
   }
+}
 
-  // Aufgeklappte Google Maps Karte (nebeneinander, niemals über das Protokoll!)
-  .map-panel {
+// ── SPALTE 2: Workspace (~72% Breite, Tabs für Protokoll & Pläne) ──────
+.workspace-column {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+// ── Workspace Mode Navigation Switcher ────────────────────────────────
+.workspace-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 8px;
+  flex-shrink: 0;
+
+  .workspace-switcher-capsule {
+    display: inline-flex;
+    align-items: center;
+    background: #edf0f5;
+    border: 1px solid #d4dae3;
+    border-radius: 999px;
+    padding: 5px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    gap: 6px;
+
+    .capsule-tab-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid transparent;
+      background: #ffffff;
+      padding: 8px 26px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #0f172a; // Vollwertiges, klares Schwarz/Dunkelblau – keinesfalls ausgegraut!
+      font-size: 0.9rem;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.18s ease;
+
+      .tab-icon {
+        font-size: 19px;
+        width: 19px;
+        height: 19px;
+        color: #1e293b; // Kräftiges Icon – nicht ausgegraut!
+        transition: color 0.18s ease;
+      }
+
+      .tab-label {
+        letter-spacing: 0.01em;
+      }
+
+      &:hover:not(.active) {
+        background: #f8fafc;
+        color: $accent;
+        border-color: #cbd5e1;
+
+        .tab-icon {
+          color: $accent;
+        }
+      }
+
+      &.active {
+        background: $accent;
+        color: #ffffff;
+        border-color: $accent;
+        box-shadow: 0 3px 12px rgba(163, 29, 88, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        .tab-icon {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}
+
+// ── Tab Content Area ──────────────────────────────────────────────────
+.workspace-tab-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .tab-pane {
     flex: 1;
-    min-width: 320px;
-    height: 100%;
-    max-height: calc(100vh - 100px);
-    background: #ffffff;
-    border: 1px solid $border;
-    border-radius: 16px;
-    box-shadow: $shadow-md;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: fadeInSlide 0.22s ease-out;
 
-    .map-panel-header {
-      height: 42px;
+    &.tab-hidden {
+      display: none !important;
+    }
+
+    app-emergency-checklist,
+    app-plan-selector {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  }
+}
+
+// ── Google Maps Modal Window ───────────────────────────────────────────
+.map-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 21, 0.65);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease-out;
+
+  .map-modal-window {
+    width: 90vw;
+    max-width: 1000px;
+    height: 80vh;
+    background: #ffffff;
+    border: 1px solid $border;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .map-modal-header {
+      height: 46px;
       background: #fafbfc;
       border-bottom: 1px solid $border;
-      padding: 0 14px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -401,21 +494,20 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
         min-width: 0;
 
         .map-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
           color: $accent;
         }
 
         .map-heading {
-          font-size: 0.84rem;
+          font-size: 0.9rem;
           font-weight: 700;
           color: $text;
-          flex-shrink: 0;
         }
 
         .map-addr-hint {
-          font-size: 0.76rem;
+          font-size: 0.78rem;
           color: $text-muted;
           white-space: nowrap;
           overflow: hidden;
@@ -426,8 +518,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       .map-controls {
         display: flex;
         align-items: center;
-        gap: 4px;
-        flex-shrink: 0;
+        gap: 6px;
 
         .map-header-btn {
           appearance: none;
@@ -435,8 +526,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           border: none;
           background: transparent;
           color: $text-muted;
-          width: 28px;
-          height: 28px;
+          width: 30px;
+          height: 30px;
           border-radius: 6px;
           display: flex;
           align-items: center;
@@ -445,9 +536,9 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           transition: all 0.15s ease;
 
           mat-icon {
-            font-size: 18px;
-            width: 18px;
-            height: 18px;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
           }
 
           &:hover {
@@ -481,140 +572,6 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   }
 }
 
-// ── Right: Sidebar Workspace (Protokoll & Pläne) ───────────────────────
-.sidebar-workspace {
-  flex: 0 0 460px;
-  width: 460px;
-  max-width: 480px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow: hidden;
-}
-
-// ── Tab Switcher ──────────────────────────────────────────────────────
-.tab-switcher {
-  display: flex;
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: $radius;
-  overflow: hidden;
-  box-shadow: $shadow-sm;
-  flex-shrink: 0;
-
-  .tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    position: relative;
-
-    mat-icon {
-      font-size: 19px;
-      width: 19px;
-      height: 19px;
-      color: $text-muted;
-      transition: color 0.18s ease;
-    }
-
-    .tab-text-group {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      line-height: 1.15;
-
-      .tab-title {
-        font-size: 0.84rem;
-        font-weight: 700;
-        color: $text-muted;
-      }
-
-      .tab-sub {
-        font-size: 0.68rem;
-        font-weight: 500;
-        color: #8c939f;
-      }
-    }
-
-    &:hover:not(.active) {
-      background: #fafbfc;
-
-      mat-icon, .tab-title {
-        color: $text;
-      }
-    }
-
-    &.active {
-      background: #fdf4f7;
-
-      mat-icon {
-        color: $accent;
-      }
-
-      .tab-title {
-        color: $accent;
-      }
-
-      .tab-sub {
-        color: rgba(163, 29, 88, 0.7);
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 8%;
-        width: 84%;
-        height: 3px;
-        background: $accent;
-        border-radius: 3px 3px 0 0;
-      }
-    }
-
-    &:not(:last-child) {
-      border-right: 1px solid $border;
-    }
-  }
-}
-
-// ── Tab Content Area ──────────────────────────────────────────────────
-.tab-content-wrapper {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .tab-hidden {
-    display: none !important;
-  }
-}
-
-.checklist-wrapper,
-.plan-selector-wrapper {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  app-emergency-checklist,
-  app-plan-selector {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-}
-
 // ── Confirmation Modal ────────────────────────────────────────────────
 .modal-backdrop {
   position: fixed;
@@ -636,7 +593,6 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     border: 1px solid $border;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
     overflow: hidden;
-    animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
     .dialog-header {
       padding: 20px 24px 14px;
@@ -730,25 +686,13 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.animate-scale-up {
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
-}
-
-@keyframes gpsPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50%       { transform: scale(1.4); opacity: 0.6; }
-}
-
-@keyframes fadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 @keyframes fadeIn {
@@ -762,7 +706,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 }
 
 // ── Responsive Adjustments ────────────────────────────────────────────
-@media (max-width: 1150px) {
+@media (max-width: 1100px) {
   .page-header-bar {
     height: auto;
     flex-wrap: wrap;
@@ -776,14 +720,19 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     }
   }
 
-  .content {
+  .content-2col {
     flex-direction: column;
     overflow-y: auto;
   }
 
-  .sidebar-workspace {
+  .video-column {
+    width: 100%;
+    max-width: none;
+    height: 380px;
+  }
+
+  .workspace-column {
     width: 100%;
     flex: auto;
-    max-width: none;
   }
 }

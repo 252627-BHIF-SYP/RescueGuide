@@ -2,9 +2,8 @@ import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatIcon } from '@angular/material/icon';
-import { MatCard, MatCardContent } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -15,7 +14,19 @@ import { SignalingService } from '../services/signaling.service';
 import { CallContextService } from '../services/call-context.service';
 import { environment } from '../../environments/environment';
 
-export type FilterTab = 'all' | 'plans' | 'measures' | 'selected';
+export type FilterCategory = 'all' | 'plans' | 'measures';
+
+export interface QueueItem {
+  uid: string;
+  type: 'plan' | 'measure';
+  id: number;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  plan?: Plan;
+  measure?: Measure;
+  stepsCount: number;
+}
 
 interface DispatchProgress {
   completedCount: number;
@@ -30,10 +41,8 @@ interface DispatchProgress {
   imports: [
     CommonModule,
     FormsModule,
+    DragDropModule,
     MatIcon,
-    MatCard,
-    MatCardContent,
-    MatCheckboxModule,
     MatButton,
     MatIconButton,
     MatTooltipModule,
@@ -43,11 +52,10 @@ interface DispatchProgress {
   styleUrl: './plan-selector.scss',
 })
 export class PlanSelector implements OnInit, OnDestroy {
-  // Persisted state across component lifecycles
-  private static savedSelectedPlans: Plan[] = [];
-  private static savedSelectedMeasures: Measure[] = [];
+  // Persisted state across component lifecycles / tab switching
+  private static savedQueue: QueueItem[] = [];
   private static savedSearchTerm = '';
-  private static savedActiveFilterTab: FilterTab = 'all';
+  private static savedFilterCategory: FilterCategory = 'all';
 
   private service = inject(InstructionMenuService);
   private dialog = inject(MatDialog);
@@ -56,28 +64,26 @@ export class PlanSelector implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   private dispatchTimer: any = null;
 
-  // Data from service
+  // Catalog Data from service
   allPlans: Plan[] = [];
   allMeasures: Measure[] = [];
 
-  // Filtered lists
+  // Filtered catalog
   filteredPlans: Plan[] = [];
   filteredMeasures: Measure[] = [];
 
-  // Selection state (restored from saved state)
-  selectedPlans: Plan[] = [...PlanSelector.savedSelectedPlans];
-  selectedMeasures: Measure[] = [...PlanSelector.savedSelectedMeasures];
+  // Warteschlange (Queue)
+  queue: QueueItem[] = [...PlanSelector.savedQueue];
 
-  // UI state (restored from saved state)
+  // UI state
   searchTerm = PlanSelector.savedSearchTerm;
-  activeFilterTab: FilterTab = PlanSelector.savedActiveFilterTab;
-  expandedPlans: { [planId: number]: boolean } = {};
-  expandedMeasures: { [measureId: number]: boolean } = {};
+  filterCategory: FilterCategory = PlanSelector.savedFilterCategory;
 
-  // Feedback banner state
+  // Feedback banner & dispatch progress
   dispatchNotice: string | null = null;
   dispatchError = false;
   dispatchProgress: DispatchProgress | null = null;
+
   private readonly onInstructionProgress = (payload: any) => {
     if (payload?.from !== this.callContext.getActiveCallId() || !payload.progress) return;
     this.dispatchProgress = payload.progress as DispatchProgress;
@@ -115,9 +121,9 @@ export class PlanSelector implements OnInit, OnDestroy {
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      if (this.hasSelection) {
+      if (this.queue.length > 0) {
         event.preventDefault();
-        this.sendSelection();
+        this.sendQueue();
       }
     } else if (event.key === 'Escape' && this.searchTerm) {
       event.preventDefault();
@@ -126,10 +132,9 @@ export class PlanSelector implements OnInit, OnDestroy {
   }
 
   private syncSavedState(): void {
-    PlanSelector.savedSelectedPlans = [...this.selectedPlans];
-    PlanSelector.savedSelectedMeasures = [...this.selectedMeasures];
+    PlanSelector.savedQueue = [...this.queue];
     PlanSelector.savedSearchTerm = this.searchTerm;
-    PlanSelector.savedActiveFilterTab = this.activeFilterTab;
+    PlanSelector.savedFilterCategory = this.filterCategory;
   }
 
   // ── Filtering ───────────────────────────────────────────────────────
@@ -154,8 +159,8 @@ export class PlanSelector implements OnInit, OnDestroy {
     );
   }
 
-  setFilterTab(tab: FilterTab): void {
-    this.activeFilterTab = tab;
+  setFilterCategory(cat: FilterCategory): void {
+    this.filterCategory = cat;
     this.syncSavedState();
   }
 
@@ -164,141 +169,102 @@ export class PlanSelector implements OnInit, OnDestroy {
     this.applyFilter();
   }
 
-  // ── Computed helpers ────────────────────────────────────────────────
-  get totalSelectedCount(): number {
-    return this.selectedPlans.length + this.selectedMeasures.length;
+  // ── Warteschlange (Queue) Operations ────────────────────────────────
+  addToQueue(type: 'plan' | 'measure', rawItem: Plan | Measure, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const uid = `${type}-${rawItem.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+    if (type === 'plan') {
+      const plan = rawItem as Plan;
+      this.queue.push({
+        uid,
+        type: 'plan',
+        id: plan.id,
+        name: plan.name,
+        plan,
+        stepsCount: plan.measures?.length || 0,
+      });
+    } else {
+      const measure = rawItem as Measure;
+      this.queue.push({
+        uid,
+        type: 'measure',
+        id: measure.id,
+        name: measure.name,
+        description: measure.description,
+        imageUrl: measure.imageUrl,
+        measure,
+        stepsCount: 1,
+      });
+    }
+
+    this.syncSavedState();
   }
 
-  get hasSelection(): boolean {
-    return this.totalSelectedCount > 0;
+  removeFromQueue(index: number, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.queue.splice(index, 1);
+    this.syncSavedState();
   }
 
-  /**
-   * Set of measure IDs already included in any of the currently selected plans.
-   */
-  get measuresInSelectedPlans(): Set<number> {
-    const set = new Set<number>();
-    for (const plan of this.selectedPlans) {
-      for (const m of plan.measures || []) {
-        set.add(m.id);
+  clearQueue(): void {
+    this.queue = [];
+    this.syncSavedState();
+  }
+
+  onQueueDrop(event: CdkDragDrop<QueueItem[]>): void {
+    if (event.previousContainer === event.container) {
+      // Reorder within queue
+      moveItemInArray(this.queue, event.previousIndex, event.currentIndex);
+      this.syncSavedState();
+    } else {
+      // Dropped from catalog into queue
+      const rawData = event.item.data;
+      if (rawData) {
+        const type: 'plan' | 'measure' = rawData.measures !== undefined ? 'plan' : 'measure';
+        const uid = `${type}-${rawData.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+        const newItem: QueueItem =
+          type === 'plan'
+            ? {
+                uid,
+                type: 'plan',
+                id: rawData.id,
+                name: rawData.name,
+                plan: rawData,
+                stepsCount: rawData.measures?.length || 0,
+              }
+            : {
+                uid,
+                type: 'measure',
+                id: rawData.id,
+                name: rawData.name,
+                description: rawData.description,
+                imageUrl: rawData.imageUrl,
+                measure: rawData,
+                stepsCount: 1,
+              };
+
+        this.queue.splice(event.currentIndex, 0, newItem);
+        this.syncSavedState();
       }
     }
-    return set;
   }
 
-  isMeasureInSelectedPlan(measureId: number): boolean {
-    return this.measuresInSelectedPlans.has(measureId);
+  // Count occurrences of an item in the queue
+  countInQueue(type: 'plan' | 'measure', id: number): number {
+    return this.queue.filter((q) => q.type === type && q.id === id).length;
   }
 
-  // Visible lists based on active tab
-  get shouldShowPlans(): boolean {
-    return (
-      this.activeFilterTab === 'all' ||
-      this.activeFilterTab === 'plans' ||
-      this.activeFilterTab === 'selected'
-    );
+  get totalStepsInQueue(): number {
+    return this.queue.reduce((acc, curr) => acc + curr.stepsCount, 0);
   }
 
-  get shouldShowMeasures(): boolean {
-    return (
-      this.activeFilterTab === 'all' ||
-      this.activeFilterTab === 'measures' ||
-      this.activeFilterTab === 'selected'
-    );
-  }
-
-  get displayedPlans(): Plan[] {
-    if (this.activeFilterTab === 'selected') {
-      const term = this.searchTerm.toLowerCase().trim();
-      return this.selectedPlans.filter((p) => !term || p.name.toLowerCase().includes(term));
-    }
-    return this.filteredPlans;
-  }
-
-  get displayedMeasures(): Measure[] {
-    if (this.activeFilterTab === 'selected') {
-      const term = this.searchTerm.toLowerCase().trim();
-      return this.selectedMeasures.filter(
-        (m) =>
-          !term ||
-          m.name.toLowerCase().includes(term) ||
-          m.description?.toLowerCase().includes(term),
-      );
-    }
-    return this.filteredMeasures;
-  }
-
-  get isCurrentTabEmpty(): boolean {
-    if (this.activeFilterTab === 'all') {
-      return this.displayedPlans.length === 0 && this.displayedMeasures.length === 0;
-    }
-    if (this.activeFilterTab === 'plans') {
-      return this.displayedPlans.length === 0;
-    }
-    if (this.activeFilterTab === 'measures') {
-      return this.displayedMeasures.length === 0;
-    }
-    if (this.activeFilterTab === 'selected') {
-      return this.totalSelectedCount === 0;
-    }
-    return false;
-  }
-
-  // ── Plan selection ──────────────────────────────────────────────────
-  isPlanSelected(plan: Plan): boolean {
-    return this.selectedPlans.some((p) => p.id === plan.id);
-  }
-
-  togglePlanSelection(plan: Plan, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    if (this.isPlanSelected(plan)) {
-      this.selectedPlans = this.selectedPlans.filter((p) => p.id !== plan.id);
-    } else {
-      this.selectedPlans = [...this.selectedPlans, plan];
-    }
-    this.syncSavedState();
-  }
-
-  togglePlanExpand(planId: number, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.expandedPlans[planId] = !this.expandedPlans[planId];
-  }
-
-  // ── Measure selection ───────────────────────────────────────────────
-  isMeasureSelected(measure: Measure): boolean {
-    return this.selectedMeasures.some((m) => m.id === measure.id);
-  }
-
-  toggleMeasureSelection(measure: Measure, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    if (this.isMeasureSelected(measure)) {
-      this.selectedMeasures = this.selectedMeasures.filter((m) => m.id !== measure.id);
-    } else {
-      this.selectedMeasures = [...this.selectedMeasures, measure];
-    }
-    this.syncSavedState();
-  }
-
-  toggleMeasureExpand(measureId: number, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.expandedMeasures[measureId] = !this.expandedMeasures[measureId];
-  }
-
-  clearAllSelection(): void {
-    this.selectedPlans = [];
-    this.selectedMeasures = [];
-    this.syncSavedState();
-  }
-
-  // ── Dialog Previews ─────────────────────────────────────────────────
+  // ── Full Preview Dialogs ────────────────────────────────────────────
   previewPlan(plan: Plan, event?: Event): void {
     if (event) {
       event.stopPropagation();
@@ -309,8 +275,8 @@ export class PlanSelector implements OnInit, OnDestroy {
       panelClass: 'preview-plan-dialog',
       data: {
         plan,
-        isSelected: this.isPlanSelected(plan),
-        toggleSelection: () => this.togglePlanSelection(plan),
+        isSelected: this.countInQueue('plan', plan.id) > 0,
+        toggleSelection: () => this.addToQueue('plan', plan),
       },
     });
   }
@@ -325,47 +291,59 @@ export class PlanSelector implements OnInit, OnDestroy {
       panelClass: 'preview-measure-dialog',
       data: {
         measure,
-        isSelected: this.isMeasureSelected(measure),
-        toggleSelection: () => this.toggleMeasureSelection(measure),
+        isSelected: this.countInQueue('measure', measure.id) > 0,
+        toggleSelection: () => this.addToQueue('measure', measure),
       },
     });
   }
 
-  // ── Send action ────────────────────────────────────────────────────
-  sendSelection(): void {
-    if (!this.hasSelection) return;
+  // ── Send queue action ───────────────────────────────────────────────
+  sendQueue(): void {
+    if (this.queue.length === 0) return;
 
     const targetId = this.callContext.getActiveCallId();
     if (!targetId || !this.signaling.isConnected) {
-      this.showDispatchNotice('Keine aktive Handyverbindung zur Leitstelle.', true);
+      this.showDispatchNotice(
+        'Keine aktive Verbindung zum Ersthelfer (Warte auf Videoanruf).',
+        true,
+      );
       return;
     }
 
-    const items = new Map<
-      number,
-      { id: number; name: string; description: string; imageUrl?: string; planName?: string }
-    >();
-    for (const plan of this.selectedPlans) {
-      for (const measure of plan.measures ?? []) {
-        if (!items.has(measure.id)) items.set(measure.id, { ...measure, planName: plan.name });
+    const steps: {
+      id: number;
+      name: string;
+      description: string;
+      imageUrl?: string;
+      planName?: string;
+    }[] = [];
+    const titles: string[] = [];
+
+    // Process queue in EXACT sequential order!
+    for (const q of this.queue) {
+      if (q.type === 'plan' && q.plan) {
+        titles.push(q.plan.name);
+        for (const m of q.plan.measures ?? []) {
+          steps.push({ ...m, planName: q.plan.name });
+        }
+      } else if (q.type === 'measure' && q.measure) {
+        titles.push(q.measure.name);
+        steps.push({ ...q.measure });
       }
     }
-    for (const measure of this.selectedMeasures) {
-      if (!items.has(measure.id)) items.set(measure.id, { ...measure });
-    }
 
-    const steps = [...items.values()];
     if (steps.length === 0) {
-      this.showDispatchNotice('Die Auswahl enthält keine Maßnahmen zum Übermitteln.', true);
+      this.showDispatchNotice('Die Warteschlange enthält keine ausführbaren Schritte.', true);
       return;
     }
 
-    const title = this.selectedPlans.map((plan) => plan.name).join(', ') || 'Sofortmaßnahmen';
+    const title = titles.join(' ➔ ') || 'Einsatzmaßnahmen';
     this.signaling.emit('instruction-plan', {
       from: 'controlcenter',
       to: targetId,
       plan: { title, items: steps },
     });
+
     this.dispatchProgress = {
       completedCount: 0,
       totalSteps: steps.length,
@@ -374,19 +352,8 @@ export class PlanSelector implements OnInit, OnDestroy {
     };
     this.dispatchError = false;
 
-    const plansCount = this.selectedPlans.length;
-    const measuresCount = this.selectedMeasures.length;
-
-    const parts: string[] = [];
-    if (plansCount > 0) {
-      parts.push(`${plansCount} ${plansCount === 1 ? 'Plan' : 'Pläne'}`);
-    }
-    if (measuresCount > 0) {
-      parts.push(`${measuresCount} ${measuresCount === 1 ? 'Maßnahme' : 'Maßnahmen'}`);
-    }
-
     this.showDispatchNotice(
-      `Übermittelt: ${parts.join(' und ')}. Fortschritt wird angezeigt.`,
+      `Warteschlange übermittelt: ${this.queue.length} Maßnahmen (${steps.length} Schritte in Reihenfolge).`,
       false,
     );
   }
