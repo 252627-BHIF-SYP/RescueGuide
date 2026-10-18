@@ -6,19 +6,17 @@
         <mat-icon class="emergency-icon animate-pulse">emergency</mat-icon>
       </div>
       <div class="header-text-group">
-        <h2 class="header-title">Laufender Notfalleinsatz</h2>
-        <span class="header-sub">Leitstelle &bull; Echtzeit-Disposition</span>
+        <h2 class="header-title">Notfalleinsatz</h2>
       </div>
     </div>
 
     <!-- Center: Prominent Location & Coordinates Bar -->
-    <!-- Center: Kompakter, zusammengefasster Einsatzort & Koordinaten -->
     <div class="header-location-center">
       <div class="compact-loc-pill">
         <div class="loc-icon-bubble">
           <mat-icon>location_on</mat-icon>
         </div>
-        
+
         <div class="loc-content">
           <div class="loc-address-line" [title]="displayAddress()">
             {{ displayAddress() }}
@@ -36,7 +34,8 @@
             class="loc-copy-btn"
             (click)="copyCoordinates()"
             [class.copied]="copiedCoords()"
-            title="GPS-Koordinaten in Zwischenablage kopieren">
+            title="GPS-Koordinaten in Zwischenablage kopieren"
+          >
             <mat-icon>{{ copiedCoords() ? 'check' : 'content_copy' }}</mat-icon>
             <span>{{ copiedCoords() ? 'Kopiert' : 'Kopieren' }}</span>
           </button>
@@ -49,13 +48,15 @@
           class="loc-map-toggle"
           [class.active]="showMap()"
           (click)="toggleMap()"
-          [disabled]="mapUrl === null">
+          [disabled]="mapUrl === null"
+        >
           <mat-icon>{{ showMap() ? 'layers_clear' : 'map' }}</mat-icon>
           <span>{{ showMap() ? 'Karte schließen' : 'Karte' }}</span>
         </button>
       </div>
     </div>
 
+    <!-- Header Right: Timer & Ende -->
     <div class="header-right">
       <div class="timer-box">
         <mat-icon class="timer-icon">schedule</mat-icon>
@@ -66,105 +67,113 @@
       </div>
 
       <button mat-flat-button color="warn" class="btn-end-call" (click)="requestEndCall()">
-        <mat-icon>call_end</mat-icon>
-        <span>Einsatz beenden</span>
+        <mat-icon>close</mat-icon>
+        <span>Ende</span>
       </button>
     </div>
   </header>
 
-  <!-- Main Content Layout -->
-  <main class="content">
-
-    <!-- LINKER BEREICH: Medien & Lage (Video + optional Karte nebeneinander) -->
-    <section class="media-section" [class.map-open]="showMap()">
-
-      <!-- Video Feed im Hochformat (9:16) -->
+  <!-- 2-COLUMN MAIN LAYOUT: Live-Video (~28%) + Workspace (~72%) -->
+  <main class="content-2col">
+    <!-- LINKER BEREICH: Konstantes Live-Video (~28% Breite, 9:16 Portrait) -->
+    <aside class="video-column">
       <div class="video-container">
         <app-video-call></app-video-call>
       </div>
+    </aside>
 
-      <!-- Aufgeklappte Karte nebeneinander (drängt weder Protokoll noch Pläne ab!) -->
-      @if (showMap() && mapUrl !== null) {
-        <div class="map-panel">
-          <div class="map-panel-header">
-            <div class="map-title-left">
-              <mat-icon class="map-icon">map</mat-icon>
-              <span class="map-heading">Einsatzort-Karte</span>
-              <span class="map-addr-hint" [title]="displayAddress()">{{ displayAddress() }}</span>
-            </div>
-            <div class="map-controls">
-              <button
-                type="button"
-                class="map-header-btn"
-                (click)="toggleMapFullscreen()"
-                aria-label="Karte Vollbild"
-                title="Vollbild">
-                <mat-icon>fullscreen</mat-icon>
-              </button>
-              <button
-                type="button"
-                class="map-header-btn close-btn"
-                (click)="toggleMap()"
-                aria-label="Karte schließen"
-                title="Karte schließen">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          </div>
-          <div class="map-frame-wrapper">
-            <iframe #mapIframe [src]="mapUrl!" width="100%" height="100%"
-              style="border:0; display:block;" loading="lazy"></iframe>
-          </div>
+    <!-- RECHTER BEREICH: Workspace mit Tabs (Protokoll / Maßnahmen & Pläne) (~72% Breite) -->
+    <section class="workspace-column">
+      <!-- Workspace Mode Navigation Switcher (Deutlich abgehoben als View-Umschalter) -->
+      <header class="workspace-nav-header">
+        <div class="workspace-switcher-capsule" role="tablist" aria-label="Arbeitsbereich Modus">
+          <button
+            type="button"
+            class="capsule-tab-btn"
+            role="tab"
+            [attr.aria-selected]="activeTab === 'checklist'"
+            [class.active]="activeTab === 'checklist'"
+            (click)="activeTab = 'checklist'"
+          >
+            <mat-icon class="tab-icon">fact_check</mat-icon>
+            <span class="tab-label">Protokoll</span>
+          </button>
+
+          <button
+            type="button"
+            class="capsule-tab-btn"
+            role="tab"
+            [attr.aria-selected]="activeTab === 'plans'"
+            [class.active]="activeTab === 'plans'"
+            (click)="activeTab = 'plans'"
+          >
+            <mat-icon class="tab-icon">send</mat-icon>
+            <span class="tab-label">Maßnahmen senden</span>
+          </button>
         </div>
-      }
+      </header>
 
-    </section>
-
-    <!-- RECHTER BEREICH: Feste, kompakte Arbeitsspalte (Protokoll / Pläne) -->
-    <section class="sidebar-workspace">
-
-      <!-- Tab Switcher -->
-      <div class="tab-switcher">
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'checklist'"
-          (click)="activeTab = 'checklist'">
-          <mat-icon>fact_check</mat-icon>
-          <div class="tab-text-group">
-            <span class="tab-title">Notfall-Protokoll</span>
-            <span class="tab-sub">Stammdaten &amp; Vitalparameter</span>
-          </div>
-        </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'plans'"
-          (click)="activeTab = 'plans'">
-          <mat-icon>send</mat-icon>
-          <div class="tab-text-group">
-            <span class="tab-title">Maßnahmen &amp; Pläne</span>
-            <span class="tab-sub">An Ersthelfer übertragen</span>
-          </div>
-        </button>
-      </div>
-
-      <!-- Tab Content Area (bleibt IMMER stabil und wird NIE verdrängt!) -->
-      <div class="tab-content-wrapper">
-        <div class="checklist-wrapper" [class.tab-hidden]="activeTab !== 'checklist'">
+      <!-- Tab Content Area -->
+      <div class="workspace-tab-content">
+        <div class="tab-pane" [class.tab-hidden]="activeTab !== 'checklist'">
           <app-emergency-checklist [emergencyData]="emergencyData()"></app-emergency-checklist>
         </div>
-        <div class="plan-selector-wrapper" [class.tab-hidden]="activeTab !== 'plans'">
+        <div class="tab-pane" [class.tab-hidden]="activeTab !== 'plans'">
           <app-plan-selector></app-plan-selector>
         </div>
       </div>
-
     </section>
-
   </main>
+
+  <!-- Google Maps Modal Overlay (drängt weder Video noch Workspace ab!) -->
+  @if (showMap() && mapUrl !== null) {
+    <div class="map-modal-backdrop" (click)="toggleMap()">
+      <div class="map-modal-window animate-scale-up" (click)="$event.stopPropagation()">
+        <div class="map-modal-header">
+          <div class="map-title-left">
+            <mat-icon class="map-icon">map</mat-icon>
+            <span class="map-heading">Einsatzort-Karte</span>
+            <span class="map-addr-hint" [title]="displayAddress()">{{ displayAddress() }}</span>
+          </div>
+          <div class="map-controls">
+            <button
+              type="button"
+              class="map-header-btn"
+              (click)="toggleMapFullscreen()"
+              aria-label="Vollbild"
+              title="Vollbild"
+            >
+              <mat-icon>fullscreen</mat-icon>
+            </button>
+            <button
+              type="button"
+              class="map-header-btn close-btn"
+              (click)="toggleMap()"
+              aria-label="Schließen"
+              title="Karte schließen"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+        <div class="map-frame-wrapper">
+          <iframe
+            #mapIframe
+            [src]="mapUrl!"
+            width="100%"
+            height="100%"
+            style="border:0; display:block;"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  }
 
   <!-- Confirmation Modal for Ending Emergency Call -->
   @if (showEndConfirm()) {
     <div class="modal-backdrop" (click)="cancelEndCall()">
-      <div class="confirm-dialog" (click)="$event.stopPropagation()">
+      <div class="confirm-dialog animate-scale-up" (click)="$event.stopPropagation()">
         <div class="dialog-header">
           <div class="warn-bubble">
             <mat-icon>warning_amber</mat-icon>
@@ -177,7 +186,7 @@
         <div class="dialog-body">
           <p>
             Die Videoverbindung zum Ersthelfer wird sofort getrennt, das erfasste Notfallprotokoll
-            wird final im System archiviert und Sie werden zur Übersicht weitergeleitet.
+            wird final im System archiviert und Sie werden zur Leitstellen-Übersicht weitergeleitet.
           </p>
         </div>
         <div class="dialog-actions">

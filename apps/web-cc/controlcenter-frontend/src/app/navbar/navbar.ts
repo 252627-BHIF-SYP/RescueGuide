@@ -27,4 +27,13 @@ export class Navbar {
     const url = this.router.url;
     return url.startsWith('/login') || url.startsWith('/signup');
   }
+
+  isEmergencyPage(): boolean {
+    const url = this.router.url;
+    return url.startsWith('/emergency-page');
+  }
+
+  shouldShowNavbar(): boolean {
+    return this.auth.isLoggedIn() && !this.isAuthPage() && !this.isEmergencyPage();
+  }
 }

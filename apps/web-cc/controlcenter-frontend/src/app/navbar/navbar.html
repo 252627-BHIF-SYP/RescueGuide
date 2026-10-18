@@ -1,4 +1,4 @@
-@if (auth.isLoggedIn() && !isAuthPage()) {
+@if (shouldShowNavbar()) {
   <mat-toolbar color="primary">
     <button mat-button routerLink="/dashboard">Dashboard</button>
     <button mat-button routerLink="/instruction-menu">Instruction Menu</button>
