@@ -1,71 +1,68 @@
-<div class="login-wrapper">
-  <div class="login-container">
-
-    <div class="brand-section">
-      <div class="logo-icon">
-        <mat-icon>security</mat-icon>
-      </div>
-      <h1>RescueGuide</h1>
-      <br>
-      <p>Leitstellen-Portal</p>
-    </div>
-
-    <mat-card class="login-card" appearance="outlined">
-      <mat-card-content>
-        <form (ngSubmit)="onLogin()" class="form-container">
-
-          <mat-form-field appearance="outline">
-            <mat-label>Benutzername / Leitstellen-ID</mat-label>
-            <mat-icon matPrefix>badge</mat-icon>
-            <input matInput
-                   [ngModel]="username()"
-                   (ngModelChange)="username.set($event)"
-                   name="username"
-                   autocomplete="username"
-                   required>
-          </mat-form-field>
-
-          <!-- Password -->
-          <mat-form-field appearance="outline">
-            <mat-label>Passwort</mat-label>
-            <mat-icon matPrefix>lock</mat-icon>
-            <input matInput
-                   [type]="hidePassword() ? 'password' : 'text'"
-                   [ngModel]="password()"
-                   (ngModelChange)="password.set($event)"
-                   name="password"
-                   autocomplete="current-password"
-                   required>
-            <button mat-icon-button matSuffix
-                    type="button"
-                    (click)="hidePassword.set(!hidePassword())"
-                    [attr.aria-label]="'Passwort anzeigen'"
-                    [attr.aria-pressed]="!hidePassword()">
-              <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-          </mat-form-field>
-
-          @if (error()) {
-            <div class="error-box">
-              <mat-icon>error_outline</mat-icon>
-              <span>{{ error() }}</span>
-            </div>
-          }
-
-          <div class="action-container">
-            <button mat-flat-button color="primary" class="submit-btn" type="submit">
-              <mat-icon>login</mat-icon>
-              Anmelden
-            </button>
-
-            <button mat-button class="signup-btn" type="button" (click)="goToSignup()">
-              Noch kein Account? Registrieren
-            </button>
+<div class="auth-wrapper">
+  <mat-card class="auth-card" appearance="outlined">
+    <mat-card-header>
+      <div class="auth-header">
+        <div class="auth-brand-row">
+          <div class="auth-brand-left">
+            <mat-icon class="auth-brand-icon">emergency</mat-icon>
+            <span class="auth-brand-title">RescueGuide</span>
           </div>
+          <h1 class="auth-title">Anmeldung</h1>
+        </div>
+      </div>
+    </mat-card-header>
 
-        </form>
-      </mat-card-content>
-    </mat-card>
+    <mat-card-content>
+      <form (ngSubmit)="onLogin()" class="auth-form">
 
-  </div>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Benutzername / Leitstellen-ID</mat-label>
+          <input matInput
+                 [ngModel]="username()"
+                 (ngModelChange)="username.set($event)"
+                 name="username"
+                 autocomplete="username"
+                 required>
+        </mat-form-field>
+
+        <hr class="auth-divider">
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Passwort</mat-label>
+          <input matInput
+                 [type]="hidePassword() ? 'password' : 'text'"
+                 [ngModel]="password()"
+                 (ngModelChange)="password.set($event)"
+                 name="password"
+                 autocomplete="current-password"
+                 required>
+          <button mat-icon-button matSuffix
+                  type="button"
+                  (click)="hidePassword.set(!hidePassword())"
+                  [attr.aria-label]="'Passwort anzeigen'"
+                  [attr.aria-pressed]="!hidePassword()">
+            <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (error()) {
+          <div class="auth-error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <div class="auth-actions">
+          <button mat-flat-button class="auth-submit-btn" type="submit">
+            Anmelden
+          </button>
+
+          <button mat-button class="auth-switch-btn" type="button" (click)="goToSignup()">
+            Noch kein Account? Registrieren
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>
