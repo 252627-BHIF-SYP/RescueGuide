@@ -57,6 +57,17 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="dialog-actions-row">
+  @if (data.toggleSelection) {
+    <button
+      mat-stroked-button
+      type="button"
+      class="select-toggle-btn"
+      [class.selected]="data.isSelected"
+      (click)="data.toggleSelection(); data.isSelected = !data.isSelected">
+      <mat-icon>{{ data.isSelected ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+      <span>{{ data.isSelected ? 'Ausgewählt' : 'Plan auswählen' }}</span>
+    </button>
+  }
   <button mat-flat-button color="primary" mat-dialog-close class="close-btn">
     <mat-icon>close</mat-icon>
     <span>Schließen</span>

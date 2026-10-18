@@ -6,6 +6,7 @@ import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/m
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { VideoCall } from '../video-call/video-call';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
+import { PlanSelector } from '../plan-selector/plan-selector';
 import { LocationService, Notruf } from '../services/location.service';
 import { EmergencyService } from '../services/emergency.service';
 
@@ -22,7 +23,8 @@ import { EmergencyService } from '../services/emergency.service';
     MatButton,
     MatIconButton,
     VideoCall,
-    EmergencyChecklist
+    EmergencyChecklist,
+    PlanSelector
   ],
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
@@ -30,6 +32,9 @@ import { EmergencyService } from '../services/emergency.service';
 export class EmergencyPage implements OnInit, OnDestroy {
   @ViewChild(VideoCall) videoCallComponent!: VideoCall;
   @ViewChild('mapIframe') mapIframe?: ElementRef<HTMLIFrameElement>;
+
+  // Tab state for right column
+  activeTab: 'checklist' | 'plans' = 'checklist';
 
   private sanitizer = inject(DomSanitizer);
   public locationService = inject(LocationService);

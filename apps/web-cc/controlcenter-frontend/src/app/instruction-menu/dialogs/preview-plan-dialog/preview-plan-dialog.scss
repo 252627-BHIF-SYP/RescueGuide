@@ -201,6 +201,35 @@
   border-top: 1px solid #f1f3f5;
   margin: 0;
 
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+
+  .select-toggle-btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    color: #a31d58 !important;
+    border-color: #a31d58 !important;
+    transition: all 0.15s ease;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 4px;
+    }
+
+    &.selected {
+      background-color: #fdf2f6 !important;
+      border-color: #a31d58 !important;
+    }
+
+    &:hover {
+      background-color: #fdf2f6 !important;
+    }
+  }
+
   .close-btn {
     background-color: #e63946 !important;
     color: #ffffff !important;
