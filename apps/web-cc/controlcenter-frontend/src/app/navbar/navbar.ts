@@ -22,4 +22,9 @@ export class Navbar {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
+
+  isAuthPage(): boolean {
+    const url = this.router.url;
+    return url.startsWith('/login') || url.startsWith('/signup');
+  }
 }

@@ -27,8 +27,34 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        if (await _context.UserControlCenters.AnyAsync(u => u.Name == dto.Name))
-            return BadRequest("Username already exists");
+        if (dto == null || string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Password))
+            return BadRequest("Benutzername und Passwort sind erforderlich.");
+
+        var trimmedName = dto.Name.Trim();
+
+        if (trimmedName.Length < 3 || trimmedName.Length > 30)
+            return BadRequest("Der Benutzername muss zwischen 3 und 30 Zeichen lang sein.");
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedName, @"^[a-zA-Z0-9._-]+$"))
+            return BadRequest("Der Benutzername darf nur Buchstaben, Zahlen, Punkte (.), Bindestriche (-) und Unterstriche (_) enthalten.");
+
+        if (dto.Password.Length < 8)
+            return BadRequest("Das Passwort muss mindestens 8 Zeichen lang sein.");
+
+        if (!dto.Password.Any(char.IsUpper))
+            return BadRequest("Das Passwort muss mindestens einen Großbuchstaben enthalten.");
+
+        if (!dto.Password.Any(char.IsLower))
+            return BadRequest("Das Passwort muss mindestens einen Kleinbuchstaben enthalten.");
+
+        if (!dto.Password.Any(char.IsDigit))
+            return BadRequest("Das Passwort muss mindestens eine Ziffer enthalten.");
+
+        if (!dto.Password.Any(ch => !char.IsLetterOrDigit(ch)))
+            return BadRequest("Das Passwort muss mindestens ein Sonderzeichen enthalten.");
+
+        if (await _context.UserControlCenters.AnyAsync(u => u.Name.ToLower() == trimmedName.ToLower()))
+            return BadRequest("Dieser Benutzername ist bereits vergeben.");
 
         // Ermittle höchste Id
         int maxId = 0;
@@ -40,7 +66,7 @@ public class AuthController : ControllerBase
         var user = new UserControlCenter
         {
             Id = maxId + 1,
-            Name = dto.Name,
+            Name = trimmedName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
         _context.UserControlCenters.Add(user);
