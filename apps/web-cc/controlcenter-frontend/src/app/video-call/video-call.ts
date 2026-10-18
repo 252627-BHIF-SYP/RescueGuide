@@ -36,7 +36,7 @@ export class VideoCall implements OnInit, OnDestroy {
   pendingOffer: any = null;
 
   // TEMP: Preview-Modus für Styling – auf false setzen wenn fertig
-  private readonly PREVIEW_MODE = true;
+  private readonly PREVIEW_MODE = false;
 
   // Lokale Warteschlange
   private iceCandidateQueue: any[] = [];
