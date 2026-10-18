@@ -136,6 +136,7 @@ export class VideoCall implements OnInit, OnDestroy {
       const offer = this.pendingOffer;
 
       this.activeCallId = callerId;
+      this.callContext.setActiveCallId(callerId);
       this.incomingFrom = null;
       this.pendingOffer = null;
       this.callContext.clearPendingOffer();
@@ -320,6 +321,7 @@ export class VideoCall implements OnInit, OnDestroy {
     this.incomingFrom = null;
     this.pendingOffer = null;
     this.activeCallId = null;
+    this.callContext.setActiveCallId(null);
     this.iceCandidateQueue = [];
     this.isRemoteDescriptionSet = false;
     this.callContext.clearEarlyCandidates();
@@ -328,6 +330,7 @@ export class VideoCall implements OnInit, OnDestroy {
   private startAcceptedOffer(offer: { from: string; sdp: any }) {
     if (this.activeCallId) return;
     this.activeCallId = offer.from;
+    this.callContext.setActiveCallId(offer.from);
     this.callContext.clearPendingOffer();
     this.callContext.clearAcceptedFlag();
     this.processOffer(offer.from, offer.sdp).catch((err) => console.error(err));

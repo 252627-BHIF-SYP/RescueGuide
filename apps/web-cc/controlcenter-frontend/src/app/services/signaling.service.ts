@@ -7,6 +7,10 @@ export class SignalingService {
   private userId?: string;
   private listeners = new Map<string, Set<(data: any) => void>>();
 
+  get isConnected(): boolean {
+    return this.socket?.connected ?? false;
+  }
+
   connect(serverUrl: string, userId: string) {
     this.userId = userId;
     if (this.socket) {

@@ -24,6 +24,11 @@ class _ConnectingScreenState extends State<ConnectingScreen>
   Timer? _timer;
 
   String _currentAddress = "Suche Standort...";
+  String _instructionTitle = '';
+  List<Map<String, dynamic>> _instructionItems = [];
+  int _instructionIndex = 0;
+  int _completedInstructionCount = 0;
+  bool _instructionComplete = false;
 
   @override
   void initState() {
@@ -58,10 +63,65 @@ class _ConnectingScreenState extends State<ConnectingScreen>
       if (!mounted) return;
       _exitCall('Notruf wurde beendet');
     };
+    _webRTCService.onInstructionPlanReceived = _receiveInstructionPlan;
 
     final settings = await SettingsService.init();
     if (!mounted) return;
     await _webRTCService.init(settings.serverUrl.trim());
+  }
+
+  void _receiveInstructionPlan(Map<String, dynamic> plan) {
+    final rawItems = plan['items'];
+    if (rawItems is! List) return;
+
+    final items = rawItems
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .where((item) => (item['name'] ?? '').toString().trim().isNotEmpty)
+        .toList();
+    if (items.isEmpty || !mounted) return;
+
+    setState(() {
+      _instructionTitle = (plan['title'] ?? 'Erste-Hilfe-Anleitung').toString();
+      _instructionItems = items;
+      _instructionIndex = 0;
+      _completedInstructionCount = 0;
+      _instructionComplete = false;
+    });
+    _sendInstructionProgress();
+  }
+
+  void _sendInstructionProgress() {
+    final currentItem = _instructionItems.isEmpty
+        ? null
+        : _instructionItems[_instructionIndex];
+    _webRTCService.sendInstructionProgress({
+      'currentIndex': _instructionIndex,
+      'totalSteps': _instructionItems.length,
+      'completedCount': _completedInstructionCount,
+      'currentTitle': _instructionComplete
+          ? ''
+          : (currentItem?['name'] ?? '').toString(),
+      'complete': _instructionComplete,
+    });
+  }
+
+  void _moveInstruction(int direction) {
+    if (_instructionItems.isEmpty || _instructionComplete) return;
+    setState(() {
+      if (direction > 0) {
+        _completedInstructionCount = _instructionIndex + 1;
+        if (_instructionIndex == _instructionItems.length - 1) {
+          _instructionComplete = true;
+        } else {
+          _instructionIndex++;
+        }
+      } else if (_instructionIndex > 0) {
+        _instructionIndex--;
+        _completedInstructionCount = _instructionIndex;
+      }
+    });
+    _sendInstructionProgress();
   }
 
   Future<void> _determinePosition() async {
@@ -239,8 +299,15 @@ class _ConnectingScreenState extends State<ConnectingScreen>
         children: [
           _buildHeader(),
           const SizedBox(height: 10),
-          _buildVideoPreview(),
-          const SizedBox(height: 30),
+          Expanded(
+            child: _instructionItems.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: _buildVideoPreview(),
+                  )
+                : _buildInstructionWorkspace(),
+          ),
+          const SizedBox(height: 14),
           _buildActionButtons(),
         ],
       ),
@@ -281,23 +348,168 @@ class _ConnectingScreenState extends State<ConnectingScreen>
   }
 
   Widget _buildVideoPreview() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: RTCVideoView(
-              _webRTCService.localRenderer,
-              mirror: _webRTCService.isFrontCamera,
-              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: RTCVideoView(
+          _webRTCService.localRenderer,
+          mirror: _webRTCService.isFrontCamera,
+          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInstructionWorkspace() {
+    final item = _instructionItems[_instructionIndex];
+    final imageUrl = (item['imageUrl'] ?? '').toString();
+    final progress =
+        (_instructionIndex + (_instructionComplete ? 1 : 0)) /
+        _instructionItems.length;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F7F4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFDCE7DF)),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(18, 174, 18, 22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _instructionComplete
+                        ? 'Alle Schritte erledigt'
+                        : 'Schritt ${_instructionIndex + 1} von ${_instructionItems.length}',
+                    style: const TextStyle(
+                      color: Color(0xFF16704F),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _instructionComplete
+                        ? 'Der Fortschritt wurde an die Leitstelle übermittelt.'
+                        : (item['name'] ?? '').toString(),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      height: 1.15,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF17221C),
+                    ),
+                  ),
+                  if (!_instructionComplete && item['planName'] != null) ...[
+                    const SizedBox(height: 5),
+                    Text(
+                      item['planName'].toString(),
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  if (!_instructionComplete &&
+                      (item['description'] ?? '').toString().isNotEmpty)
+                    Text(
+                      item['description'].toString(),
+                      style: const TextStyle(fontSize: 17, height: 1.45),
+                    ),
+                  if (!_instructionComplete && imageUrl.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        imageUrl,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      if (_instructionIndex > 0 && !_instructionComplete)
+                        OutlinedButton.icon(
+                          onPressed: () => _moveInstruction(-1),
+                          icon: const Icon(Icons.arrow_back),
+                          label: const Text('Zurück'),
+                        ),
+                      const Spacer(),
+                      FilledButton.icon(
+                        onPressed: _instructionComplete
+                            ? null
+                            : () => _moveInstruction(1),
+                        icon: Icon(
+                          _instructionComplete
+                              ? Icons.check
+                              : _instructionIndex ==
+                                    _instructionItems.length - 1
+                              ? Icons.done_all
+                              : Icons.arrow_forward,
+                        ),
+                        label: Text(
+                          _instructionComplete
+                              ? 'Abgeschlossen'
+                              : _instructionIndex ==
+                                    _instructionItems.length - 1
+                              ? 'Plan abschließen'
+                              : 'Nächster Schritt',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+          Positioned(
+            top: 14,
+            left: 16,
+            right: 142,
+            child: Text(
+              _instructionTitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF17221C),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 14,
+            right: 14,
+            width: 116,
+            height: 148,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: _buildVideoPreview(),
+            ),
+          ),
+          Positioned(
+            top: 82,
+            left: 16,
+            right: 142,
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 5,
+              color: const Color(0xFF16805D),
+              backgroundColor: const Color(0xFFDCE7DF),
+            ),
+          ),
+        ],
       ),
     );
   }

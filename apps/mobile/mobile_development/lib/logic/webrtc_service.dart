@@ -24,6 +24,7 @@ class WebRTCService {
   Function(String)? onCallFailed;
   Function()? onCallEnd;
   Function()? onCallAccepted;
+  Function(Map<String, dynamic>)? onInstructionPlanReceived;
 
   Map<String, dynamic>? _currentLocation;
   late String _serverUrl;
@@ -123,6 +124,12 @@ class WebRTCService {
       'call-rejected',
       (data) => onCallFailed?.call(data['reason'] ?? 'Abgelehnt'),
     );
+    socket!.on('instruction-plan', (data) {
+      final plan = data is Map ? data['plan'] : null;
+      if (plan is Map) {
+        onInstructionPlanReceived?.call(Map<String, dynamic>.from(plan));
+      }
+    });
 
     socket!.connect();
   }
@@ -271,6 +278,15 @@ class WebRTCService {
     } finally {
       client.close(force: true);
     }
+  }
+
+  void sendInstructionProgress(Map<String, dynamic> progress) {
+    if (socket == null || !socket!.connected) return;
+    socket!.emit('instruction-progress', {
+      'from': selfId,
+      'to': targetId,
+      'progress': progress,
+    });
   }
 
   void dispose() {

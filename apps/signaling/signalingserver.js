@@ -57,6 +57,26 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("instruction-plan", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) {
+            io.to(target).emit("instruction-plan", {
+                from: payload.from,
+                plan: payload.plan,
+            });
+        }
+    });
+
+    socket.on("instruction-progress", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) {
+            io.to(target).emit("instruction-progress", {
+                from: payload.from,
+                progress: payload.progress,
+            });
+        }
+    });
+
     socket.on("call-rejected", (payload) => {
         const target = registry.get(payload.to);
         if (target) io.to(target).emit("call-rejected", { from: payload.from, reason: payload.reason });

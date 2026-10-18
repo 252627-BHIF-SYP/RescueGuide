@@ -11,6 +11,7 @@ export class CallContextService {
   private pendingOffer$ = new BehaviorSubject<PendingOffer | null>(null);
   private acceptSubject = new Subject<void>();
   private acceptedFlag$ = new BehaviorSubject<boolean>(false);
+  private activeCallId: string | null = null;
 
   // === NEU: Der globale Auffang-Korb für frühe ICE-Candidates ===
   private earlyIceCandidates: any[] = [];
@@ -53,6 +54,14 @@ export class CallContextService {
 
   getAcceptedValue(): boolean {
     return this.acceptedFlag$.getValue();
+  }
+
+  setActiveCallId(callId: string | null) {
+    this.activeCallId = callId;
+  }
+
+  getActiveCallId(): string | null {
+    return this.activeCallId;
   }
 
   clearAcceptedFlag() {
