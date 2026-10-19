@@ -114,3 +114,10 @@ Pods/
 .generated/
 Flutter.framework
 App.framework
+
+# Impeccable & AI tooling
+.impeccable/
+.github/agents/
+.github/hooks/
+.github/skills/
+PRODUCT.md
