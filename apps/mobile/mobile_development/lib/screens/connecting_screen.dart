@@ -307,7 +307,7 @@ class _ConnectingScreenState extends State<ConnectingScreen>
           _buildHeader(),
           const SizedBox(height: 10),
           Expanded(
-            child: _instructionItems.isEmpty
+            child: _instructionItems.isEmpty || _instructionComplete
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: _buildVideoPreview(),
