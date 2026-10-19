@@ -7,8 +7,7 @@ import { Logout } from './logout/logout';
 import { InstructionMenu } from './instruction-menu/instruction-menu';
 import { EmergencyPage } from './emergency-page/emergency-page';
 import { Dashboard } from './dashboard/dashboard';
-
-import { EmergencyService } from './services/emergency.service';
+import { MainLayoutComponent } from './main-layout/main-layout.component';
 
 const authGuard = () => {
   const auth = inject(AuthService);
@@ -16,19 +15,23 @@ const authGuard = () => {
   return auth.isLoggedIn() ? true : router.parseUrl('/login');
 };
 
-const activeEmergencyGuard = () => {
-  const emergencyService = inject(EmergencyService);
-  const router = inject(Router);
-  return emergencyService.isActive() ? true : router.parseUrl('/instruction-menu');
-};
-
 export const routes: Routes = [
-  { path: '', component: Dashboard, canActivate: [authGuard] },
+  // Fullscreen standalone pages (No sidebar navigation)
   { path: 'login', component: Login },
   { path: 'signup', component: Signup },
   { path: 'logout', component: Logout },
-  { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
-  { path: 'instruction-menu', component: InstructionMenu, canActivate: [authGuard] },
-  { path: 'emergency-page', component: EmergencyPage, canActivate: [authGuard, activeEmergencyGuard] }, 
+  { path: 'emergency-page', component: EmergencyPage, canActivate: [authGuard] },
+
+  // Dispatched operational pages (with Dispatcher Sidebar Navigation Rail)
+  {
+    path: '',
+    component: MainLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: Dashboard },
+      { path: 'instruction-menu', component: InstructionMenu },
+    ],
+  },
   { path: '**', redirectTo: '' },
 ];
