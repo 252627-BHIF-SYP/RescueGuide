@@ -1,0 +1,44 @@
+<aside class="sidebar" aria-label="Hauptnavigation">
+  <!-- Brand Header -->
+  <div class="sidebar-header">
+    <div class="brand">
+      <mat-icon class="brand-icon">emergency</mat-icon>
+      <span class="brand-title">RescueGuide</span>
+    </div>
+  </div>
+
+  <!-- Nav Links -->
+  <nav class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+      <mat-icon class="nav-icon">dashboard</mat-icon>
+      <span>Dashboard</span>
+    </a>
+
+    <a routerLink="/instruction-menu" routerLinkActive="active" class="nav-link">
+      <mat-icon class="nav-icon">assignment</mat-icon>
+      <span>Leitfäden</span>
+    </a>
+
+    @if (emergencyService.isActive()) {
+      <a routerLink="/emergency-page" class="nav-link emergency-link">
+        <mat-icon class="nav-icon">phone_in_talk</mat-icon>
+        <span>Aktiver Notruf</span>
+      </a>
+    }
+  </nav>
+
+  <!-- Footer / User & Logout -->
+  <div class="sidebar-footer">
+    @if (auth.userName()) {
+      <div class="user-info">
+        <mat-icon class="user-icon">person</mat-icon>
+        <span class="user-name">{{ auth.userName() }}</span>
+      </div>
+    }
+
+    <button type="button" class="logout-btn" (click)="logout()" title="Abmelden">
+      <mat-icon>logout</mat-icon>
+      <span>Abmelden</span>
+    </button>
+  </div>
+</aside>

@@ -1,4 +1,4 @@
-﻿// ── Design Tokens ─────────────────────────────────────────────────────
+// ── Design Tokens ─────────────────────────────────────────────────────
 $bg:         #f5f6f8;
 $surface:    #ffffff;
 $border:     #e1e2e5;
@@ -12,7 +12,7 @@ $shadow-md:  0 3px 10px rgba(0,0,0,.10);
 
 // ── Page Shell ────────────────────────────────────────────────────────
 .container {
-  height: 93vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: $bg;

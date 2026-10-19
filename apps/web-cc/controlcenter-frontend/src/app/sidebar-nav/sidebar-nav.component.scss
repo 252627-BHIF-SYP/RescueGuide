@@ -1,0 +1,160 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  width: 210px;
+  height: 100vh;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-right: 1px solid #e1e2e5;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────
+.sidebar-header {
+  padding: 4px 8px 16px;
+  border-bottom: 1px solid #f1f3f5;
+  margin-bottom: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .brand-icon {
+    color: #a31d58;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .brand-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2328;
+    letter-spacing: -0.01em;
+  }
+}
+
+// ── Nav Links ──────────────────────────────────────────────────────────
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  transition: all 0.15s ease;
+
+  .nav-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+  }
+
+  &:hover {
+    color: #1f2328;
+    background: #f1f5f9;
+
+    .nav-icon {
+      color: #64748b;
+    }
+  }
+
+  &.active {
+    color: #a31d58;
+    font-weight: 600;
+    background: #fdf2f8;
+
+    .nav-icon {
+      color: #a31d58;
+    }
+  }
+}
+
+.emergency-link {
+  color: #b42355 !important;
+  background: #ffe4e6 !important;
+  font-weight: 600;
+
+  .nav-icon {
+    color: #b42355 !important;
+  }
+}
+
+// ── Footer ─────────────────────────────────────────────────────────────
+.sidebar-footer {
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 0.84rem;
+  color: #475569;
+
+  .user-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+  }
+
+  .user-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid #e1e2e5;
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: #f8fafc;
+    color: #b42355;
+    border-color: #cbd5e1;
+  }
+}

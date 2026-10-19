@@ -1,6 +1,6 @@
 .dashboard {
   box-sizing: border-box;
-  min-height: calc(100vh - 64px);
+  min-height: 100vh;
   padding: 20px clamp(14px, 3vw, 40px);
   background: #f5f6f8;
 }
@@ -138,7 +138,7 @@ h2 {
 
 @media (max-width: 760px) {
   .dashboard {
-    min-height: calc(100vh - 56px);
+    min-height: 100vh;
     padding: 14px;
   }
 
