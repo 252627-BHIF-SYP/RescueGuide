@@ -64,6 +64,10 @@ class _ConnectingScreenState extends State<ConnectingScreen>
       _exitCall('Notruf wurde beendet');
     };
     _webRTCService.onInstructionPlanReceived = _receiveInstructionPlan;
+    _webRTCService.onInstructionNextRequested = () {
+      if (!mounted) return;
+      _moveInstruction(1);
+    };
 
     final settings = await SettingsService.init();
     if (!mounted) return;

@@ -83,10 +83,12 @@ export class PlanSelector implements OnInit, OnDestroy {
   dispatchNotice: string | null = null;
   dispatchError = false;
   dispatchProgress: DispatchProgress | null = null;
+  advancePending = false;
 
   private readonly onInstructionProgress = (payload: any) => {
     if (payload?.from !== this.callContext.getActiveCallId() || !payload.progress) return;
     this.dispatchProgress = payload.progress as DispatchProgress;
+    this.advancePending = false;
   };
 
   ngOnInit(): void {
@@ -350,6 +352,7 @@ export class PlanSelector implements OnInit, OnDestroy {
       currentTitle: steps[0].name,
       complete: false,
     };
+    this.advancePending = false;
     this.dispatchError = false;
 
     this.showDispatchNotice(
@@ -363,6 +366,26 @@ export class PlanSelector implements OnInit, OnDestroy {
     return Math.round(
       (this.dispatchProgress.completedCount / this.dispatchProgress.totalSteps) * 100,
     );
+  }
+
+  get canAdvanceInstruction(): boolean {
+    return (
+      this.signaling.isConnected &&
+      !!this.callContext.getActiveCallId() &&
+      !this.dispatchProgress?.complete &&
+      !this.advancePending
+    );
+  }
+
+  advanceMobileInstruction(): void {
+    const targetId = this.callContext.getActiveCallId();
+    if (!targetId || !this.canAdvanceInstruction) return;
+
+    this.advancePending = true;
+    this.signaling.emit('instruction-next', {
+      from: 'controlcenter',
+      to: targetId,
+    });
   }
 
   private showDispatchNotice(message: string, isError: boolean): void {

@@ -3,7 +3,9 @@
   @if (dispatchNotice) {
     <div class="dispatch-notice-banner animate-slide-down" [class.error]="dispatchError">
       <div class="notice-inner">
-        <mat-icon class="notice-icon">{{ dispatchError ? 'error_outline' : 'check_circle' }}</mat-icon>
+        <mat-icon class="notice-icon">{{
+          dispatchError ? 'error_outline' : 'check_circle'
+        }}</mat-icon>
         <span class="notice-text">{{ dispatchNotice }}</span>
       </div>
       <button
@@ -24,7 +26,9 @@
       <div class="progress-heading">
         <div class="progress-title-group">
           <mat-icon class="pulse-icon">sync</mat-icon>
-          <strong>{{ dispatchProgress.complete ? 'Übermittlung abgeschlossen' : 'Ablauf beim Ersthelfer' }}</strong>
+          <strong>{{
+            dispatchProgress.complete ? 'Übermittlung abgeschlossen' : 'Ablauf beim Ersthelfer'
+          }}</strong>
         </div>
         <span class="progress-step-text"
           >{{ dispatchProgress.completedCount }} / {{ dispatchProgress.totalSteps }} Schritte</span
@@ -41,8 +45,20 @@
       </div>
       @if (!dispatchProgress.complete && dispatchProgress.currentTitle) {
         <div class="progress-current">
-          <span>Aktueller Schritt beim Ersthelfer:</span>
-          <strong>{{ dispatchProgress.currentTitle }}</strong>
+          <div class="progress-current-copy">
+            <span>Aktueller Schritt beim Ersthelfer:</span>
+            <strong>{{ dispatchProgress.currentTitle }}</strong>
+          </div>
+          <button
+            type="button"
+            class="btn-advance-instruction"
+            [disabled]="!canAdvanceInstruction"
+            (click)="advanceMobileInstruction()"
+            matTooltip="Nächsten Schritt am Handy anzeigen"
+          >
+            <mat-icon>skip_next</mat-icon>
+            <span>Am Handy weiter</span>
+          </button>
         </div>
       }
     </section>
@@ -144,11 +160,7 @@
 
             <div class="catalog-items-list">
               @for (plan of filteredPlans; track plan.id) {
-                <div
-                  class="catalog-item-card plan-item"
-                  cdkDrag
-                  [cdkDragData]="plan"
-                >
+                <div class="catalog-item-card plan-item" cdkDrag [cdkDragData]="plan">
                   <div class="card-main-content">
                     <div class="card-icon-box plan-bg">
                       <mat-icon>playlist_play</mat-icon>
@@ -206,11 +218,7 @@
 
             <div class="catalog-items-list">
               @for (measure of filteredMeasures; track measure.id) {
-                <div
-                  class="catalog-item-card measure-item"
-                  cdkDrag
-                  [cdkDragData]="measure"
-                >
+                <div class="catalog-item-card measure-item" cdkDrag [cdkDragData]="measure">
                   <div class="card-main-content">
                     <div class="card-icon-box measure-bg">
                       <mat-icon>healing</mat-icon>
@@ -262,9 +270,7 @@
           <div class="catalog-empty-state">
             <mat-icon>search_off</mat-icon>
             <p>Keine Einträge für „{{ searchTerm }}“ gefunden.</p>
-            <button mat-stroked-button color="primary" (click)="clearSearch()">
-              Suche leeren
-            </button>
+            <button mat-stroked-button color="primary" (click)="clearSearch()">Suche leeren</button>
           </div>
         }
       </div>
@@ -323,10 +329,7 @@
         @if (queue.length > 0) {
           <div class="queue-items-container">
             @for (item of queue; track item.uid; let i = $index) {
-              <div
-                class="queue-item-row"
-                cdkDrag
-              >
+              <div class="queue-item-row" cdkDrag>
                 <!-- Drag Grip Handle -->
                 <div class="drag-handle" cdkDragHandle matTooltip="Ziehen zum Verschieben">
                   <mat-icon>drag_indicator</mat-icon>
@@ -338,7 +341,11 @@
                 </div>
 
                 <!-- Type Icon & Pill -->
-                <div class="queue-type-badge" [class.plan]="item.type === 'plan'" [class.measure]="item.type === 'measure'">
+                <div
+                  class="queue-type-badge"
+                  [class.plan]="item.type === 'plan'"
+                  [class.measure]="item.type === 'measure'"
+                >
                   <mat-icon>{{ item.type === 'plan' ? 'playlist_play' : 'healing' }}</mat-icon>
                   <span>{{ item.type === 'plan' ? 'Plan' : 'Maßnahme' }}</span>
                 </div>

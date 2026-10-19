@@ -97,6 +97,12 @@ export class EmergencyService implements OnDestroy {
   }
 
   async createEmergency(initialData?: Partial<EmergencyProtocol>) {
+    const protocolInitialData = {
+      ...initialData,
+      dispatcherName: initialData?.dispatcherName?.trim() || this.auth.userName()?.trim() || '',
+    };
+    this.protocol.set({ ...this.getDefaultProtocol(), ...protocolInitialData });
+
     // Create an empty emergency
     const emergencyPayload = {
       startedAt: new Date().toISOString(),
@@ -110,12 +116,14 @@ export class EmergencyService implements OnDestroy {
       this.activeEmergencyId.set(res.id);
       if (res.protocol) {
         this.activeProtocolId.set(res.protocol.id);
-        this.protocol.set({ ...this.getDefaultProtocol(), ...res.protocol, ...initialData });
+        this.protocol.set({
+          ...this.getDefaultProtocol(),
+          ...res.protocol,
+          ...protocolInitialData,
+        });
       }
       console.log('Emergency created with ID:', res.id);
-      if (initialData) {
-        this.saveProtocol();
-      }
+      this.saveProtocol();
     } catch (err) {
       console.error('Error creating emergency', err);
     }

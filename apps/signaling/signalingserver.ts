@@ -104,6 +104,13 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("instruction-next", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) {
+            io.to(target).emit("instruction-next", { from: payload.from });
+        }
+    });
+
     socket.on("call-rejected", (payload) => {
         const target = registry.get(payload.to);
         if (target) io.to(target).emit("call-rejected", { from: payload.from, reason: payload.reason });

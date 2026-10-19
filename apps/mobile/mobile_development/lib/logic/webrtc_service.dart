@@ -25,6 +25,7 @@ class WebRTCService {
   Function()? onCallEnd;
   Function()? onCallAccepted;
   Function(Map<String, dynamic>)? onInstructionPlanReceived;
+  Function()? onInstructionNextRequested;
 
   Map<String, dynamic>? _currentLocation;
   late String _serverUrl;
@@ -129,6 +130,9 @@ class WebRTCService {
       if (plan is Map) {
         onInstructionPlanReceived?.call(Map<String, dynamic>.from(plan));
       }
+    });
+    socket!.on('instruction-next', (_) {
+      onInstructionNextRequested?.call();
     });
 
     socket!.connect();

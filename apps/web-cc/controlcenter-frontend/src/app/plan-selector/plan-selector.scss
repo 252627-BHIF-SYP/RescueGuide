@@ -1,17 +1,17 @@
 // ── Design Tokens ─────────────────────────────────────────────────────
-$accent:        #a31d58;
-$accent-soft:   #fce7f0;
-$accent-hover:  #8b1649;
-$surface:       #ffffff;
-$border:        #e2e4e9;
-$border-light:  #edf0f4;
-$text:          #191c21;
-$text-muted:    #68707d;
-$success:       #16a34a;
-$success-soft:  #ecfdf5;
-$danger:        #dc2626;
-$danger-soft:   #fee2e2;
-$radius:        12px;
+$accent: #a31d58;
+$accent-soft: #fce7f0;
+$accent-hover: #8b1649;
+$surface: #ffffff;
+$border: #e2e4e9;
+$border-light: #edf0f4;
+$text: #191c21;
+$text-muted: #68707d;
+$success: #16a34a;
+$success-soft: #ecfdf5;
+$danger: #dc2626;
+$danger-soft: #fee2e2;
+$radius: 12px;
 
 :host {
   display: block;
@@ -140,10 +140,44 @@ $radius:        12px;
     margin-top: 4px;
     font-size: 0.72rem;
     color: $text-muted;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    .progress-current-copy {
+      min-width: 0;
+    }
 
     strong {
       color: $text;
       margin-left: 4px;
+    }
+
+    .btn-advance-instruction {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+      border: 1px solid $border;
+      border-radius: 4px;
+      padding: 5px 9px;
+      background: $surface;
+      color: $text;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+
+      mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
     }
   }
 }
@@ -1047,23 +1081,44 @@ $radius:        12px;
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes expandDown {
-  from { opacity: 0; max-height: 0; overflow: hidden; }
-  to   { opacity: 1; max-height: 300px; }
+  from {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+  }
+  to {
+    opacity: 1;
+    max-height: 300px;
+  }
 }
 
 @keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // ── Responsive Adjustments ────────────────────────────────────────────
