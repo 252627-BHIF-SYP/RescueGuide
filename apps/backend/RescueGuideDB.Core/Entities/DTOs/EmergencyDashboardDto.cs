@@ -9,4 +9,5 @@ public class EmergencyDashboardDto
     public string? EmergencyType { get; set; }
     public string? HandlerName { get; set; }
     public string? Address { get; set; }
+    public int? ProtocolId { get; set; }
 }

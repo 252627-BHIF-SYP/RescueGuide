@@ -11,6 +11,7 @@ export interface DashboardEmergency {
   emergencyType: string | null;
   handlerName: string | null;
   address: string | null;
+  protocolId?: number | null;
 }
 
 @Injectable({ providedIn: 'root' })

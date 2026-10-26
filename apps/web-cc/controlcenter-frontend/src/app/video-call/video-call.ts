@@ -297,14 +297,16 @@ export class VideoCall implements OnInit, OnDestroy {
     }
   }
 
-  endCall() {
+  endCall(navigate = true) {
     console.log('🛑 [UI] Laufenden Einsatz manuell beendet.');
     if (this.activeCallId) {
       this.signaling.emit('call-end', { to: this.activeCallId, from: this.myId });
     }
     this.closeConnection();
 
-    this.router.navigate(['/dashboard']);
+    if (navigate) {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   private closeConnection() {

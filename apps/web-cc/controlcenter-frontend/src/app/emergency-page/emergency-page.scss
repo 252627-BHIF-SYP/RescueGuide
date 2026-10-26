@@ -5,6 +5,7 @@ $border:      #e2e4e9;
 $border-light:#edf0f4;
 $accent:      #a31d58;
 $accent-soft: #fce7f0;
+$accent-hover:#8b1649;
 $danger:      #b42355;
 $danger-soft: #fde8ef;
 $success:     #16a34a;
@@ -736,3 +737,195 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     flex: auto;
   }
 }
+
+// ── Post-Emergency Review Styling (Issue 133 & 97) ──────────────────────
+.post-review-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f1f5f9;
+  overflow: hidden;
+
+  .review-header-bar {
+    background: #ffffff;
+    border-bottom: 1px solid $border;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    z-index: 10;
+
+    .review-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      .review-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: $success-soft;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+          color: $success;
+        }
+      }
+
+      .review-titles {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        h2 {
+          margin: 0;
+          font-size: 1.12rem;
+          font-weight: 800;
+          color: #0f172a;
+          white-space: nowrap;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.78rem;
+          color: #64748b;
+        }
+      }
+    }
+
+    .review-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .btn-action {
+        appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.18s ease;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+
+        &.btn-pdf {
+          background: $accent;
+          color: #ffffff;
+          box-shadow: 0 2px 6px rgba(163, 29, 88, 0.25);
+
+          &:hover {
+            background: $accent-hover;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(163, 29, 88, 0.35);
+          }
+        }
+
+        &.btn-save {
+          background: #ffffff;
+          border: 1px solid #cbd5e1;
+          color: #334155;
+
+          &:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+          }
+
+          &.saved {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
+          }
+        }
+
+        &.btn-finish {
+          background: #1e293b;
+          color: #ffffff;
+
+          &:hover {
+            background: #0f172a;
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+  }
+
+  .review-content-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 14px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+
+    .review-guidance-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #1e40af;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      flex-shrink: 0;
+
+      .banner-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #2563eb;
+        flex-shrink: 0;
+      }
+
+      .banner-text {
+        color: #1e3a8a;
+
+        strong {
+          color: #1d4ed8;
+        }
+      }
+    }
+
+    .review-form-wrapper {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+
+      app-emergency-checklist {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
+

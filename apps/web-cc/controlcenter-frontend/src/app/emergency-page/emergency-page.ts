@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
@@ -18,6 +19,7 @@ import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
 import { PlanSelector } from '../plan-selector/plan-selector';
 import { LocationService, Notruf } from '../services/location.service';
 import { EmergencyService } from '../services/emergency.service';
+import { PdfExportService } from '../services/pdf-export.service';
 
 @Component({
   selector: 'app-emergency-page',
@@ -39,10 +41,19 @@ export class EmergencyPage implements OnInit, OnDestroy {
   copiedCoords = signal<boolean>(false);
   showEndConfirm = signal<boolean>(false);
 
+  // Nachbearbeitungs-Zustand (Issue 133)
+  isPostEmergencyReview = signal<boolean>(false);
+  endedEmergencyId = signal<number | null>(null);
+  emergencyEndedAt = signal<Date | null>(null);
+  isSaving = signal<boolean>(false);
+  saveSuccess = signal<boolean>(false);
+
   private http = inject(HttpClient);
+  private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   public locationService = inject(LocationService);
   public emergencyService = inject(EmergencyService);
+  public pdfExportService = inject(PdfExportService);
 
   lastLocation = signal<Notruf | null>(null);
   status = computed(() => (this.lastLocation() ? 'Aktueller Notruf' : 'Kein Standort verfügbar'));
@@ -51,6 +62,12 @@ export class EmergencyPage implements OnInit, OnDestroy {
 
   durationSeconds = this.emergencyService.durationSeconds;
   emergencyData = this.emergencyService.protocol;
+
+  reviewMeta = computed(() => ({
+    emergencyId: this.endedEmergencyId() || this.emergencyService.activeEmergencyId(),
+    endedAt: this.emergencyEndedAt(),
+    status: 'Abgeschlossen',
+  }));
 
   private pollingInterval: any;
   private lastLat: number | null = null;
@@ -133,11 +150,43 @@ export class EmergencyPage implements OnInit, OnDestroy {
   }
 
   endCall() {
+    const activeId = this.emergencyService.activeEmergencyId();
+    this.endedEmergencyId.set(activeId);
+    this.emergencyEndedAt.set(new Date());
+
     if (this.videoCallComponent) {
-      this.videoCallComponent.endCall();
+      this.videoCallComponent.endCall(false);
     }
-    // Protokoll final speichern und Notfall beenden
-    this.emergencyService.endEmergency();
+
+    // Protokoll im Backend schließen, aber Session für Nachbearbeitung behalten! (Issue 133)
+    this.emergencyService.endEmergency(true);
+    this.isPostEmergencyReview.set(true);
+  }
+
+  savePostReviewProtocol() {
+    this.isSaving.set(true);
+    this.emergencyService.executeSaveProtocol();
+    setTimeout(() => {
+      this.isSaving.set(false);
+      this.saveSuccess.set(true);
+      setTimeout(() => this.saveSuccess.set(false), 3000);
+    }, 400);
+  }
+
+  exportPdf() {
+    const meta = {
+      emergencyId: this.endedEmergencyId() || this.emergencyService.activeEmergencyId(),
+      startedAt: null,
+      endedAt: this.emergencyEndedAt(),
+      status: 'Abgeschlossen',
+    };
+    this.pdfExportService.exportProtocol(this.emergencyData(), meta);
+  }
+
+  finishReviewAndExit() {
+    this.emergencyService.executeSaveProtocol();
+    this.emergencyService.clearActiveEmergency();
+    this.router.navigate(['/dashboard']);
   }
 
   fetchLatestLocation() {

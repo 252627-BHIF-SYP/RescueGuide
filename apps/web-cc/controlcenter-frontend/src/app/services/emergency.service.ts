@@ -12,6 +12,8 @@ export interface Notruf {
 }
 
 export interface EmergencyProtocol {
+  id?: number;
+  emergencyId?: number;
   type: string;
   callerName: string;
   callerType: string;
@@ -150,7 +152,17 @@ export class EmergencyService implements OnDestroy {
     });
   }
 
-  endEmergency() {
+  getProtocolByEmergencyId(emergencyId: number) {
+    return this.http.get<EmergencyProtocol>(
+      `${environment.apiUrl}/EmergencyProtocol/ByEmergency/${emergencyId}`,
+    );
+  }
+
+  saveProtocolById(protocolId: number, data: Partial<EmergencyProtocol>) {
+    return this.http.put(`${environment.apiUrl}/EmergencyProtocol/${protocolId}`, data);
+  }
+
+  endEmergency(keepSessionForReview = false) {
     this.executeSaveProtocol();
     const emergencyId = this.activeEmergencyId();
     if (emergencyId) {
@@ -160,11 +172,23 @@ export class EmergencyService implements OnDestroy {
       });
     }
     this.isActive.set(false);
+    this.activeCallerId.set(null);
+    this.currentLocation.set(null);
+    this.stopTimer();
+
+    if (!keepSessionForReview) {
+      this.clearActiveEmergency();
+    }
+  }
+
+  clearActiveEmergency() {
     this.activeEmergencyId.set(null);
     this.activeProtocolId.set(null);
     this.activeCallerId.set(null);
     this.currentLocation.set(null);
+    this.protocol.set(this.getDefaultProtocol());
     this.stopTimer();
+    this.resetTimer();
   }
 
   startTimer() {
