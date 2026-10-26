@@ -114,3 +114,10 @@ Pods/
 .generated/
 Flutter.framework
 App.framework
+
+# Impeccable (local tooling)
+.impeccable/
+.github/agents/impeccable*
+.github/hooks/impeccable*
+.github/skills/impeccable/
+PRODUCT.md
