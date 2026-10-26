@@ -42,6 +42,8 @@ export class Dashboard implements OnInit, OnDestroy {
   readonly protocolError = signal<string>('');
   readonly isSavingProtocol = signal<boolean>(false);
   readonly saveSuccess = signal<boolean>(false);
+  readonly hasUnsavedChanges = signal<boolean>(false);
+  private initialProtocolSnapshot = '';
 
   readonly activeEmergencies = computed(() =>
     this.emergencies().filter((emergency) => emergency.status === 'Active'),
@@ -98,6 +100,8 @@ export class Dashboard implements OnInit, OnDestroy {
     this.emergencyService.getProtocolByEmergencyId(emergency.id).subscribe({
       next: (protocol) => {
         this.selectedProtocol.set(protocol);
+        this.initialProtocolSnapshot = JSON.stringify(protocol);
+        this.hasUnsavedChanges.set(false);
         this.loadingProtocol.set(false);
       },
       error: (err) => {
@@ -113,10 +117,13 @@ export class Dashboard implements OnInit, OnDestroy {
     this.selectedProtocol.set(null);
     this.protocolError.set('');
     this.saveSuccess.set(false);
+    this.hasUnsavedChanges.set(false);
+    this.initialProtocolSnapshot = '';
   }
 
   onProtocolChanged(updated: EmergencyProtocol): void {
     this.selectedProtocol.set(updated);
+    this.hasUnsavedChanges.set(JSON.stringify(updated) !== this.initialProtocolSnapshot);
   }
 
   saveSelectedProtocol(): void {
@@ -133,6 +140,8 @@ export class Dashboard implements OnInit, OnDestroy {
     this.emergencyService.saveProtocolById(protocolId, proto).subscribe({
       next: () => {
         this.isSavingProtocol.set(false);
+        this.initialProtocolSnapshot = JSON.stringify(this.selectedProtocol());
+        this.hasUnsavedChanges.set(false);
         this.saveSuccess.set(true);
         setTimeout(() => this.saveSuccess.set(false), 3000);
         // Dashboard im Hintergrund aktualisieren, falls Art oder Adresse angepasst wurden

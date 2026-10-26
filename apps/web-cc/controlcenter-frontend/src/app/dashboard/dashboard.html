@@ -210,15 +210,7 @@
 
         <!-- Modal Footer -->
         <footer class="modal-footer">
-          <div class="footer-status">
-            @if (saveSuccess()) {
-              <span class="save-toast-msg success">
-                <mat-icon>check_circle</mat-icon> Änderungen erfolgreich gespeichert!
-              </span>
-            }
-          </div>
-
-          <div class="footer-buttons">
+          <div class="footer-left">
             <button
               type="button"
               class="btn-export-pdf"
@@ -229,13 +221,22 @@
               <mat-icon>picture_as_pdf</mat-icon>
               <span>Protokoll exportieren</span>
             </button>
+          </div>
+
+          <div class="footer-right">
+            @if (saveSuccess()) {
+              <span class="save-toast-msg success">
+                <mat-icon>check_circle</mat-icon> Änderungen erfolgreich gespeichert!
+              </span>
+            }
 
             <button
               type="button"
               class="btn-save-changes"
               [class.saved]="saveSuccess()"
               (click)="saveSelectedProtocol()"
-              [disabled]="isSavingProtocol() || loadingProtocol() || !selectedProtocol()"
+              [disabled]="isSavingProtocol() || loadingProtocol() || !selectedProtocol() || !hasUnsavedChanges()"
+              title="Änderungen im Einsatzprotokoll speichern"
             >
               <mat-icon>{{ saveSuccess() ? 'check' : 'save' }}</mat-icon>
               <span>{{ isSavingProtocol() ? 'Speichern...' : (saveSuccess() ? 'Gespeichert' : 'Änderungen speichern') }}</span>

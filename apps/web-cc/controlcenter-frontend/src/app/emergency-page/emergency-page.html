@@ -1,76 +1,6 @@
 <div class="container">
-  @if (isPostEmergencyReview()) {
-    <!-- ── POST-EMERGENCY PROTOCOL REVIEW SCREEN (Issue 133 & 97) ── -->
-    <div class="post-review-container">
-      <header class="review-header-bar">
-        <div class="review-header-left">
-          <div class="review-status-badge">
-            <mat-icon>task_alt</mat-icon>
-            <span>Einsatz beendet</span>
-          </div>
-          <div class="review-titles">
-            <h2>Einsatzprotokoll nachbearbeiten</h2>
-            <p>
-              Einsatz #{{ endedEmergencyId() || '–' }} &bull; Einsatzdauer: {{ formatTime(durationSeconds()) }} &bull; Status: Beendet
-            </p>
-          </div>
-        </div>
-
-        <div class="review-header-actions">
-          <button
-            type="button"
-            class="btn-action btn-pdf"
-            (click)="exportPdf()"
-            title="Vollständiges Einsatzprotokoll als PDF exportieren"
-          >
-            <mat-icon>picture_as_pdf</mat-icon>
-            <span>Protokoll exportieren</span>
-          </button>
-
-          <button
-            type="button"
-            class="btn-action btn-save"
-            [class.saved]="saveSuccess()"
-            (click)="savePostReviewProtocol()"
-            [disabled]="isSaving()"
-            title="Aktuellen Stand des Protokolls manuell sichern"
-          >
-            <mat-icon>{{ saveSuccess() ? 'check' : 'save' }}</mat-icon>
-            <span>{{ saveSuccess() ? 'Gespeichert' : 'Speichern' }}</span>
-          </button>
-
-          <button
-            type="button"
-            class="btn-action btn-finish"
-            (click)="finishReviewAndExit()"
-            title="Nachbearbeitung abschließen und zur Leitstellen-Übersicht wechseln"
-          >
-            <mat-icon>dashboard</mat-icon>
-            <span>Abschließen &amp; Dashboard</span>
-          </button>
-        </div>
-      </header>
-
-      <div class="review-content-area">
-        <div class="review-guidance-banner">
-          <mat-icon class="banner-icon">info</mat-icon>
-          <div class="banner-text">
-            <strong>Nachbereitung &amp; Dokumentation:</strong> Der Notruf wurde beendet. Sie können die Angaben und Einsatzdaten hier in Ruhe prüfen, fehlende Informationen nachtragen und das offizielle PDF-Protokoll exportieren. Änderungen werden automatisch im System gesichert.
-          </div>
-        </div>
-
-        <div class="review-form-wrapper">
-          <app-emergency-checklist
-            [emergencyData]="emergencyData()"
-            [meta]="reviewMeta()"
-          ></app-emergency-checklist>
-        </div>
-      </div>
-    </div>
-  } @else {
-    <!-- ── LIVE EMERGENCY MODE (Original Screen) ── -->
-    <!-- Top Unified Header Bar with integrated Location & Controls -->
-    <header class="page-header-bar">
+  <!-- Top Unified Header Bar with integrated Location & Controls -->
+  <header class="page-header-bar">
       <div class="header-left">
         <div class="emergency-badge">
           <mat-icon class="emergency-icon animate-pulse">emergency</mat-icon>
@@ -243,37 +173,97 @@
       </div>
     }
 
-    <!-- Confirmation Modal for Ending Emergency Call -->
-    @if (showEndConfirm()) {
-      <div class="modal-backdrop" (click)="cancelEndCall()">
-        <div class="confirm-dialog animate-scale-up" (click)="$event.stopPropagation()">
-          <div class="dialog-header">
-            <div class="warn-bubble">
-              <mat-icon>warning_amber</mat-icon>
+    <!-- ── PROTOKOLL-NACHBEARBEITUNGS-MODAL (Issue 133 & 97) ── -->
+    @if (isPostEmergencyReview()) {
+      <div class="modal-backdrop" (click)="finishReviewAndExit()">
+        <div class="protocol-modal animate-scale-up" (click)="$event.stopPropagation()">
+          <!-- Modal Header -->
+          <header class="modal-header">
+            <div class="modal-title-left">
+              <div class="title-icon-bubble">
+                <mat-icon>edit_document</mat-icon>
+              </div>
+              <div class="title-text">
+                <h2>Einsatzprotokoll</h2>
+                <p>
+                  Status: Beendet &bull; Einsatzdauer: {{ formatTime(durationSeconds()) }}
+                  @if (authService.userName()) {
+                    &bull; Bearbeiter: {{ authService.userName() }}
+                  }
+                </p>
+              </div>
             </div>
-            <div class="dialog-titles">
-              <h3>Notfalleinsatz beenden?</h3>
-              <p>Möchten Sie diesen laufenden Einsatz wirklich abschließen?</p>
+
+            <div class="modal-header-actions">
+              <button
+                type="button"
+                class="btn-close-modal"
+                (click)="finishReviewAndExit()"
+                aria-label="Schließen"
+                title="Nachbearbeitung beenden und zum Dashboard wechseln"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </header>
+
+          <!-- Modal Body: Checklist -->
+          <div class="modal-body">
+            <div class="modal-form-container">
+              <app-emergency-checklist
+                [emergencyData]="emergencyData()"
+                [meta]="reviewMeta()"
+                [showExportButton]="false"
+                (protocolChange)="onReviewProtocolChanged($event)"
+              ></app-emergency-checklist>
             </div>
           </div>
-          <div class="dialog-body">
-            <p>
-              Die Videoverbindung zum Anrufer wird sofort getrennt. Im Anschluss öffnet sich das
-              vollständige <strong>Einsatzprotokoll zur Nachbearbeitung</strong>, damit Sie alle
-              Angaben in Ruhe vervollständigen und als <strong>PDF exportieren</strong> können.
-            </p>
-          </div>
-          <div class="dialog-actions">
-            <button mat-button class="btn-cancel" (click)="cancelEndCall()">
-              Abbrechen
-            </button>
-            <button mat-flat-button color="warn" class="btn-confirm-end" (click)="confirmEndCall()">
-              <mat-icon>call_end</mat-icon>
-              Ja, Einsatz beenden &amp; Nachbearbeiten
-            </button>
-          </div>
+
+          <!-- Modal Footer -->
+          <footer class="modal-footer">
+            <div class="footer-left">
+              <button
+                type="button"
+                class="btn-export-pdf"
+                (click)="exportPdf()"
+                title="Vollständiges Einsatzprotokoll als PDF exportieren"
+              >
+                <mat-icon>picture_as_pdf</mat-icon>
+                <span>Protokoll exportieren</span>
+              </button>
+            </div>
+
+            <div class="footer-right">
+              @if (saveSuccess()) {
+                <span class="save-toast-msg success">
+                  <mat-icon>check_circle</mat-icon> Änderungen erfolgreich gespeichert!
+                </span>
+              }
+
+              <button
+                type="button"
+                class="btn-save-changes"
+                [class.saved]="saveSuccess()"
+                (click)="savePostReviewProtocol()"
+                [disabled]="isSaving() || !hasUnsavedChanges()"
+                title="Aktuellen Stand des Protokolls manuell sichern"
+              >
+                <mat-icon>{{ saveSuccess() ? 'check' : 'save' }}</mat-icon>
+                <span>{{ isSaving() ? 'Speichern...' : (saveSuccess() ? 'Gespeichert' : 'Änderungen speichern') }}</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn-finish-dashboard"
+                (click)="finishReviewAndExit()"
+                title="Notfall abschließen und zum Dashboard wechseln"
+              >
+                <mat-icon>dashboard</mat-icon>
+                <span>Notfall abschließen</span>
+              </button>
+            </div>
+          </footer>
         </div>
       </div>
     }
-  }
 </div>

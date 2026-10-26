@@ -573,114 +573,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   }
 }
 
-// ── Confirmation Modal ────────────────────────────────────────────────
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 17, 21, 0.65);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.2s ease-out;
 
-  .confirm-dialog {
-    width: 90%;
-    max-width: 480px;
-    background: $surface;
-    border-radius: 16px;
-    border: 1px solid $border;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-
-    .dialog-header {
-      padding: 20px 24px 14px;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-
-      .warn-bubble {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: $danger-soft;
-        color: $danger;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-
-        mat-icon {
-          font-size: 26px;
-          width: 26px;
-          height: 26px;
-        }
-      }
-
-      .dialog-titles {
-        h3 {
-          margin: 0;
-          font-size: 1.15rem;
-          font-weight: 700;
-          color: $text;
-        }
-
-        p {
-          margin: 4px 0 0;
-          font-size: 0.84rem;
-          color: $text-muted;
-        }
-      }
-    }
-
-    .dialog-body {
-      padding: 0 24px 20px;
-
-      p {
-        margin: 0;
-        font-size: 0.88rem;
-        color: #4b5563;
-        line-height: 1.5;
-        background: #f8fafc;
-        border: 1px solid #eef2f6;
-        padding: 12px 14px;
-        border-radius: 8px;
-      }
-    }
-
-    .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      padding: 14px 24px;
-      background: #fafbfc;
-      border-top: 1px solid $border-light;
-
-      .btn-cancel {
-        font-weight: 600;
-        color: $text-muted;
-      }
-
-      .btn-confirm-end {
-        background-color: $danger !important;
-        color: #fff !important;
-        font-weight: 700;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-        }
-      }
-    }
-  }
-}
 
 // ── Animations ────────────────────────────────────────────────────────
 .animate-pulse {
@@ -738,116 +631,243 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   }
 }
 
-// ── Post-Emergency Review Styling (Issue 133 & 97) ──────────────────────
-.post-review-container {
-  height: 100vh;
+// ── Protokoll-Modal Styling (Issue 133 & 97) ────────────────────────
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
   display: flex;
-  flex-direction: column;
-  background: #f1f5f9;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.18s ease-out;
 
-  .review-header-bar {
+  .protocol-modal {
+    width: 95vw;
+    max-width: 1100px;
+    height: 90vh;
     background: #ffffff;
-    border-bottom: 1px solid $border;
-    padding: 12px 24px;
+    border-radius: 16px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    flex-shrink: 0;
-    z-index: 10;
+    flex-direction: column;
+    overflow: hidden;
 
-    .review-header-left {
+    .modal-header {
+      padding: 12px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 14px;
+      flex-shrink: 0;
 
-      .review-status-badge {
-        display: inline-flex;
+      .modal-title-left {
+        display: flex;
         align-items: center;
-        gap: 6px;
-        background: $success-soft;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
-        border-radius: 999px;
-        padding: 5px 14px;
-        font-size: 0.82rem;
-        font-weight: 700;
+        gap: 12px;
 
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-          color: $success;
+        .title-icon-bubble {
+          width: 36px;
+          height: 36px;
+          border-radius: 9px;
+          background: $accent-soft;
+          color: $accent;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .title-text {
+          display: flex;
+          align-items: baseline;
+          gap: 12px;
+          flex-wrap: wrap;
+
+          h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #0f172a;
+            white-space: nowrap;
+          }
+
+          p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: #64748b;
+          }
         }
       }
 
-      .review-titles {
+      .modal-header-actions {
         display: flex;
-        align-items: baseline;
-        gap: 12px;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
 
-        h2 {
-          margin: 0;
-          font-size: 1.12rem;
-          font-weight: 800;
-          color: #0f172a;
-          white-space: nowrap;
-        }
-
-        p {
-          margin: 0;
-          font-size: 0.78rem;
+        .btn-close-modal {
+          appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          background: transparent;
           color: #64748b;
+          width: 32px;
+          height: 32px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+
+          &:hover {
+            background: #fee2e2;
+            color: #dc2626;
+          }
         }
       }
     }
 
-    .review-header-actions {
+    .modal-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      background: #f8fafc;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+
+      .modal-form-container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+
+        app-emergency-checklist {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    .modal-footer {
+      padding: 10px 20px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
 
-      .btn-action {
-        appearance: none;
-        -webkit-appearance: none;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-size: 0.84rem;
-        font-weight: 700;
-        cursor: pointer;
-        display: inline-flex;
+      .footer-left {
+        display: flex;
         align-items: center;
-        gap: 6px;
-        transition: all 0.18s ease;
+        gap: 10px;
 
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
+        .btn-export-pdf {
+          appearance: none;
+          -webkit-appearance: none;
+          border: 1px solid #fbcfe8;
+          background: $accent-soft;
+          color: $accent;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 8px 14px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.18s ease;
+
+          mat-icon {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+          }
+
+          &:hover:not(:disabled) {
+            background: #fbcfe8;
+            border-color: #f472b6;
+            color: $accent-hover;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
         }
+      }
 
-        &.btn-pdf {
-          background: $accent;
-          color: #ffffff;
-          box-shadow: 0 2px 6px rgba(163, 29, 88, 0.25);
+      .footer-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
 
-          &:hover {
-            background: $accent-hover;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(163, 29, 88, 0.35);
+        .save-toast-msg {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.78rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+
+          &.success {
+            color: #15803d;
+            font-weight: 700;
+
+            mat-icon {
+              color: $success;
+            }
           }
         }
 
-        &.btn-save {
-          background: #ffffff;
+        .btn-save-changes {
+          appearance: none;
+          -webkit-appearance: none;
           border: 1px solid #cbd5e1;
+          background: #ffffff;
           color: #334155;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.18s ease;
 
-          &:hover {
+          mat-icon {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+          }
+
+          &:hover:not(:disabled) {
             background: #f8fafc;
             border-color: #94a3b8;
           }
@@ -857,73 +877,45 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
             color: #065f46;
             border-color: #a7f3d0;
           }
-        }
 
-        &.btn-finish {
-          background: #1e293b;
-          color: #ffffff;
-
-          &:hover {
-            background: #0f172a;
-            transform: translateY(-1px);
+          &:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: #f8fafc;
+            color: #94a3b8;
+            border-color: #e2e8f0;
           }
         }
-      }
-    }
-  }
 
-  .review-content-area {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 14px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 1100px;
-    width: 100%;
-    margin: 0 auto;
+        .btn-finish-dashboard {
+          appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          background: #0f172a;
+          color: #ffffff;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
 
-    .review-guidance-banner {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 10px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #1e40af;
-      font-size: 0.82rem;
-      line-height: 1.4;
-      flex-shrink: 0;
+          mat-icon {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+          }
 
-      .banner-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #2563eb;
-        flex-shrink: 0;
-      }
-
-      .banner-text {
-        color: #1e3a8a;
-
-        strong {
-          color: #1d4ed8;
+          &:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.35);
+          }
         }
-      }
-    }
-
-    .review-form-wrapper {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-
-      app-emergency-checklist {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
       }
     }
   }
