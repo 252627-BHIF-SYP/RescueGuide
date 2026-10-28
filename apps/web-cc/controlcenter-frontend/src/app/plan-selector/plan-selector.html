@@ -410,11 +410,11 @@
           class="btn-send-queue"
           [disabled]="queue.length === 0"
           (click)="sendQueue()"
-          matTooltip="Reihenfolge sofort an Ersthelfer übertragen (Ctrl + Enter)"
+          matTooltip="Reihenfolge sofort an Ersthelfer übertragen (Strg + Enter)"
         >
-          <mat-icon class="send-icon">play_arrow</mat-icon>
-          <span class="send-text">SENDEN</span>
-          <span class="shortcut-pill">Ctrl+↵</span>
+          <mat-icon class="send-icon">send</mat-icon>
+          <span class="send-text">Senden</span>
+          <kbd class="shortcut-pill">Strg + ↵</kbd>
         </button>
       </div>
     </section>
