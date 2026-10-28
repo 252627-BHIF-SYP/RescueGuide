@@ -1,15 +1,15 @@
 // ── RG+ Design Tokens (Instruction Menu) ──────────────────────────────
-$bg:         #f4f6f9;
+$bg:         #f8fafd;
 $surface:    #ffffff;
-$border:     #dce2ea;
-$accent:     #162846;
-$accent-soft:#f0f4fa;
-$danger:     #dc2626;
+$border:     #e2e8f0;
+$accent:     #2563eb;
+$accent-soft:#eff6ff;
+$danger:     #ef4444;
 $text:       #0f172a;
-$muted:      #526075;
+$muted:      #475569;
 $radius:     6px;
-$shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.06);
-$shadow-md:  0 3px 10px rgba(15, 23, 42, 0.10);
+$shadow-sm:  0 1px 3px rgba(37, 99, 235, 0.06);
+$shadow-md:  0 3px 10px rgba(37, 99, 235, 0.10);
 
 // ── Page Shell ────────────────────────────────────────────────────────
 .container {

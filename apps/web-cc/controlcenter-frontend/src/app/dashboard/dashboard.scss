@@ -1,27 +1,25 @@
-// ── RG+ Design Tokens (Control Center Dashboard) ────────────────────────
-$rg-navy:         #162846;
-$rg-navy-vibrant: #1e3a6a;
-$rg-navy-dark:    #0f1d33;
-$rg-navy-hover:   #193054;
-$rg-navy-soft:    #edf3fa;
-$rg-navy-border:  #c8d8ec;
+// ── RG+ Design Tokens (Vibrant & Warm Dashboard) ────────────────────────
+$rg-blue:         #2563eb;       // Vivid, warm royal blue
+$rg-blue-dark:    #1d4ed8;       // Deep vibrant blue
+$rg-blue-hover:   #1e40af;
+$rg-blue-soft:    #eff6ff;       // Inviting, warm sky tint
+$rg-blue-border:  #bfdbfe;
 
-$rg-red:          #dc2626;
-$rg-red-vibrant:  #e52e2e;
-$rg-red-dark:     #b91c1c;
+$rg-red:          #ef4444;       // Vibrant, friendly rescue red
+$rg-red-dark:     #dc2626;
 $rg-red-soft:     #fef2f2;
 $rg-red-tint:     #fee2e2;
 $rg-red-border:   #fecaca;
 
 $surface:         #ffffff;
-$canvas:          #f4f6f9;
-$border:          #dce2ea;
-$border-light:    #edf1f6;
+$canvas:          #f8fafd;       // Fresh, friendly, warm canvas
+$border:          #e2e8f0;
+$border-light:    #f1f5f9;
 $text:            #0f172a;
-$text-muted:      #526075;
+$text-muted:      #475569;
 $success:         #16a34a;
 $success-soft:    #f0fdf4;
-$radius:          6px;
+$radius:          8px;
 
 .dashboard {
   box-sizing: border-box;
@@ -41,7 +39,7 @@ $radius:          6px;
   justify-content: space-between;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 2px solid $rg-navy-border;
+  border-bottom: 2px solid $rg-blue-border;
 
   .header-title-block {
     display: flex;
@@ -53,23 +51,23 @@ $radius:          6px;
       align-items: center;
       gap: 6px;
       width: fit-content;
-      background: $rg-navy-soft;
-      border: 1px solid $rg-navy-border;
-      padding: 3px 8px;
-      border-radius: 4px;
+      background: $rg-blue-soft;
+      border: 1px solid $rg-blue-border;
+      padding: 3px 9px;
+      border-radius: 6px;
 
       .eyebrow-dot {
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
-        background: $rg-red-vibrant;
+        background: $rg-red;
       }
 
       .eyebrow {
-        color: $rg-navy;
-        font-size: 0.72rem;
+        color: $rg-blue-dark;
+        font-size: 0.74rem;
         font-weight: 800;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
       }
     }
@@ -78,7 +76,7 @@ $radius:          6px;
       margin: 2px 0 0;
       font-size: clamp(1.4rem, 3.5vw, 1.85rem);
       font-weight: 900;
-      color: $rg-navy;
+      color: $rg-blue-dark;
       letter-spacing: -0.02em;
       line-height: 1.15;
     }
@@ -87,32 +85,32 @@ $radius:          6px;
   .refresh-btn {
     appearance: none;
     -webkit-appearance: none;
-    background: #ffffff;
-    border: 1px solid $rg-navy-border;
-    border-radius: 6px;
-    padding: 7px 14px;
-    color: $rg-navy;
-    font-size: 0.82rem;
+    background: $rg-blue-soft;
+    border: 1px solid $rg-blue-border;
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: $rg-blue-dark;
+    font-size: 0.84rem;
     font-weight: 700;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     transition: all 0.15s ease;
-    box-shadow: 0 1px 3px rgba(22, 40, 70, 0.08);
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
 
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
-      color: $rg-navy-vibrant;
+      color: $rg-blue;
       transition: color 0.15s ease;
     }
 
     &:hover:not(:disabled) {
-      background: $rg-navy;
+      background: $rg-blue;
       color: #ffffff;
-      border-color: $rg-navy;
+      border-color: $rg-blue;
 
       mat-icon {
         color: #ffffff;
@@ -146,13 +144,13 @@ h2 {
 
 .count,
 .status {
-  padding: 3px 9px;
-  color: $rg-navy;
-  font-size: 0.72rem;
+  padding: 3px 10px;
+  color: $rg-blue-dark;
+  font-size: 0.74rem;
   font-weight: 800;
-  border-radius: 4px;
-  background: $rg-navy-soft;
-  border: 1px solid $rg-navy-border;
+  border-radius: 6px;
+  background: $rg-blue-soft;
+  border: 1px solid $rg-blue-border;
 }
 
 .active-count {
@@ -160,7 +158,7 @@ h2 {
   background: $rg-red !important;
   border: 1px solid $rg-red !important;
   font-weight: 800;
-  box-shadow: 0 1px 4px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
 .active-status {
@@ -172,7 +170,7 @@ h2 {
 
 .emergency-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 // ── Emergency Rows ───────────────────────────────────────────────────
@@ -180,13 +178,13 @@ h2 {
   display: grid;
   grid-template-columns: minmax(190px, 1.4fr) minmax(130px, 1fr) 115px 115px auto;
   gap: 16px;
-  min-height: 58px;
-  padding: 10px 16px;
+  min-height: 60px;
+  padding: 12px 18px;
   border: 1px solid $border;
-  border-left: 4px solid #94a3b8;
+  border-left: 5px solid #93c5fd;
   border-radius: $radius;
   background: $surface;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
   transition: all 0.15s ease;
 
   &.clickable {
@@ -194,8 +192,8 @@ h2 {
 
     &:hover {
       border-color: #cbd5e1;
-      border-left-color: $rg-navy;
-      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.08);
+      border-left-color: $rg-blue;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.09);
       transform: translateY(-1px);
     }
   }
@@ -204,7 +202,7 @@ h2 {
     border-color: $rg-red-border;
     border-left: 5px solid $rg-red;
     background: #ffffff;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.10);
 
     .main-info strong {
       color: #0f172a;
@@ -213,7 +211,7 @@ h2 {
     &:hover {
       border-color: $rg-red;
       border-left-color: $rg-red-dark;
-      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.14);
+      box-shadow: 0 5px 16px rgba(239, 68, 68, 0.16);
     }
   }
 }
@@ -269,9 +267,9 @@ h2 {
       appearance: none;
       -webkit-appearance: none;
       border: 1px solid transparent;
-      border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 0.74rem;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
@@ -280,31 +278,32 @@ h2 {
       transition: all 0.15s ease;
 
       mat-icon {
-        font-size: 15px;
-        width: 15px;
-        height: 15px;
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
       }
 
       &.protocol-btn {
-        background: $rg-navy;
+        background: $rg-blue;
         color: #ffffff;
-        border-color: $rg-navy;
+        border-color: $rg-blue;
+        box-shadow: 0 1px 4px rgba(37, 99, 235, 0.25);
 
         &:hover {
-          background: $rg-navy-dark;
-          border-color: $rg-navy-dark;
+          background: $rg-blue-dark;
+          border-color: $rg-blue-dark;
         }
       }
 
       &.pdf-btn {
-        background: $rg-navy-soft;
-        color: $rg-navy;
-        border-color: $rg-navy-border;
+        background: $rg-blue-soft;
+        color: $rg-blue-dark;
+        border-color: $rg-blue-border;
 
         &:hover {
-          background: #d4e3f4;
-          color: $rg-navy-dark;
-          border-color: $rg-navy;
+          background: #dbeafe;
+          color: $rg-blue-hover;
+          border-color: $rg-blue;
         }
       }
     }
@@ -316,7 +315,7 @@ h2 {
   padding: 24px;
   color: $text-muted;
   text-align: center;
-  border: 1px dashed $rg-navy-border;
+  border: 1px dashed $rg-blue-border;
   border-radius: $radius;
   background: $surface;
   font-size: 0.88rem;
@@ -359,16 +358,16 @@ h2 {
     background: #ffffff;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
-    border-top: 3px solid $rg-navy;
+    border-top: 4px solid $rg-blue;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
 
     .modal-header {
-      padding: 12px 20px;
-      background: #f7f9fd;
-      border-bottom: 1px solid $rg-navy-border;
+      padding: 14px 20px;
+      background: $rg-blue-soft;
+      border-bottom: 1px solid $rg-blue-border;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -381,15 +380,15 @@ h2 {
         gap: 12px;
 
         .title-icon-bubble {
-          width: 36px;
-          height: 36px;
-          border-radius: 6px;
-          background: $rg-navy;
+          width: 38px;
+          height: 38px;
+          border-radius: 8px;
+          background: $rg-blue;
           color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 6px rgba(22, 40, 70, 0.2);
+          box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
 
           mat-icon {
             font-size: 20px;
@@ -408,7 +407,7 @@ h2 {
             margin: 0;
             font-size: 1.05rem;
             font-weight: 900;
-            color: $rg-navy;
+            color: $rg-blue-dark;
             white-space: nowrap;
           }
 
@@ -459,7 +458,7 @@ h2 {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
-      background: #f4f6fa;
+      background: $canvas;
       padding: 12px 16px;
       display: flex;
       flex-direction: column;
@@ -478,7 +477,7 @@ h2 {
           font-size: 32px;
           width: 32px;
           height: 32px;
-          color: $rg-navy;
+          color: $rg-blue;
         }
 
         &.error {
@@ -551,13 +550,13 @@ h2 {
       .btn-export-pdf {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid $rg-navy-border;
-        background: $rg-navy-soft;
-        color: $rg-navy;
+        border: 1px solid $rg-blue-border;
+        background: $rg-blue-soft;
+        color: $rg-blue-dark;
         font-size: 0.82rem;
         font-weight: 700;
         padding: 7px 15px;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -571,9 +570,9 @@ h2 {
         }
 
         &:hover:not(:disabled) {
-          background: $rg-navy;
+          background: $rg-blue;
           color: #ffffff;
-          border-color: $rg-navy;
+          border-color: $rg-blue;
         }
 
         &:disabled {
@@ -585,19 +584,19 @@ h2 {
       .btn-save-changes {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid $rg-navy;
-        background: $rg-navy;
+        border: 1px solid $rg-blue;
+        background: $rg-blue;
         color: #ffffff;
         font-size: 0.82rem;
         font-weight: 700;
         padding: 7px 16px;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 6px;
         transition: all 0.15s ease;
-        box-shadow: 0 1px 4px rgba(22, 40, 70, 0.25);
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
 
         mat-icon {
           font-size: 16px;
@@ -606,8 +605,8 @@ h2 {
         }
 
         &:hover:not(:disabled) {
-          background: $rg-navy-dark;
-          border-color: $rg-navy-dark;
+          background: $rg-blue-dark;
+          border-color: $rg-blue-dark;
         }
 
         &.saved {

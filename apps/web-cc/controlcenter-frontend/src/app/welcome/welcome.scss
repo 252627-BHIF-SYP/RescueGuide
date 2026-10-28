@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f4f6f9;
+  background-color: #f8fafd;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -11,40 +11,41 @@
 .welcome-card {
   width: 100%;
   max-width: 420px;
-  padding: 28px 24px;
+  padding: 30px 24px;
   border-radius: 8px;
-  border: 1px solid #dce2ea;
+  border: 1px solid #dbeafe;
+  border-top: 4px solid #2563eb;
   background: #ffffff;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.08);
 }
 
 .brand-header {
   text-align: center;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 
   .brand-logo-img {
-    height: 48px;
+    height: 52px;
     width: auto;
     object-fit: contain;
     margin-bottom: 12px;
   }
 
   h2 {
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: #162846;
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #1d4ed8;
     margin: 0;
     letter-spacing: -0.02em;
   }
 
   .brand-subtitle {
-    color: #526075;
-    font-size: 0.85rem;
-    font-weight: 600;
+    color: #ef4444;
+    font-size: 0.82rem;
+    font-weight: 800;
     margin: 6px 0 0 0;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
   }
 }
 
@@ -52,13 +53,13 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 18px;
 
   .action-btn {
     height: 42px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    border-radius: 6px;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,24 +67,26 @@
     transition: all 0.15s ease;
 
     &[color="primary"] {
-      background-color: #162846;
+      background-color: #2563eb;
       color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 
       &:hover {
-        background-color: #0f1d33;
+        background-color: #1d4ed8;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
       }
     }
   }
 
   .signup-btn {
-    border: 1px solid #dce2ea;
-    color: #334155;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
     background: #ffffff;
 
     &:hover {
-      border-color: #162846;
-      color: #162846;
-      background: #f0f4fa;
+      border-color: #2563eb;
+      color: #2563eb;
+      background: #eff6ff;
     }
   }
 }

@@ -69,32 +69,32 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   flex-shrink: 0;
 }
 
-// ── RG+ Brand Design Tokens & Auth Pages ──
-$rg-navy:          #162846;
-$rg-navy-dark:     #0f1d33;
-$rg-navy-hover:    #1f355b;
-$rg-navy-soft:     #f0f4fa;
-$rg-navy-border:   #d2deee;
+// ── RG+ Brand Design Tokens & Auth Pages (Vibrant & Warm) ──
+$rg-blue:          #2563eb;
+$rg-blue-dark:     #1d4ed8;
+$rg-blue-hover:    #1e40af;
+$rg-blue-soft:     #eff6ff;
+$rg-blue-border:   #bfdbfe;
 
-$rg-red:           #dc2626;
-$rg-red-dark:      #b91c1c;
+$rg-red:           #ef4444;
+$rg-red-dark:      #dc2626;
 $rg-red-soft:      #fef2f2;
 $rg-red-border:    #fecaca;
 
-$auth-bg:          #f4f6f9;
+$auth-bg:          #f8fafd;
 $auth-surface:     #ffffff;
-$auth-border:      #dce2ea;
-$auth-border-subtle:#edf1f6;
-$auth-accent:      $rg-navy;
-$auth-accent-hover:$rg-navy-dark;
-$auth-accent-soft: $rg-navy-soft;
-$auth-accent-border:$rg-navy-border;
+$auth-border:      #dbeafe;
+$auth-border-subtle:#eff6ff;
+$auth-accent:      $rg-blue;
+$auth-accent-hover:$rg-blue-hover;
+$auth-accent-soft: $rg-blue-soft;
+$auth-accent-border:$rg-blue-border;
 $auth-danger:      $rg-red;
 $auth-text:        #0f172a;
-$auth-text-muted:  #526075;
-$auth-radius:      6px;
-$auth-shadow-sm:   0 1px 3px rgba(15, 23, 42, 0.08);
-$auth-shadow-md:   0 4px 14px rgba(15, 23, 42, 0.12);
+$auth-text-muted:  #475569;
+$auth-radius:      8px;
+$auth-shadow-sm:   0 2px 6px rgba(37, 99, 235, 0.08);
+$auth-shadow-md:   0 6px 20px rgba(37, 99, 235, 0.12);
 
 body:has(.auth-wrapper) {
   overflow: hidden !important;
@@ -125,7 +125,7 @@ body:has(.auth-wrapper) {
   overflow-y: auto;
   border-radius: $auth-radius !important;
   border: 1px solid $auth-border !important;
-  border-top: 3px solid $rg-navy !important;
+  border-top: 4px solid $rg-blue !important;
   background: $auth-surface !important;
   box-shadow: $auth-shadow-sm !important;
   transition: box-shadow 0.18s ease;
@@ -136,7 +136,7 @@ body:has(.auth-wrapper) {
 
   mat-card-header {
     padding: 14px 20px 12px !important;
-    background: #f7f9fd;
+    background: #f8fafd;
     border-bottom: 1px solid $auth-border-subtle;
     display: block;
 
@@ -158,15 +158,15 @@ body:has(.auth-wrapper) {
       }
 
       .auth-logo-img {
-        height: 24px;
+        height: 26px;
         width: auto;
         object-fit: contain;
       }
 
       .auth-brand-title {
-        font-size: 0.98rem;
+        font-size: 1rem;
         font-weight: 900;
-        color: $rg-navy;
+        color: $rg-blue-dark;
         letter-spacing: -0.01em;
       }
 
@@ -174,7 +174,7 @@ body:has(.auth-wrapper) {
         font-size: 0.82rem;
         font-weight: 800;
         margin: 0;
-        color: $rg-navy;
+        color: $rg-blue;
         letter-spacing: 0.04em;
         text-align: right;
         text-transform: uppercase;
@@ -232,8 +232,8 @@ body:has(.auth-wrapper) {
 }
 
 .password-checklist {
-  background: $rg-navy-soft;
-  border: 1px solid $rg-navy-border;
+  background: $rg-blue-soft;
+  border: 1px solid $rg-blue-border;
   border-radius: 6px;
   padding: 8px 10px;
   margin: 2px 0;
@@ -241,7 +241,7 @@ body:has(.auth-wrapper) {
   .checklist-title {
     font-size: 0.72rem;
     font-weight: 700;
-    color: $rg-navy;
+    color: $rg-blue-dark;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 5px;
@@ -267,7 +267,7 @@ body:has(.auth-wrapper) {
         width: 13px;
         height: 13px;
         line-height: 13px;
-        color: $rg-navy;
+        color: $rg-blue;
         flex-shrink: 0;
       }
     }
@@ -361,17 +361,17 @@ body:has(.auth-wrapper) {
     background-color: $auth-accent !important;
     color: #ffffff !important;
     border: none;
-    box-shadow: 0 1px 3px rgba(22, 40, 70, 0.2);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
     letter-spacing: 0.02em;
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
 
     &:hover:not(:disabled) {
       background-color: $auth-accent-hover !important;
-      box-shadow: 0 2px 6px rgba(22, 40, 70, 0.3);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
     }
 
     &:active:not(:disabled) {
-      background-color: #0b1424 !important;
+      background-color: #172554 !important;
     }
 
     &:disabled {

@@ -1,28 +1,29 @@
-// ── RG+ Design Tokens (Emergency Page / Leitstelle CAD) ────────────────
-$bg:            #f4f6f9;
+// ── RG+ Design Tokens (Vibrant & Warm Emergency Page) ────────────────
+$bg:            #f8fafd;
 $surface:       #ffffff;
-$border:        #dce2ea;
-$border-light:  #edf1f6;
+$border:        #e2e8f0;
+$border-light:  #f1f5f9;
 
-$rg-navy:        #162846;       // RG+ Navy
-$rg-navy-vibrant:#1e3a6a;
-$rg-navy-soft:   #edf3fa;
-$rg-navy-border: #c8d8ec;
+$rg-blue:        #2563eb;       // Vivid, warm royal blue
+$rg-blue-dark:   #1d4ed8;
+$rg-blue-hover:  #1e40af;
+$rg-blue-soft:   #eff6ff;
+$rg-blue-border: #bfdbfe;
 
-$danger:        #dc2626;       // Rescue Red
+$danger:        #ef4444;       // Warm, vibrant rescue red
 $danger-soft:   #fef2f2;
 $danger-tint:   #fee2e2;
 $danger-border: #fecaca;
-$danger-hover:  #b91c1c;
+$danger-hover:  #dc2626;
 
 $success:       #16a34a;
 $success-soft:  #ecfdf5;
 
 $text:          #0f172a;
-$text-muted:    #526075;
-$radius:        6px;
-$shadow-sm:     0 1px 3px rgba(15, 23, 42, 0.06);
-$shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
+$text-muted:    #475569;
+$radius:        8px;
+$shadow-sm:     0 2px 6px rgba(37, 99, 235, 0.06);
+$shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
 
 // ── Root Page Container ───────────────────────────────────────────────
 .container {
@@ -40,8 +41,8 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
   height: 62px;
   padding: 0 18px;
   background: $surface;
-  border-bottom: 2px solid $rg-navy-border;
-  border-top: 3px solid $rg-navy;
+  border-bottom: 2px solid $rg-blue-border;
+  border-top: 3px solid $rg-blue;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -66,7 +67,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
     .header-left-divider {
       width: 1px;
       height: 22px;
-      background: $rg-navy-border;
+      background: $rg-blue-border;
       flex-shrink: 0;
     }
 
@@ -79,7 +80,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
 
       .emergency-icon {
         color: #ffffff;
@@ -97,7 +98,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         margin: 0;
         font-size: 1.05rem;
         font-weight: 900;
-        color: $rg-navy;
+        color: $rg-blue-dark;
         line-height: 1.2;
         letter-spacing: -0.01em;
       }
@@ -117,24 +118,24 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
       align-items: center;
       gap: 10px;
       background: #ffffff;
-      border: 1px solid $rg-navy-border;
-      border-radius: 6px;
+      border: 1px solid $rg-blue-border;
+      border-radius: 8px;
       padding: 4px 8px;
-      box-shadow: 0 1px 3px rgba(22, 40, 70, 0.06);
+      box-shadow: 0 1px 4px rgba(37, 99, 235, 0.08);
       max-width: 560px;
       min-width: 0;
 
       .loc-icon-bubble {
         width: 28px;
         height: 28px;
-        border-radius: 4px;
+        border-radius: 6px;
         background: $danger;
         color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 1px 4px rgba(220, 38, 38, 0.25);
+        box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
 
         mat-icon {
           font-size: 17px;
@@ -151,7 +152,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         line-height: 1.15;
 
         .loc-address-line {
-          font-size: 0.83rem;
+          font-size: 0.84rem;
           font-weight: 700;
           color: $text;
           white-space: nowrap;
@@ -169,7 +170,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
 
           .coords-text {
             font-weight: 700;
-            color: $rg-navy;
+            color: $rg-blue-dark;
             font-variant-numeric: tabular-nums;
           }
         }
@@ -182,7 +183,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         background: #f8fafc;
         color: #334155;
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: 6px;
         font-size: 0.72rem;
         font-weight: 600;
         display: inline-flex;
@@ -199,9 +200,9 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         }
 
         &:hover {
-          background: $rg-navy-soft;
-          color: $rg-navy;
-          border-color: $rg-navy-border;
+          background: $rg-blue-soft;
+          color: $rg-blue-dark;
+          border-color: $rg-blue-border;
         }
 
         &.copied {
@@ -214,20 +215,20 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
       .loc-pill-divider {
         width: 1px;
         height: 20px;
-        background: $rg-navy-border;
+        background: $rg-blue-border;
         flex-shrink: 0;
       }
 
       .loc-map-toggle {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid $rg-navy-border;
-        background: $rg-navy-soft;
-        color: $rg-navy;
+        border: 1px solid $rg-blue-border;
+        background: $rg-blue-soft;
+        color: $rg-blue-dark;
         font-size: 0.78rem;
         font-weight: 700;
         padding: 4px 10px;
-        border-radius: 4px;
+        border-radius: 6px;
         display: inline-flex;
         align-items: center;
         gap: 5px;
@@ -239,18 +240,18 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
           font-size: 16px;
           width: 16px;
           height: 16px;
-          color: $rg-navy-vibrant;
+          color: $rg-blue;
         }
 
         &:hover {
-          background: #dceaf7;
-          border-color: $rg-navy;
+          background: #dbeafe;
+          border-color: $rg-blue;
         }
 
         &.active {
-          background: $rg-navy;
+          background: $rg-blue;
           color: #ffffff;
-          border-color: $rg-navy;
+          border-color: $rg-blue;
 
           mat-icon {
             color: #ffffff;
@@ -276,13 +277,13 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
       display: flex;
       align-items: center;
       gap: 8px;
-      background: $rg-navy-soft;
+      background: $rg-blue-soft;
       padding: 4px 12px;
-      border-radius: 6px;
-      border: 1px solid $rg-navy-border;
+      border-radius: 8px;
+      border: 1px solid $rg-blue-border;
 
       .timer-icon {
-        color: $rg-navy-vibrant;
+        color: $rg-blue;
         font-size: 18px;
         width: 18px;
         height: 18px;
@@ -296,7 +297,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         .timer-label {
           font-size: 0.62rem;
           font-weight: 800;
-          color: $rg-navy;
+          color: $rg-blue-dark;
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
@@ -304,7 +305,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         .timer-value {
           font-size: 0.94rem;
           font-weight: 900;
-          color: $rg-navy;
+          color: $rg-blue-dark;
           font-variant-numeric: tabular-nums;
         }
       }
@@ -315,13 +316,13 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
       color: #fff !important;
       font-weight: 800;
       font-size: 0.84rem;
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 6px 16px;
       height: 36px;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
       letter-spacing: 0.02em;
       transition: all 0.15s ease;
 
@@ -333,7 +334,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
 
       &:hover {
         background-color: $danger-hover !important;
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.45);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.45);
       }
     }
   }
@@ -399,9 +400,9 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
   .workspace-switcher-capsule {
     display: inline-flex;
     align-items: center;
-    background: $rg-navy-soft;
-    border: 1px solid $rg-navy-border;
-    border-radius: 6px;
+    background: $rg-blue-soft;
+    border: 1px solid $rg-blue-border;
+    border-radius: 8px;
     padding: 3px;
     gap: 4px;
 
@@ -410,13 +411,13 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
       -webkit-appearance: none;
       border: 1px solid transparent;
       background: transparent;
-      padding: 7px 22px;
-      border-radius: 4px;
+      padding: 7px 24px;
+      border-radius: 6px;
       display: inline-flex;
       align-items: center;
       gap: 7px;
       cursor: pointer;
-      color: $rg-navy;
+      color: $rg-blue-dark;
       font-size: 0.88rem;
       font-weight: 700;
       transition: all 0.15s ease;
@@ -425,7 +426,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: $rg-navy-vibrant;
+        color: $rg-blue;
         transition: color 0.15s ease;
       }
 
@@ -435,18 +436,18 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
 
       &:hover:not(.active) {
         background: #ffffff;
-        color: $rg-navy;
+        color: $rg-blue-dark;
 
         .tab-icon {
-          color: $rg-navy;
+          color: $rg-blue;
         }
       }
 
       &.active {
-        background: $rg-navy;
+        background: $rg-blue;
         color: #ffffff;
-        border-color: $rg-navy;
-        box-shadow: 0 2px 6px rgba(22, 40, 70, 0.3);
+        border-color: $rg-blue;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 
         .tab-icon {
           color: #ffffff;
@@ -506,7 +507,7 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
     height: 80vh;
     background: #ffffff;
     border: 1px solid $border;
-    border-top: 3px solid $rg-navy;
+    border-top: 4px solid $rg-blue;
     border-radius: 8px;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
@@ -515,8 +516,8 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
 
     .map-modal-header {
       height: 48px;
-      background: $rg-navy-soft;
-      border-bottom: 1px solid $rg-navy-border;
+      background: $rg-blue-soft;
+      border-bottom: 1px solid $rg-blue-border;
       padding: 0 16px;
       display: flex;
       align-items: center;
@@ -533,13 +534,13 @@ $shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
           font-size: 20px;
           width: 20px;
           height: 20px;
-          color: $rg-navy;
+          color: $rg-blue;
         }
 
         .map-heading {
           font-size: 0.92rem;
           font-weight: 800;
-          color: $rg-navy;
+          color: $rg-blue-dark;
         }
 
         .map-addr-hint {

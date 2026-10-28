@@ -1,27 +1,27 @@
-// ── RG+ Design Tokens (Emergency Checklist / CAD Protocol) ─────────────
-$rg-navy:         #162846;
-$rg-navy-vibrant: #1e3a6a;
-$rg-navy-soft:    #edf3fa;
-$rg-navy-border:  #c8d8ec;
+// ── RG+ Design Tokens (Vibrant & Warm Emergency Checklist) ─────────────
+$rg-blue:         #2563eb;       // Vivid, warm royal blue
+$rg-blue-dark:    #1d4ed8;
+$rg-blue-soft:    #eff6ff;
+$rg-blue-border:  #bfdbfe;
 
-$rg-red:          #dc2626;
+$rg-red:          #ef4444;       // Warm rescue red
 $rg-red-soft:     #fef2f2;
 $rg-red-tint:     #fee2e2;
 $rg-red-border:   #fecaca;
 
 $surface:         #ffffff;
-$border:          #dce2ea;
-$border-light:    #edf1f6;
+$border:          #e2e8f0;
+$border-light:    #f1f5f9;
 $border-input:    #cbd5e1;
 $text:            #0f172a;
-$text-muted:      #526075;
+$text-muted:      #475569;
 $success:         #16a34a;
 $success-soft:    #f0fdf4;
 $success-border:  #86efac;
 $pending-soft:    #f8fafc;
 $pending-border:  #cbd5e1;
 $pending-text:    #64748b;
-$radius:          6px;
+$radius:          8px;
 
 :host {
   display: block;
@@ -33,10 +33,10 @@ $radius:          6px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #f0f4fa;
-  border: 1px solid $rg-navy-border;
+  background: #f8fafd;
+  border: 1px solid $rg-blue-border;
   border-radius: $radius;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.05);
   overflow: hidden;
 
   // ── Scrollable Protocol Content ────────────────────────────────────
@@ -65,10 +65,10 @@ $radius:          6px;
 // ── Card Panel Container ────────────────────────────────────────────
 .form-card-panel {
   background: #ffffff;
-  border: 1px solid #dce2ea;
-  border-top: 3px solid $rg-navy;
+  border: 1px solid $border;
+  border-top: 3px solid $rg-blue;
   border-radius: $radius;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -78,8 +78,10 @@ $radius:          6px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #edf1f6;
+    padding: 6px 8px;
+    background: $rg-blue-soft;
+    border: 1px solid $rg-blue-border;
+    border-radius: 6px;
 
     .panel-header-title {
       display: flex;
@@ -90,13 +92,13 @@ $radius:          6px;
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: $rg-navy-vibrant;
+        color: $rg-blue;
       }
 
       .panel-title {
         font-size: 0.84rem;
         font-weight: 800;
-        color: $rg-navy;
+        color: $rg-blue-dark;
         letter-spacing: 0.03em;
         text-transform: uppercase;
       }
@@ -110,15 +112,15 @@ $radius:          6px;
       border-radius: 4px;
 
       &.primary {
-        background: $rg-navy;
+        background: $rg-blue;
         color: #ffffff;
-        box-shadow: 0 1px 3px rgba(22, 40, 70, 0.2);
+        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
       }
 
       &.secondary {
-        background: $rg-navy-soft;
-        color: $rg-navy;
-        border: 1px solid $rg-navy-border;
+        background: #ffffff;
+        color: $rg-blue-dark;
+        border: 1px solid $rg-blue-border;
       }
     }
   }
@@ -212,12 +214,12 @@ $radius:          6px;
       border-color: $border-input;
 
       &:hover {
-        border-color: $rg-navy-vibrant;
+        border-color: $rg-blue;
       }
 
       &:focus {
-        border-color: $rg-navy-vibrant;
-        box-shadow: 0 0 0 2px rgba(30, 58, 106, 0.18);
+        border-color: $rg-blue;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
       }
     }
   }
@@ -283,7 +285,7 @@ $radius:          6px;
   color: $text;
   background: #ffffff;
   border: 1px solid $border-input;
-  border-radius: 4px;
+  border-radius: 6px;
   box-sizing: border-box;
   transition: all 0.15s ease;
 
@@ -294,7 +296,7 @@ $radius:          6px;
 }
 
 .custom-input {
-  height: 35px;
+  height: 36px;
   padding: 0 28px 0 32px;
 
   &.no-icon {
@@ -303,7 +305,7 @@ $radius:          6px;
 }
 
 .custom-select {
-  height: 35px;
+  height: 36px;
   padding: 0 46px 0 32px;
   cursor: pointer;
 
@@ -314,7 +316,7 @@ $radius:          6px;
 }
 
 .custom-textarea {
-  padding: 7px 10px;
+  padding: 8px 10px;
   line-height: 1.35;
   resize: none;
   height: 64px;
@@ -323,8 +325,8 @@ $radius:          6px;
 // ── Alarm Section (2x2 Grid) ────────────────────────────────────────
 .alarm-section {
   padding: 10px 12px;
-  background: $rg-navy-soft;
-  border: 1px solid $rg-navy-border;
+  background: $rg-blue-soft;
+  border: 1px solid $rg-blue-border;
   border-radius: 6px;
   transition: all 0.15s ease;
 
@@ -346,7 +348,7 @@ $radius:          6px;
   -webkit-appearance: none;
   border: 1px solid #cbd5e1;
   background: #ffffff;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 7px 9px;
   display: flex;
   align-items: center;
@@ -359,7 +361,7 @@ $radius:          6px;
   .chip-check-box {
     width: 18px;
     height: 18px;
-    border-radius: 3px;
+    border-radius: 4px;
     border: 1.5px solid #94a3b8;
     background: #ffffff;
     display: flex;
@@ -400,8 +402,8 @@ $radius:          6px;
   }
 
   &:hover {
-    background: #edf3fa;
-    border-color: $rg-navy-border;
+    background: #eff6ff;
+    border-color: $rg-blue-border;
   }
 
   &.active {
@@ -409,15 +411,15 @@ $radius:          6px;
       color: #ffffff;
     }
 
-    // Rettungsdienst (Rescue Red)
+    // Rettungsdienst (Warm Rescue Red)
     &.rd {
       background: #fef2f2;
       border-color: #ef4444;
-      box-shadow: 0 1px 4px rgba(220, 38, 38, 0.2);
+      box-shadow: 0 1px 4px rgba(239, 68, 68, 0.2);
 
       .chip-check-box {
-        background: #dc2626;
-        border-color: #dc2626;
+        background: #ef4444;
+        border-color: #ef4444;
       }
 
       .chip-code {
@@ -441,10 +443,10 @@ $radius:          6px;
       }
     }
 
-    // Polizei (Police Blue)
+    // Polizei (Vivid Police Blue)
     &.pol {
       background: #eff6ff;
-      border-color: #3b82f6;
+      border-color: #2563eb;
       box-shadow: 0 1px 4px rgba(37, 99, 235, 0.2);
 
       .chip-check-box {
