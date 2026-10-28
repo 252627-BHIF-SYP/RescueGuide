@@ -8,20 +8,17 @@
   height: 100vh;
   box-sizing: border-box;
   background: #ffffff;
-  border-right: 1px solid #e2e8f0;
-  border-top: 3px solid #2563eb;
+  border-right: 1px solid #d6e0ee;
   display: flex;
   flex-direction: column;
-  padding: 14px 12px;
+  padding: 16px 12px;
 }
 
 // ── Header ─────────────────────────────────────────────────────────────
 .sidebar-header {
-  padding: 10px 10px 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  padding: 4px 6px 16px;
+  border-bottom: 1px solid #e7eef8;
+  margin-bottom: 14px;
 }
 
 .brand {
@@ -43,17 +40,17 @@
     min-width: 0;
 
     .brand-title {
-      font-size: 1rem;
-      font-weight: 900;
-      color: #1d4ed8;
-      letter-spacing: -0.02em;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #2353a1;
+      letter-spacing: -0.01em;
       white-space: nowrap;
     }
 
     .brand-sub {
       font-size: 0.62rem;
       font-weight: 800;
-      color: #ef4444;
+      color: #556987;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
@@ -64,7 +61,7 @@
 .nav-links {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   flex: 1;
 }
 
@@ -72,11 +69,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 9px 12px;
+  border-radius: 6px;
   font-size: 0.88rem;
   font-weight: 600;
-  color: #334155;
+  color: #475569;
   text-decoration: none;
   transition: all 0.15s ease;
 
@@ -84,51 +81,52 @@
     font-size: 20px;
     width: 20px;
     height: 20px;
-    color: #3b82f6;
-    transition: all 0.15s ease;
+    color: #64748b;
+    transition: color 0.15s ease;
   }
 
   &:hover {
-    color: #1d4ed8;
-    background: #eff6ff;
+    color: #2353a1;
+    background: #f0f5fc;
 
     .nav-icon {
-      color: #1d4ed8;
+      color: #2353a1;
     }
   }
 
   &.active {
-    color: #ffffff;
+    color: #2353a1;
     font-weight: 700;
-    background: #2563eb;
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
+    background: #ebf2fc;
+    border-left: 3px solid #2353a1;
+    padding-left: 9px;
 
     .nav-icon {
-      color: #ffffff;
+      color: #2353a1;
     }
   }
 }
 
 .emergency-link {
-  color: #ffffff !important;
-  background: #ef4444 !important;
-  font-weight: 800;
-  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.35);
+  color: #d92632 !important;
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca;
+  font-weight: 700;
 
   .nav-icon {
-    color: #ffffff !important;
+    color: #d92632 !important;
   }
 
   &:hover {
-    background: #dc2626 !important;
-    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
+    background: #fee2e2 !important;
+    border-color: #fca5a5;
   }
 }
 
 // ── Footer ─────────────────────────────────────────────────────────────
 .sidebar-footer {
-  padding-top: 14px;
-  border-top: 1px solid #edf1f6;
+  padding-top: 12px;
+  border-top: 1px solid #e7eef8;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -139,18 +137,18 @@
   align-items: center;
   gap: 8px;
   padding: 7px 10px;
-  background: #f8fafd;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
   font-size: 0.84rem;
   font-weight: 600;
   color: #1e293b;
+  background: #f0f5fc;
+  border-radius: 6px;
+  border: 1px solid #dbe6f6;
 
   .user-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: #2563eb;
+    color: #2353a1;
   }
 
   .user-name {
@@ -184,7 +182,7 @@
 
   &:hover {
     background: #fef2f2;
-    color: #ef4444;
+    color: #d92632;
     border-color: #fecaca;
   }
 }

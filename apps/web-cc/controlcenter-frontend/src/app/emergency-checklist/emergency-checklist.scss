@@ -1,27 +1,21 @@
-// ── RG+ Design Tokens (Vibrant & Warm Emergency Checklist) ─────────────
-$rg-blue:         #2563eb;       // Vivid, warm royal blue
-$rg-blue-dark:    #1d4ed8;
-$rg-blue-soft:    #eff6ff;
-$rg-blue-border:  #bfdbfe;
-
-$rg-red:          #ef4444;       // Warm rescue red
-$rg-red-soft:     #fef2f2;
-$rg-red-tint:     #fee2e2;
-$rg-red-border:   #fecaca;
-
-$surface:         #ffffff;
-$border:          #e2e8f0;
-$border-light:    #f1f5f9;
-$border-input:    #cbd5e1;
-$text:            #0f172a;
-$text-muted:      #475569;
-$success:         #16a34a;
-$success-soft:    #f0fdf4;
-$success-border:  #86efac;
-$pending-soft:    #f8fafc;
-$pending-border:  #cbd5e1;
-$pending-text:    #64748b;
-$radius:          8px;
+// ── RG+ Design Tokens (Emergency Checklist / CAD Protocol) ─────────────
+$accent:        #2353a1;
+$accent-soft:   #eef4fc;
+$accent-hover:  #1b4384;
+$accent-border: #c2d7f3;
+$surface:       #ffffff;
+$border:        #d2deee;
+$border-light:  #e8eef8;
+$border-input:  #cbd5e1;
+$text:          #0f172a;
+$text-muted:    #475569;
+$success:       #16a34a;
+$success-soft:  #f0fdf4;
+$success-border:#86efac;
+$pending-soft:  #f8fafc;
+$pending-border:#cbd5e1;
+$pending-text:  #64748b;
+$radius:        6px;
 
 :host {
   display: block;
@@ -33,10 +27,10 @@ $radius:          8px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #f8fafd;
-  border: 1px solid $rg-blue-border;
+  background: #f0f4fa;
+  border: 1px solid $border;
   border-radius: $radius;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.05);
+  box-shadow: 0 1px 4px rgba(35, 83, 161, 0.05);
   overflow: hidden;
 
   // ── Scrollable Protocol Content ────────────────────────────────────
@@ -66,9 +60,8 @@ $radius:          8px;
 .form-card-panel {
   background: #ffffff;
   border: 1px solid $border;
-  border-top: 3px solid $rg-blue;
   border-radius: $radius;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 3px rgba(35, 83, 161, 0.04);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -78,10 +71,8 @@ $radius:          8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 8px;
-    background: $rg-blue-soft;
-    border: 1px solid $rg-blue-border;
-    border-radius: 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #edf2f9;
 
     .panel-header-title {
       display: flex;
@@ -92,13 +83,13 @@ $radius:          8px;
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: $rg-blue;
+        color: $accent;
       }
 
       .panel-title {
-        font-size: 0.84rem;
+        font-size: 0.83rem;
         font-weight: 800;
-        color: $rg-blue-dark;
+        color: $accent;
         letter-spacing: 0.03em;
         text-transform: uppercase;
       }
@@ -106,21 +97,21 @@ $radius:          8px;
 
     .panel-badge {
       font-size: 0.65rem;
-      font-weight: 800;
+      font-weight: 700;
       text-transform: uppercase;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
 
       &.primary {
-        background: $rg-blue;
-        color: #ffffff;
-        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+        background: $accent-soft;
+        color: $accent;
+        border: 1px solid $accent-border;
       }
 
       &.secondary {
-        background: #ffffff;
-        color: $rg-blue-dark;
-        border: 1px solid $rg-blue-border;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
       }
     }
   }
@@ -147,9 +138,9 @@ $radius:          8px;
     gap: 6px;
 
     .input-label {
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       font-weight: 700;
-      color: #1e293b;
+      color: #334155;
       letter-spacing: 0.01em;
     }
 
@@ -158,7 +149,7 @@ $radius:          8px;
       align-items: center;
       gap: 3px;
       font-size: 0.68rem;
-      font-weight: 700;
+      font-weight: 600;
       padding: 1px 6px;
       border-radius: 4px;
       transition: all 0.15s ease;
@@ -197,7 +188,7 @@ $radius:          8px;
 
       &:focus {
         border-color: $success !important;
-        box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+        box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.18) !important;
       }
     }
 
@@ -214,12 +205,12 @@ $radius:          8px;
       border-color: $border-input;
 
       &:hover {
-        border-color: $rg-blue;
+        border-color: #94a3b8;
       }
 
       &:focus {
-        border-color: $rg-blue;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+        border-color: $accent;
+        box-shadow: 0 0 0 2px rgba(35, 83, 161, 0.2);
       }
     }
   }
@@ -245,7 +236,7 @@ $radius:          8px;
     font-size: 17px;
     width: 17px;
     height: 17px;
-    color: #64748b;
+    color: #94a3b8;
     pointer-events: none;
     z-index: 2;
     transition: color 0.15s ease;
@@ -285,7 +276,7 @@ $radius:          8px;
   color: $text;
   background: #ffffff;
   border: 1px solid $border-input;
-  border-radius: 6px;
+  border-radius: 4px;
   box-sizing: border-box;
   transition: all 0.15s ease;
 
@@ -296,7 +287,7 @@ $radius:          8px;
 }
 
 .custom-input {
-  height: 36px;
+  height: 35px;
   padding: 0 28px 0 32px;
 
   &.no-icon {
@@ -305,7 +296,7 @@ $radius:          8px;
 }
 
 .custom-select {
-  height: 36px;
+  height: 35px;
   padding: 0 46px 0 32px;
   cursor: pointer;
 
@@ -316,7 +307,7 @@ $radius:          8px;
 }
 
 .custom-textarea {
-  padding: 8px 10px;
+  padding: 7px 10px;
   line-height: 1.35;
   resize: none;
   height: 64px;
@@ -324,44 +315,44 @@ $radius:          8px;
 
 // ── Alarm Section (2x2 Grid) ────────────────────────────────────────
 .alarm-section {
-  padding: 10px 12px;
-  background: $rg-blue-soft;
-  border: 1px solid $rg-blue-border;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px dashed $border;
   border-radius: 6px;
   transition: all 0.15s ease;
 
   &.field-filled {
     background: #f0fdf4;
     border-color: $success-border;
+    border-style: solid;
   }
 }
 
 .alarm-grid-2x2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 7px;
+  margin-top: 4px;
 }
 
 .alarm-chip {
   appearance: none;
   -webkit-appearance: none;
-  border: 1px solid #cbd5e1;
+  border: 1px solid $border;
   background: #ffffff;
-  border-radius: 6px;
-  padding: 7px 9px;
+  border-radius: 4px;
+  padding: 6px 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 
   .chip-check-box {
     width: 18px;
     height: 18px;
-    border-radius: 4px;
+    border-radius: 3px;
     border: 1.5px solid #94a3b8;
     background: #ffffff;
     display: flex;
@@ -386,14 +377,14 @@ $radius:          8px;
     line-height: 1.1;
 
     .chip-code {
-      font-size: 0.84rem;
-      font-weight: 900;
-      color: #1e293b;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #334155;
     }
 
     .chip-name {
       font-size: 0.63rem;
-      font-weight: 600;
+      font-weight: 500;
       color: #64748b;
       white-space: nowrap;
       overflow: hidden;
@@ -402,8 +393,8 @@ $radius:          8px;
   }
 
   &:hover {
-    background: #eff6ff;
-    border-color: $rg-blue-border;
+    background: #eef4fc;
+    border-color: $accent-border;
   }
 
   &.active {
@@ -411,19 +402,18 @@ $radius:          8px;
       color: #ffffff;
     }
 
-    // Rettungsdienst (Warm Rescue Red)
+    // Rettungsdienst (Vibrant Red)
     &.rd {
       background: #fef2f2;
       border-color: #ef4444;
-      box-shadow: 0 1px 4px rgba(239, 68, 68, 0.2);
 
       .chip-check-box {
-        background: #ef4444;
-        border-color: #ef4444;
+        background: #d92632;
+        border-color: #d92632;
       }
 
       .chip-code {
-        color: #b91c1c;
+        color: #b81b26;
       }
     }
 
@@ -431,7 +421,6 @@ $radius:          8px;
     &.na {
       background: #fffbeb;
       border-color: #f59e0b;
-      box-shadow: 0 1px 4px rgba(217, 119, 6, 0.2);
 
       .chip-check-box {
         background: #d97706;
@@ -443,19 +432,18 @@ $radius:          8px;
       }
     }
 
-    // Polizei (Vivid Police Blue)
+    // Polizei (Vibrant Police Blue #2353a1)
     &.pol {
-      background: #eff6ff;
-      border-color: #2563eb;
-      box-shadow: 0 1px 4px rgba(37, 99, 235, 0.2);
+      background: #eef4fc;
+      border-color: #3b82f6;
 
       .chip-check-box {
-        background: #2563eb;
-        border-color: #2563eb;
+        background: #2353a1;
+        border-color: #2353a1;
       }
 
       .chip-code {
-        color: #1d4ed8;
+        color: #173b75;
       }
     }
 
@@ -463,7 +451,6 @@ $radius:          8px;
     &.fw {
       background: #fff7ed;
       border-color: #f97316;
-      box-shadow: 0 1px 4px rgba(234, 88, 12, 0.2);
 
       .chip-check-box {
         background: #ea580c;

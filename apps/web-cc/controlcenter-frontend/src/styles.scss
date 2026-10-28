@@ -69,32 +69,32 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   flex-shrink: 0;
 }
 
-// ── RG+ Brand Design Tokens & Auth Pages (Vibrant & Warm) ──
-$rg-blue:          #2563eb;
-$rg-blue-dark:     #1d4ed8;
-$rg-blue-hover:    #1e40af;
-$rg-blue-soft:     #eff6ff;
-$rg-blue-border:   #bfdbfe;
+// ── RG+ Brand Design Tokens & Auth Pages ──
+$rg-blue:          #2353a1;
+$rg-blue-dark:     #1b4384;
+$rg-blue-hover:    #2d62b8;
+$rg-blue-soft:     #eef4fc;
+$rg-blue-border:   #c2d7f3;
 
-$rg-red:           #ef4444;
-$rg-red-dark:      #dc2626;
+$rg-red:           #d92632;
+$rg-red-dark:      #b81b26;
 $rg-red-soft:      #fef2f2;
 $rg-red-border:    #fecaca;
 
-$auth-bg:          #f8fafd;
+$auth-bg:          #f0f4fa;
 $auth-surface:     #ffffff;
-$auth-border:      #dbeafe;
-$auth-border-subtle:#eff6ff;
+$auth-border:      #d2deee;
+$auth-border-subtle:#e5eef9;
 $auth-accent:      $rg-blue;
-$auth-accent-hover:$rg-blue-hover;
+$auth-accent-hover:$rg-blue-dark;
 $auth-accent-soft: $rg-blue-soft;
 $auth-accent-border:$rg-blue-border;
 $auth-danger:      $rg-red;
 $auth-text:        #0f172a;
 $auth-text-muted:  #475569;
-$auth-radius:      8px;
-$auth-shadow-sm:   0 2px 6px rgba(37, 99, 235, 0.08);
-$auth-shadow-md:   0 6px 20px rgba(37, 99, 235, 0.12);
+$auth-radius:      6px;
+$auth-shadow-sm:   0 1px 4px rgba(35, 83, 161, 0.08);
+$auth-shadow-md:   0 6px 20px rgba(35, 83, 161, 0.12);
 
 body:has(.auth-wrapper) {
   overflow: hidden !important;
@@ -125,7 +125,6 @@ body:has(.auth-wrapper) {
   overflow-y: auto;
   border-radius: $auth-radius !important;
   border: 1px solid $auth-border !important;
-  border-top: 4px solid $rg-blue !important;
   background: $auth-surface !important;
   box-shadow: $auth-shadow-sm !important;
   transition: box-shadow 0.18s ease;
@@ -136,7 +135,6 @@ body:has(.auth-wrapper) {
 
   mat-card-header {
     padding: 14px 20px 12px !important;
-    background: #f8fafd;
     border-bottom: 1px solid $auth-border-subtle;
     display: block;
 
@@ -158,24 +156,24 @@ body:has(.auth-wrapper) {
       }
 
       .auth-logo-img {
-        height: 26px;
+        height: 24px;
         width: auto;
         object-fit: contain;
       }
 
       .auth-brand-title {
-        font-size: 1rem;
-        font-weight: 900;
-        color: $rg-blue-dark;
+        font-size: 0.98rem;
+        font-weight: 800;
+        color: $auth-text;
         letter-spacing: -0.01em;
       }
 
       .auth-title {
-        font-size: 0.82rem;
-        font-weight: 800;
+        font-size: 0.84rem;
+        font-weight: 700;
         margin: 0;
-        color: $rg-blue;
-        letter-spacing: 0.04em;
+        color: $auth-text-muted;
+        letter-spacing: 0;
         text-align: right;
         text-transform: uppercase;
       }
@@ -241,7 +239,7 @@ body:has(.auth-wrapper) {
   .checklist-title {
     font-size: 0.72rem;
     font-weight: 700;
-    color: $rg-blue-dark;
+    color: $rg-blue;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 5px;
@@ -361,17 +359,17 @@ body:has(.auth-wrapper) {
     background-color: $auth-accent !important;
     color: #ffffff !important;
     border: none;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 1px 3px rgba(35, 83, 161, 0.25);
     letter-spacing: 0.02em;
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
 
     &:hover:not(:disabled) {
       background-color: $auth-accent-hover !important;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 2px 8px rgba(35, 83, 161, 0.35);
     }
 
     &:active:not(:disabled) {
-      background-color: #172554 !important;
+      background-color: #173b75 !important;
     }
 
     &:disabled {

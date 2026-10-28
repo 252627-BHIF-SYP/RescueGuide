@@ -1,10 +1,9 @@
 // ── Shared Dialog Tokens ──────────────────────────────────────────────
-$accent:  #2563eb;
-$accent-hover: #1d4ed8;
-$danger:  #ef4444;
+$accent:  #2353a1;
+$danger:  #d92632;
 $text:    #0f172a;
 $muted:   #475569;
-$border:  #e2e8f0;
+$border:  #d2deee;
 
 // ── Dialog Title ──────────────────────────────────────────────────────
 .dialog-title {
@@ -80,8 +79,8 @@ $border:  #e2e8f0;
     mat-icon { color: $muted; margin-right: 6px; }
 
     &.has-file {
-      border-color: rgba(37, 99, 235, 0.4);
-      background: #eff6ff;
+      border-color: rgba(163,29,88,.4);
+      background: #fdf2f6;
       color: $accent;
       mat-icon { color: $accent; }
     }
@@ -89,7 +88,7 @@ $border:  #e2e8f0;
     &:hover {
       border-color: $accent;
       color: $accent;
-      background: #eff6ff;
+      background: #fdf2f6;
     }
   }
 
@@ -127,7 +126,7 @@ $border:  #e2e8f0;
 
   .cancel-btn {
     color: $muted;
-    border-radius: 6px;
+    border-radius: 999px;
     padding: 0 16px;
     font-weight: 500;
 
@@ -137,17 +136,17 @@ $border:  #e2e8f0;
   .submit-btn {
     background: $accent !important;
     color: #fff !important;
-    border-radius: 6px !important;
+    border-radius: 999px !important;
     padding: 0 22px !important;
     font-weight: 600 !important;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+    box-shadow: 0 2px 6px rgba(163,29,88,.2) !important;
     transition: background 0.15s, box-shadow 0.15s, transform 0.15s !important;
 
     mat-icon { margin-right: 5px; font-size: 17px; }
 
     &:not([disabled]):hover {
-      background: $accent-hover !important;
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
+      background: #8c164a !important;
+      box-shadow: 0 4px 10px rgba(163,29,88,.3) !important;
       transform: translateY(-1px) !important;
     }
 

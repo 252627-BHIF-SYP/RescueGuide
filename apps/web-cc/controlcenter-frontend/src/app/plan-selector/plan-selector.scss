@@ -1,16 +1,16 @@
 // ── RG+ Design Tokens (Plan Selector) ──────────────────────────────────
-$accent:        #2563eb;
-$accent-soft:   #eff6ff;
-$accent-hover:  #1d4ed8;
-$accent-border: #bfdbfe;
+$accent:        #2353a1;
+$accent-soft:   #eef4fc;
+$accent-hover:  #1b4384;
+$accent-border: #c2d7f3;
 $surface:       #ffffff;
-$border:        #e2e8f0;
-$border-light:  #f1f5f9;
+$border:        #d2deee;
+$border-light:  #e8eef8;
 $text:          #0f172a;
 $text-muted:    #475569;
 $success:       #16a34a;
 $success-soft:  #ecfdf5;
-$danger:        #ef4444;
+$danger:        #d92632;
 $danger-soft:   #fef2f2;
 $radius:        6px;
 
@@ -131,7 +131,7 @@ $radius:        6px;
     span {
       display: block;
       height: 100%;
-      background: $accent;
+      background: linear-gradient(90deg, $accent, #d946ef);
       border-radius: 999px;
       transition: width 0.3s ease;
     }
@@ -984,18 +984,18 @@ $radius:        6px;
     appearance: none;
     -webkit-appearance: none;
     border: none;
-    background: #162846;
+    background: linear-gradient(135deg, $accent, #801242);
     color: #ffffff;
     font-size: 0.88rem;
     font-weight: 800;
     padding: 8px 18px;
-    border-radius: 6px;
+    border-radius: 999px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(22, 40, 70, 0.25);
-    transition: all 0.15s ease;
+    box-shadow: 0 3px 10px rgba(163, 29, 88, 0.35);
+    transition: all 0.18s ease;
 
     .send-icon {
       font-size: 18px;
@@ -1013,9 +1013,9 @@ $radius:        6px;
     }
 
     &:hover:not(:disabled) {
-      background: #0f1d33;
+      background: linear-gradient(135deg, #b92466, #92174c);
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(22, 40, 70, 0.35);
+      box-shadow: 0 5px 14px rgba(163, 29, 88, 0.45);
     }
 
     &:active:not(:disabled) {

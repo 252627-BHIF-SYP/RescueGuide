@@ -4,13 +4,13 @@
   gap: 10px;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #2b2d42;
+  color: #0f172a;
   padding: 20px 24px 10px 24px;
   margin: 0;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid #e2ebf7;
 
   .title-icon {
-    color: #ef4444; // RescueGuide Rot
+    color: #d92632;
     font-size: 28px;
     height: 28px;
     width: 28px;
@@ -86,7 +86,7 @@
   border-radius: 8px;
 
   mat-icon {
-    color: #2563eb;
+    color: #0284c7;
     font-size: 20px;
     height: 20px;
     width: 20px;
@@ -130,9 +130,9 @@
     }
 
     &:hover {
-      border-color: #2563eb;
-      color: #2563eb;
-      background-color: #eff6ff;
+      border-color: #e63946;
+      color: #e63946;
+      background-color: #fff5f5;
     }
   }
 }
@@ -236,14 +236,14 @@
 
   // Zustand: Selektiert
   &.mat-mdc-list-option-selected {
-    background-color: #eff6ff !important;
+    background-color: #fff5f5 !important;
 
     .measure-title {
-      color: #2563eb;
+      color: #e63946;
       font-weight: 600;
     }
     .option-icon {
-      color: #2563eb;
+      color: #e63946;
     }
   }
 }
@@ -282,18 +282,11 @@
   }
 
   .submit-btn {
-    background-color: #2563eb !important;
+    background-color: #2353a1 !important;
     color: white !important;
     border-radius: 6px;
     padding: 0 20px;
-    font-weight: 600;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
-
-    &:not([disabled]):hover {
-      background-color: #1d4ed8 !important;
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
-    }
+    font-weight: 700;
 
     &[disabled] {
       background-color: #f1f3f5 !important;

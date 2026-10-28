@@ -1,29 +1,27 @@
-// ── RG+ Design Tokens (Vibrant & Warm Emergency Page) ────────────────
-$bg:            #f8fafd;
+// ── RG+ Design Tokens (Emergency Page / Leitstelle CAD) ────────────────
+$bg:            #f0f4fa;
 $surface:       #ffffff;
-$border:        #e2e8f0;
-$border-light:  #f1f5f9;
+$border:        #d2deee;
+$border-light:  #e8eef8;
 
-$rg-blue:        #2563eb;       // Vivid, warm royal blue
-$rg-blue-dark:   #1d4ed8;
-$rg-blue-hover:  #1e40af;
-$rg-blue-soft:   #eff6ff;
-$rg-blue-border: #bfdbfe;
+$accent:        #2353a1;       // Vibrant Rescue Blue
+$accent-soft:   #eef4fc;
+$accent-hover:  #1b4384;
+$accent-border: #c2d7f3;
 
-$danger:        #ef4444;       // Warm, vibrant rescue red
+$danger:        #d92632;       // Vibrant Rescue Red
 $danger-soft:   #fef2f2;
-$danger-tint:   #fee2e2;
 $danger-border: #fecaca;
-$danger-hover:  #dc2626;
+$danger-hover:  #b81b26;
 
 $success:       #16a34a;
 $success-soft:  #ecfdf5;
 
 $text:          #0f172a;
 $text-muted:    #475569;
-$radius:        8px;
-$shadow-sm:     0 2px 6px rgba(37, 99, 235, 0.06);
-$shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
+$radius:        6px;
+$shadow-sm:     0 1px 4px rgba(35, 83, 161, 0.06);
+$shadow-md:     0 4px 16px rgba(35, 83, 161, 0.12);
 
 // ── Root Page Container ───────────────────────────────────────────────
 .container {
@@ -38,11 +36,10 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
 // ── Top Page Header Bar ───────────────────────────────────────────────
 .page-header-bar {
   flex-shrink: 0;
-  height: 62px;
+  height: 60px;
   padding: 0 18px;
   background: $surface;
-  border-bottom: 2px solid $rg-blue-border;
-  border-top: 3px solid $rg-blue;
+  border-bottom: 1px solid $border;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -66,27 +63,26 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
 
     .header-left-divider {
       width: 1px;
-      height: 22px;
-      background: $rg-blue-border;
+      height: 24px;
+      background: $border;
       flex-shrink: 0;
     }
 
     .emergency-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background: $danger;
-      color: #ffffff;
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      background: $danger-soft;
+      border: 1px solid $danger-border;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
 
       .emergency-icon {
-        color: #ffffff;
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+        color: $danger;
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
       }
     }
 
@@ -97,8 +93,8 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
       .header-title {
         margin: 0;
         font-size: 1.05rem;
-        font-weight: 900;
-        color: $rg-blue-dark;
+        font-weight: 800;
+        color: $text;
         line-height: 1.2;
         letter-spacing: -0.01em;
       }
@@ -118,30 +114,29 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
       align-items: center;
       gap: 10px;
       background: #ffffff;
-      border: 1px solid $rg-blue-border;
-      border-radius: 8px;
+      border: 1px solid $accent-border;
+      border-radius: 6px;
       padding: 4px 8px;
-      box-shadow: 0 1px 4px rgba(37, 99, 235, 0.08);
+      box-shadow: 0 1px 4px rgba(35, 83, 161, 0.05);
       max-width: 560px;
       min-width: 0;
 
       .loc-icon-bubble {
         width: 28px;
         height: 28px;
-        border-radius: 6px;
-        background: $danger;
-        color: #ffffff;
+        border-radius: 4px;
+        background: $danger-soft;
+        color: $danger;
+        border: 1px solid $danger-border;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
 
         mat-icon {
           font-size: 17px;
           width: 17px;
           height: 17px;
-          color: #ffffff;
         }
       }
 
@@ -152,7 +147,7 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
         line-height: 1.15;
 
         .loc-address-line {
-          font-size: 0.84rem;
+          font-size: 0.83rem;
           font-weight: 700;
           color: $text;
           white-space: nowrap;
@@ -169,8 +164,8 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
           color: $text-muted;
 
           .coords-text {
-            font-weight: 700;
-            color: $rg-blue-dark;
+            font-weight: 600;
+            color: $accent;
             font-variant-numeric: tabular-nums;
           }
         }
@@ -180,12 +175,12 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
         appearance: none;
         -webkit-appearance: none;
         border: 1px solid $border;
-        background: #f8fafc;
-        color: #334155;
+        background: $accent-soft;
+        color: $accent;
         padding: 4px 8px;
-        border-radius: 6px;
+        border-radius: 4px;
         font-size: 0.72rem;
-        font-weight: 600;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
         gap: 4px;
@@ -200,9 +195,9 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
         }
 
         &:hover {
-          background: $rg-blue-soft;
-          color: $rg-blue-dark;
-          border-color: $rg-blue-border;
+          background: $accent;
+          color: #ffffff;
+          border-color: $accent;
         }
 
         &.copied {
@@ -215,20 +210,20 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
       .loc-pill-divider {
         width: 1px;
         height: 20px;
-        background: $rg-blue-border;
+        background: $border;
         flex-shrink: 0;
       }
 
       .loc-map-toggle {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid $rg-blue-border;
-        background: $rg-blue-soft;
-        color: $rg-blue-dark;
+        border: 1px solid transparent;
+        background: transparent;
+        color: $accent;
         font-size: 0.78rem;
         font-weight: 700;
         padding: 4px 10px;
-        border-radius: 6px;
+        border-radius: 4px;
         display: inline-flex;
         align-items: center;
         gap: 5px;
@@ -240,22 +235,17 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
           font-size: 16px;
           width: 16px;
           height: 16px;
-          color: $rg-blue;
         }
 
         &:hover {
-          background: #dbeafe;
-          border-color: $rg-blue;
+          background: $accent-soft;
+          border-color: $accent-border;
         }
 
         &.active {
-          background: $rg-blue;
+          background: $accent;
           color: #ffffff;
-          border-color: $rg-blue;
-
-          mat-icon {
-            color: #ffffff;
-          }
+          border-color: $accent;
         }
 
         &:disabled {
@@ -277,16 +267,16 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
       display: flex;
       align-items: center;
       gap: 8px;
-      background: $rg-blue-soft;
-      padding: 4px 12px;
-      border-radius: 8px;
-      border: 1px solid $rg-blue-border;
+      background: $accent-soft;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid $accent-border;
 
       .timer-icon {
-        color: $rg-blue;
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        color: $accent;
+        font-size: 17px;
+        width: 17px;
+        height: 17px;
       }
 
       .timer-details {
@@ -296,16 +286,16 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
 
         .timer-label {
           font-size: 0.62rem;
-          font-weight: 800;
-          color: $rg-blue-dark;
+          font-weight: 700;
+          color: $text-muted;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.04em;
         }
 
         .timer-value {
-          font-size: 0.94rem;
-          font-weight: 900;
-          color: $rg-blue-dark;
+          font-size: 0.92rem;
+          font-weight: 800;
+          color: $accent;
           font-variant-numeric: tabular-nums;
         }
       }
@@ -314,27 +304,26 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
     button.btn-end-call {
       background-color: $danger !important;
       color: #fff !important;
-      font-weight: 800;
-      font-size: 0.84rem;
-      border-radius: 8px;
-      padding: 6px 16px;
-      height: 36px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      border-radius: 4px;
+      padding: 6px 14px;
+      height: 34px;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
-      letter-spacing: 0.02em;
+      box-shadow: 0 1px 4px rgba(217, 38, 50, 0.35);
       transition: all 0.15s ease;
 
       mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        font-size: 17px;
+        width: 17px;
+        height: 17px;
       }
 
       &:hover {
         background-color: $danger-hover !important;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.45);
+        box-shadow: 0 3px 8px rgba(217, 38, 50, 0.45);
       }
     }
   }
@@ -400,9 +389,9 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
   .workspace-switcher-capsule {
     display: inline-flex;
     align-items: center;
-    background: $rg-blue-soft;
-    border: 1px solid $rg-blue-border;
-    border-radius: 8px;
+    background: #e2ebf7;
+    border: 1px solid #c2d7f3;
+    border-radius: 6px;
     padding: 3px;
     gap: 4px;
 
@@ -411,14 +400,14 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
       -webkit-appearance: none;
       border: 1px solid transparent;
       background: transparent;
-      padding: 7px 24px;
-      border-radius: 6px;
+      padding: 6px 20px;
+      border-radius: 4px;
       display: inline-flex;
       align-items: center;
       gap: 7px;
       cursor: pointer;
-      color: $rg-blue-dark;
-      font-size: 0.88rem;
+      color: #334155;
+      font-size: 0.86rem;
       font-weight: 700;
       transition: all 0.15s ease;
 
@@ -426,7 +415,7 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: $rg-blue;
+        color: #556987;
         transition: color 0.15s ease;
       }
 
@@ -435,19 +424,19 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
       }
 
       &:hover:not(.active) {
-        background: #ffffff;
-        color: $rg-blue-dark;
+        background: #f0f5fc;
+        color: $accent;
 
         .tab-icon {
-          color: $rg-blue;
+          color: $accent;
         }
       }
 
       &.active {
-        background: $rg-blue;
+        background: $accent;
         color: #ffffff;
-        border-color: $rg-blue;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        border-color: $accent;
+        box-shadow: 0 2px 6px rgba(35, 83, 161, 0.3);
 
         .tab-icon {
           color: #ffffff;
@@ -507,7 +496,6 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
     height: 80vh;
     background: #ffffff;
     border: 1px solid $border;
-    border-top: 4px solid $rg-blue;
     border-radius: 8px;
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
@@ -515,9 +503,9 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
     overflow: hidden;
 
     .map-modal-header {
-      height: 48px;
-      background: $rg-blue-soft;
-      border-bottom: 1px solid $rg-blue-border;
+      height: 46px;
+      background: #fafbfc;
+      border-bottom: 1px solid $border;
       padding: 0 16px;
       display: flex;
       align-items: center;
@@ -534,13 +522,13 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
           font-size: 20px;
           width: 20px;
           height: 20px;
-          color: $rg-blue;
+          color: $accent;
         }
 
         .map-heading {
-          font-size: 0.92rem;
-          font-weight: 800;
-          color: $rg-blue-dark;
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: $text;
         }
 
         .map-addr-hint {
@@ -662,5 +650,295 @@ $shadow-md:     0 6px 16px rgba(37, 99, 235, 0.10);
   .workspace-column {
     width: 100%;
     flex: auto;
+  }
+}
+
+// ── Protokoll-Modal Styling (Review & Archive) ────────────────────────
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.15s ease-out;
+
+  .protocol-modal {
+    width: 95vw;
+    max-width: 1100px;
+    height: 90vh;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .modal-header {
+      padding: 12px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #dce4ef;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-shrink: 0;
+
+      .modal-title-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .title-icon-bubble {
+          width: 34px;
+          height: 34px;
+          border-radius: 4px;
+          background: $accent-soft;
+          color: $accent;
+          border: 1px solid $accent-border;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .title-text {
+          display: flex;
+          align-items: baseline;
+          gap: 12px;
+          flex-wrap: wrap;
+
+          h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: $accent;
+            white-space: nowrap;
+          }
+
+          p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: $text-muted;
+          }
+        }
+      }
+
+      .modal-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .btn-close-modal {
+          appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          background: transparent;
+          color: $text-muted;
+          width: 32px;
+          height: 32px;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+
+          &:hover {
+            background: $danger-soft;
+            color: $danger;
+          }
+        }
+      }
+    }
+
+    .modal-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      background: #f8fafc;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+
+      .modal-form-container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+
+        app-emergency-checklist {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      background: #ffffff;
+      border-top: 1px solid #dce4ef;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+
+      .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .btn-export-pdf {
+          appearance: none;
+          -webkit-appearance: none;
+          border: 1px solid $danger-border;
+          background: $danger-soft;
+          color: $danger;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 7px 14px;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          mat-icon {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+          }
+
+          &:hover:not(:disabled) {
+            background: $danger;
+            color: #ffffff;
+            border-color: $danger;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .footer-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .save-toast-msg {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.78rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+
+          &.success {
+            color: #15803d;
+            font-weight: 700;
+
+            mat-icon {
+              color: $success;
+            }
+          }
+        }
+
+        .btn-save-changes {
+          appearance: none;
+          -webkit-appearance: none;
+          border: 1px solid $accent;
+          background: $accent;
+          color: #ffffff;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 7px 16px;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          mat-icon {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+          }
+
+          &:hover:not(:disabled) {
+            background: $accent-hover;
+            border-color: $accent-hover;
+          }
+
+          &.saved {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
+          }
+
+          &:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: #f8fafc;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+          }
+        }
+
+        .btn-finish-dashboard {
+          appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          background: $accent;
+          color: #ffffff;
+          font-size: 0.82rem;
+          font-weight: 700;
+          padding: 7px 16px;
+          border-radius: 4px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          box-shadow: 0 2px 6px rgba(35, 83, 161, 0.25);
+
+          mat-icon {
+            font-size: 17px;
+            width: 17px;
+            height: 17px;
+          }
+
+          &:hover {
+            background: $accent-hover;
+            box-shadow: 0 4px 10px rgba(35, 83, 161, 0.35);
+          }
+        }
+      }
+    }
   }
 }
