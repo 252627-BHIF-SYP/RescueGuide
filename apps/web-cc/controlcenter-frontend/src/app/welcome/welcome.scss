@@ -3,83 +3,87 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #fcfcfc 0%, #fff5f5 100%);
+  background-color: #f4f6f9;
   padding: 20px;
   box-sizing: border-box;
 }
 
 .welcome-card {
   width: 100%;
-  max-width: 400px;
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid rgba(230, 57, 70, 0.15);
+  max-width: 420px;
+  padding: 28px 24px;
+  border-radius: 8px;
+  border: 1px solid #dce2ea;
   background: #ffffff;
-  box-shadow: 0 10px 25px rgba(230, 57, 70, 0.05);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
 }
 
 .brand-header {
   text-align: center;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 
-  .brand-icon {
-    color: #e63946;
-    font-size: 40px;
-    height: 40px;
-    width: 40px;
-    margin-bottom: 8px;
+  .brand-logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 12px;
   }
 
   h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #2b2d42;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #162846;
     margin: 0;
+    letter-spacing: -0.02em;
   }
 
-  p {
-    color: #6c757d;
-    font-size: 0.95rem;
-    margin: 4px 0 0 0;
+  .brand-subtitle {
+    color: #526075;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 6px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 }
 
 .welcome-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   margin-top: 16px;
 
   .action-btn {
-    padding: 22px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
+    height: 42px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
+    transition: all 0.15s ease;
 
     &[color="primary"] {
-      background-color: #e63946;
-      color: white;
+      background-color: #162846;
+      color: #ffffff;
 
       &:hover {
-        background-color: #d62839;
+        background-color: #0f1d33;
       }
     }
   }
 
   .signup-btn {
-    border: 1px solid #6c757d;
-    color: #6c757d;
-    background: transparent;
+    border: 1px solid #dce2ea;
+    color: #334155;
+    background: #ffffff;
 
     &:hover {
-      border-color: #e63946;
-      color: #e63946;
-      background: #fff5f5;
+      border-color: #162846;
+      color: #162846;
+      background: #f0f4fa;
     }
   }
 }

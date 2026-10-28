@@ -1,20 +1,27 @@
-// ── Design Tokens ─────────────────────────────────────────────────────
-$bg:          #f4f6f9;
-$surface:     #ffffff;
-$border:      #e2e4e9;
-$border-light:#edf0f4;
-$accent:      #a31d58;
-$accent-soft: #fce7f0;
-$accent-hover:#8b1649;
-$danger:      #b42355;
-$danger-soft: #fde8ef;
-$success:     #16a34a;
-$success-soft:#ecfdf5;
-$text:        #191c21;
-$text-muted:  #68707d;
-$radius:      12px;
-$shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.06);
-$shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
+// ── RG+ Design Tokens (Emergency Page / Leitstelle CAD) ────────────────
+$bg:            #f4f6f9;
+$surface:       #ffffff;
+$border:        #dce2ea;
+$border-light:  #edf1f6;
+
+$accent:        #162846;       // RG+ Navy
+$accent-soft:   #f0f4fa;
+$accent-hover:  #0f1d33;
+$accent-border: #d2deee;
+
+$danger:        #dc2626;       // Rescue Red
+$danger-soft:   #fef2f2;
+$danger-border: #fecaca;
+$danger-hover:  #b91c1c;
+
+$success:       #16a34a;
+$success-soft:  #ecfdf5;
+
+$text:          #0f172a;
+$text-muted:    #526075;
+$radius:        6px;
+$shadow-sm:     0 1px 3px rgba(15, 23, 42, 0.06);
+$shadow-md:     0 4px 14px rgba(15, 23, 42, 0.10);
 
 // ── Root Page Container ───────────────────────────────────────────────
 .container {
@@ -29,8 +36,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 // ── Top Page Header Bar ───────────────────────────────────────────────
 .page-header-bar {
   flex-shrink: 0;
-  height: 64px;
-  padding: 0 20px;
+  height: 60px;
+  padding: 0 18px;
   background: $surface;
   border-bottom: 1px solid $border;
   display: flex;
@@ -40,27 +47,42 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   box-shadow: $shadow-sm;
   z-index: 20;
 
-  // 1. Header Left (★ Notfalleinsatz)
+  // 1. Header Left (★ Logo & Notfalleinsatz)
   .header-left {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-shrink: 0;
 
+    .header-brand-logo {
+      height: 26px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .header-left-divider {
+      width: 1px;
+      height: 22px;
+      background: $border;
+      flex-shrink: 0;
+    }
+
     .emergency-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: 9px;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
       background: $danger-soft;
+      border: 1px solid $danger-border;
       display: flex;
       align-items: center;
       justify-content: center;
 
       .emergency-icon {
         color: $danger;
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
       }
     }
 
@@ -70,10 +92,11 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 
       .header-title {
         margin: 0;
-        font-size: 1.08rem;
+        font-size: 1.02rem;
         font-weight: 800;
         color: $text;
         line-height: 1.2;
+        letter-spacing: -0.01em;
       }
     }
   }
@@ -91,28 +114,29 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       align-items: center;
       gap: 10px;
       background: #ffffff;
-      border: 1px solid #dce1e8;
-      border-radius: 999px;
-      padding: 4px 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-      max-width: 540px;
+      border: 1px solid #dce2ea;
+      border-radius: 6px;
+      padding: 4px 8px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      max-width: 560px;
       min-width: 0;
 
       .loc-icon-bubble {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: #fee2e2;
-        color: #dc2626;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        background: $danger-soft;
+        color: $danger;
+        border: 1px solid $danger-border;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
 
         mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
+          font-size: 17px;
+          width: 17px;
+          height: 17px;
         }
       }
 
@@ -123,13 +147,13 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
         line-height: 1.15;
 
         .loc-address-line {
-          font-size: 0.84rem;
+          font-size: 0.83rem;
           font-weight: 700;
           color: $text;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 240px;
+          max-width: 260px;
         }
 
         .loc-meta-line {
@@ -141,7 +165,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 
           .coords-text {
             font-weight: 600;
-            color: #475569;
+            color: #334155;
             font-variant-numeric: tabular-nums;
           }
         }
@@ -150,11 +174,11 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       .loc-copy-btn {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid #e2e8f0;
+        border: 1px solid #dce2ea;
         background: #f8fafc;
-        color: #475569;
+        color: #334155;
         padding: 4px 8px;
-        border-radius: 6px;
+        border-radius: 4px;
         font-size: 0.72rem;
         font-weight: 600;
         display: inline-flex;
@@ -184,7 +208,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 
       .loc-pill-divider {
         width: 1px;
-        height: 22px;
+        height: 20px;
         background: #e2e8f0;
         flex-shrink: 0;
       }
@@ -192,13 +216,13 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       .loc-map-toggle {
         appearance: none;
         -webkit-appearance: none;
-        border: none;
+        border: 1px solid transparent;
         background: transparent;
         color: $accent;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 700;
-        padding: 5px 12px;
-        border-radius: 999px;
+        padding: 4px 10px;
+        border-radius: 4px;
         display: inline-flex;
         align-items: center;
         gap: 5px;
@@ -214,11 +238,13 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 
         &:hover {
           background: $accent-soft;
+          border-color: $accent-border;
         }
 
         &.active {
           background: $accent;
           color: #ffffff;
+          border-color: $accent;
         }
 
         &:disabled {
@@ -241,15 +267,15 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       align-items: center;
       gap: 8px;
       background: $accent-soft;
-      padding: 5px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(163, 29, 88, 0.16);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid $accent-border;
 
       .timer-icon {
         color: $accent;
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        font-size: 17px;
+        width: 17px;
+        height: 17px;
       }
 
       .timer-details {
@@ -258,14 +284,15 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
         line-height: 1.05;
 
         .timer-label {
-          font-size: 0.64rem;
+          font-size: 0.62rem;
           font-weight: 700;
           color: $text-muted;
           text-transform: uppercase;
+          letter-spacing: 0.04em;
         }
 
         .timer-value {
-          font-size: 0.95rem;
+          font-size: 0.92rem;
           font-weight: 800;
           color: $accent;
           font-variant-numeric: tabular-nums;
@@ -277,15 +304,15 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       background-color: $danger !important;
       color: #fff !important;
       font-weight: 700;
-      font-size: 0.84rem;
-      border-radius: 999px;
-      padding: 6px 16px;
-      height: 36px;
+      font-size: 0.82rem;
+      border-radius: 4px;
+      padding: 6px 14px;
+      height: 34px;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 6px rgba(180, 35, 85, 0.28);
-      transition: all 0.18s ease;
+      box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
+      transition: all 0.15s ease;
 
       mat-icon {
         font-size: 17px;
@@ -294,9 +321,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       }
 
       &:hover {
-        background-color: #8c164a !important;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(180, 35, 85, 0.38);
+        background-color: $danger-hover !important;
+        box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
       }
     }
   }
@@ -307,7 +333,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   display: flex;
   flex: 1;
   min-height: 0;
-  padding: 12px 18px 16px;
+  padding: 12px 16px 14px;
   gap: 14px;
   background: $bg;
   overflow: hidden;
@@ -356,42 +382,40 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 8px;
+  padding: 0 0 6px;
   flex-shrink: 0;
 
   .workspace-switcher-capsule {
     display: inline-flex;
     align-items: center;
-    background: #edf0f5;
-    border: 1px solid #d4dae3;
-    border-radius: 999px;
-    padding: 5px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-    gap: 6px;
+    background: #e8ecf2;
+    border: 1px solid #dce2ea;
+    border-radius: 6px;
+    padding: 3px;
+    gap: 4px;
 
     .capsule-tab-btn {
       appearance: none;
       -webkit-appearance: none;
       border: 1px solid transparent;
-      background: #ffffff;
-      padding: 8px 26px;
-      border-radius: 999px;
+      background: transparent;
+      padding: 6px 20px;
+      border-radius: 4px;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       cursor: pointer;
-      color: #0f172a; // Vollwertiges, klares Schwarz/Dunkelblau – keinesfalls ausgegraut!
-      font-size: 0.9rem;
+      color: #334155;
+      font-size: 0.86rem;
       font-weight: 700;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      transition: all 0.18s ease;
+      transition: all 0.15s ease;
 
       .tab-icon {
-        font-size: 19px;
-        width: 19px;
-        height: 19px;
-        color: #1e293b; // Kräftiges Icon – nicht ausgegraut!
-        transition: color 0.18s ease;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #64748b;
+        transition: color 0.15s ease;
       }
 
       .tab-label {
@@ -399,9 +423,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       }
 
       &:hover:not(.active) {
-        background: #f8fafc;
+        background: #f1f5f9;
         color: $accent;
-        border-color: #cbd5e1;
 
         .tab-icon {
           color: $accent;
@@ -412,7 +435,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
         background: $accent;
         color: #ffffff;
         border-color: $accent;
-        box-shadow: 0 3px 12px rgba(163, 29, 88, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(22, 40, 70, 0.25);
 
         .tab-icon {
           color: #ffffff;
@@ -456,15 +479,15 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 .map-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 17, 21, 0.65);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.15s ease-out;
 
   .map-modal-window {
     width: 90vw;
@@ -472,8 +495,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     height: 80vh;
     background: #ffffff;
     border: 1px solid $border;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -529,7 +552,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           color: $text-muted;
           width: 30px;
           height: 30px;
-          border-radius: 6px;
+          border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -548,8 +571,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           }
 
           &.close-btn:hover {
-            background: #fee2e2;
-            color: #dc2626;
+            background: $danger-soft;
+            color: $danger;
           }
         }
       }
@@ -559,7 +582,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
       flex: 1;
       min-height: 0;
       position: relative;
-      background: #0f1115;
+      background: #0f172a;
 
       iframe {
         position: absolute;
@@ -573,15 +596,13 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   }
 }
 
-
-
 // ── Animations ────────────────────────────────────────────────────────
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-scale-up {
-  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: scaleUp 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes pulse {
@@ -595,7 +616,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
 }
 
 @keyframes scaleUp {
-  from { transform: scale(0.95); opacity: 0; }
+  from { transform: scale(0.97); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
 }
 
@@ -631,7 +652,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   }
 }
 
-// ── Protokoll-Modal Styling (Issue 133 & 97) ────────────────────────
+// ── Protokoll-Modal Styling (Review & Archive) ────────────────────────
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -643,16 +664,16 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.18s ease-out;
+  animation: fadeIn 0.15s ease-out;
 
   .protocol-modal {
     width: 95vw;
     max-width: 1100px;
     height: 90vh;
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid #cbd5e1;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -673,11 +694,12 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
         gap: 12px;
 
         .title-icon-bubble {
-          width: 36px;
-          height: 36px;
-          border-radius: 9px;
+          width: 34px;
+          height: 34px;
+          border-radius: 4px;
           background: $accent-soft;
           color: $accent;
+          border: 1px solid $accent-border;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -699,14 +721,14 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
             margin: 0;
             font-size: 1.05rem;
             font-weight: 800;
-            color: #0f172a;
+            color: $accent;
             white-space: nowrap;
           }
 
           p {
             margin: 0;
             font-size: 0.78rem;
-            color: #64748b;
+            color: $text-muted;
           }
         }
       }
@@ -721,10 +743,10 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           -webkit-appearance: none;
           border: none;
           background: transparent;
-          color: #64748b;
+          color: $text-muted;
           width: 32px;
           height: 32px;
-          border-radius: 6px;
+          border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -738,8 +760,8 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           }
 
           &:hover {
-            background: #fee2e2;
-            color: #dc2626;
+            background: $danger-soft;
+            color: $danger;
           }
         }
       }
@@ -769,7 +791,7 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
     }
 
     .modal-footer {
-      padding: 10px 20px;
+      padding: 12px 20px;
       background: #ffffff;
       border-top: 1px solid #e2e8f0;
       display: flex;
@@ -786,18 +808,18 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
         .btn-export-pdf {
           appearance: none;
           -webkit-appearance: none;
-          border: 1px solid #fbcfe8;
+          border: 1px solid $accent-border;
           background: $accent-soft;
           color: $accent;
           font-size: 0.82rem;
           font-weight: 700;
-          padding: 8px 14px;
-          border-radius: 8px;
+          padding: 7px 14px;
+          border-radius: 4px;
           display: inline-flex;
           align-items: center;
           gap: 6px;
           cursor: pointer;
-          transition: all 0.18s ease;
+          transition: all 0.15s ease;
 
           mat-icon {
             font-size: 17px;
@@ -806,9 +828,9 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           }
 
           &:hover:not(:disabled) {
-            background: #fbcfe8;
-            border-color: #f472b6;
-            color: $accent-hover;
+            background: $accent;
+            color: #ffffff;
+            border-color: $accent;
           }
 
           &:disabled {
@@ -853,13 +875,13 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           color: #334155;
           font-size: 0.82rem;
           font-weight: 700;
-          padding: 8px 16px;
-          border-radius: 8px;
+          padding: 7px 16px;
+          border-radius: 4px;
           display: inline-flex;
           align-items: center;
           gap: 6px;
           cursor: pointer;
-          transition: all 0.18s ease;
+          transition: all 0.15s ease;
 
           mat-icon {
             font-size: 17px;
@@ -891,18 +913,18 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           appearance: none;
           -webkit-appearance: none;
           border: none;
-          background: #0f172a;
+          background: $accent;
           color: #ffffff;
           font-size: 0.82rem;
           font-weight: 700;
-          padding: 8px 16px;
-          border-radius: 8px;
+          padding: 7px 16px;
+          border-radius: 4px;
           display: inline-flex;
           align-items: center;
           gap: 6px;
           cursor: pointer;
-          transition: all 0.18s ease;
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+          transition: all 0.15s ease;
+          box-shadow: 0 1px 3px rgba(22, 40, 70, 0.25);
 
           mat-icon {
             font-size: 17px;
@@ -911,13 +933,11 @@ $shadow-md:   0 4px 16px rgba(0, 0, 0, 0.09);
           }
 
           &:hover {
-            background: #1e293b;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.35);
+            background: $accent-hover;
+            box-shadow: 0 2px 6px rgba(22, 40, 70, 0.35);
           }
         }
       }
     }
   }
 }
-

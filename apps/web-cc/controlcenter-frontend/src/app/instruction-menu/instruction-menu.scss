@@ -1,14 +1,15 @@
-// ── Design Tokens ─────────────────────────────────────────────────────
-$bg:         #f5f6f8;
+// ── RG+ Design Tokens (Instruction Menu) ──────────────────────────────
+$bg:         #f4f6f9;
 $surface:    #ffffff;
-$border:     #e1e2e5;
-$accent:     #a31d58;
-$danger:     #b42355;
-$text:       #1f2328;
-$muted:      #74777d;
-$radius:     10px;
-$shadow-sm:  0 1px 3px rgba(0,0,0,.07);
-$shadow-md:  0 3px 10px rgba(0,0,0,.10);
+$border:     #dce2ea;
+$accent:     #162846;
+$accent-soft:#f0f4fa;
+$danger:     #dc2626;
+$text:       #0f172a;
+$muted:      #526075;
+$radius:     6px;
+$shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.06);
+$shadow-md:  0 3px 10px rgba(15, 23, 42, 0.10);
 
 // ── Page Shell ────────────────────────────────────────────────────────
 .container {
@@ -221,7 +222,7 @@ $shadow-md:  0 3px 10px rgba(0,0,0,.10);
     font-size: 28px;
     width: 28px;
     height: 28px;
-    color: lighten(#a31d58, 30%);
+    color: #64748b;
     opacity: 0.7;
   }
 }

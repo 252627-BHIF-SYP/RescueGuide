@@ -1,17 +1,18 @@
-// ── Design Tokens ─────────────────────────────────────────────────────
-$accent: #a31d58;
-$accent-soft: #fce7f0;
-$accent-hover: #8b1649;
-$surface: #ffffff;
-$border: #e2e4e9;
-$border-light: #edf0f4;
-$text: #191c21;
-$text-muted: #68707d;
-$success: #16a34a;
-$success-soft: #ecfdf5;
-$danger: #dc2626;
-$danger-soft: #fee2e2;
-$radius: 12px;
+// ── RG+ Design Tokens (Plan Selector) ──────────────────────────────────
+$accent:        #162846;
+$accent-soft:   #f0f4fa;
+$accent-hover:  #0f1d33;
+$accent-border: #d2deee;
+$surface:       #ffffff;
+$border:        #dce2ea;
+$border-light:  #edf1f6;
+$text:          #0f172a;
+$text-muted:    #526075;
+$success:       #16a34a;
+$success-soft:  #ecfdf5;
+$danger:        #dc2626;
+$danger-soft:   #fef2f2;
+$radius:        6px;
 
 :host {
   display: block;
