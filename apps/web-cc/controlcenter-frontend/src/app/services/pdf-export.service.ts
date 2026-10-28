@@ -33,8 +33,8 @@ export class PdfExportService {
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 14;
 
-    // Farben
-    const primaryColor: [number, number, number] = [163, 29, 88]; // #a31d58
+    // Farben (RG+ Brand Identity)
+    const primaryColor: [number, number, number] = [35, 83, 161]; // RG+ Royal Blue #2353a1
     const darkSlate: [number, number, number] = [30, 41, 59]; // #1e293b
     const mutedColor: [number, number, number] = [100, 116, 139]; // #64748b
 
@@ -50,12 +50,12 @@ export class PdfExportService {
       logoLoaded = true;
     } catch {
       // Fallback: Logo-Badge mit Text
-      doc.setFillColor(252, 231, 240);
+      doc.setFillColor(238, 244, 252);
       doc.roundedRect(margin, 10, 24, 24, 3, 3, 'F');
       doc.setTextColor(...primaryColor);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
-      doc.text('RG', margin + 6, 24);
+      doc.text('RG+', margin + 4, 24);
       logoLoaded = false;
     }
 

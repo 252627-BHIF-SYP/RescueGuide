@@ -5,132 +5,158 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7); /* Abgedunkelter Hintergrund für Fokus */
+  background: rgba(15, 23, 42, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  backdrop-filter: blur(8px); /* Moderner Blur-Effekt */
+  backdrop-filter: blur(4px);
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 /* Die Alarm-Karte */
 .alarm-card {
-  background-color: #fcf3f4;
-  border-radius: 24px;
-  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 28px 24px 24px;
   width: 100%;
-  max-width: 450px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  border: 2px solid #a11f53;
+  max-width: 440px;
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.35);
+  border: 2px solid #d92632;
   text-align: center;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.2s ease-out;
 }
 
 /* Header-Bereich */
 .alarm-header {
-  margin-bottom: 24px;
-}
+  margin-bottom: 20px;
 
-.alarm-header h2 {
-  color: #a11f53;
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: 1px;
+  .alarm-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .alarm-logo {
+      height: 22px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .alarm-badge-tag {
+      background: #fef2f2;
+      color: #d92632;
+      border: 1px solid #fecaca;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+  }
+
+  h2 {
+    color: #0f172a;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
 }
 
 /* Container für die Grunddaten (Standort, Anrufer) */
 .alarm-content {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 30px;
+  background: #f0f5fc;
+  border: 1px solid #c2d7f3;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
   text-align: left;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .data-row {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
-}
+  margin-bottom: 10px;
 
-.data-row:last-child {
-  margin-bottom: 0;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .label {
-  font-size: 0.85rem;
-  color: #666;
+  font-size: 0.75rem;
+  color: #2353a1;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  margin-bottom: 2px;
 }
 
 .value {
-  font-size: 1.1rem;
-  color: #333;
+  font-size: 1.02rem;
+  color: #0f172a;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 hr {
   border: 0;
-  border-top: 1px solid #eee;
-  margin: 12px 0;
+  border-top: 1px solid #dbe6f6;
+  margin: 10px 0;
 }
 
 /* Action Buttons */
 .alarm-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .btn-accept {
-  background-color: #a11f53;
+  background-color: #d92632;
   color: #ffffff;
   border: none;
-  padding: 18px 40px;
-  border-radius: 100px;
-  font-size: 1.3rem;
-  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  font-weight: 800;
   width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 8px 20px rgba(161, 31, 83, 0.4);
-  text-transform: uppercase;
-  order: 1; /* Annehmen oben */
-}
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(217, 38, 50, 0.35);
+  letter-spacing: 0.02em;
 
-.btn-accept:hover {
-  background-color: #8a1a47;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 25px rgba(161, 31, 83, 0.5);
+  &:hover {
+    background-color: #b81b26;
+    box-shadow: 0 4px 12px rgba(217, 38, 50, 0.45);
+  }
 }
 
 .btn-reject {
   background: transparent;
-  color: #a11f53;
-  border: 2px solid transparent;
-  padding: 10px 20px;
-  border-radius: 100px;
-  font-size: 1rem;
+  color: #64748b;
+  border: 1px solid #dce2ea;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.88rem;
   font-weight: 600;
-  width: fit-content;
-  align-self: center;
+  width: 100%;
   cursor: pointer;
-  transition: all 0.2s ease;
-  order: 2; /* Ablehnen darunter */
-}
+  transition: all 0.15s ease;
 
-.btn-reject:hover {
-  background: rgba(161, 31, 83, 0.05);
-  border-color: #a11f53;
+  &:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+  }
 }
 
 /* Animationen */
 @keyframes slideIn {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }

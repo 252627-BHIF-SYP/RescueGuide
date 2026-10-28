@@ -1,17 +1,18 @@
-// ── Design Tokens ─────────────────────────────────────────────────────
-$accent: #a31d58;
-$accent-soft: #fce7f0;
-$accent-hover: #8b1649;
-$surface: #ffffff;
-$border: #e2e4e9;
-$border-light: #edf0f4;
-$text: #191c21;
-$text-muted: #68707d;
-$success: #16a34a;
-$success-soft: #ecfdf5;
-$danger: #dc2626;
-$danger-soft: #fee2e2;
-$radius: 12px;
+// ── RG+ Design Tokens (Plan Selector) ──────────────────────────────────
+$accent:        #2353a1;
+$accent-soft:   #eef4fc;
+$accent-hover:  #1b4384;
+$accent-border: #c2d7f3;
+$surface:       #ffffff;
+$border:        #d2deee;
+$border-light:  #e8eef8;
+$text:          #0f172a;
+$text-muted:    #475569;
+$success:       #16a34a;
+$success-soft:  #ecfdf5;
+$danger:        #d92632;
+$danger-soft:   #fef2f2;
+$radius:        6px;
 
 :host {
   display: block;
@@ -122,16 +123,16 @@ $radius: 12px;
 
   .progress-track {
     width: 100%;
-    height: 5px;
+    height: 4px;
     background: #e2e8f0;
-    border-radius: 999px;
+    border-radius: 2px;
     overflow: hidden;
 
     span {
       display: block;
       height: 100%;
-      background: linear-gradient(90deg, $accent, #d946ef);
-      border-radius: 999px;
+      background: $accent;
+      border-radius: 2px;
       transition: width 0.3s ease;
     }
   }
@@ -260,7 +261,7 @@ $radius: 12px;
 
       &:focus-within {
         border-color: $accent;
-        box-shadow: 0 0 0 2px rgba(163, 29, 88, 0.12);
+        box-shadow: 0 0 0 2px rgba(35, 83, 161, 0.15);
       }
 
       .search-icon {
@@ -341,10 +342,10 @@ $radius: 12px;
         &.active {
           background: $accent-soft;
           color: $accent;
-          border-color: rgba(163, 29, 88, 0.3);
+          border-color: rgba(35, 83, 161, 0.35);
 
           .pill-count {
-            background: rgba(163, 29, 88, 0.16);
+            background: rgba(35, 83, 161, 0.14);
             color: $accent;
             font-weight: 700;
           }
@@ -542,7 +543,7 @@ $radius: 12px;
       .btn-add-to-queue {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid rgba(163, 29, 88, 0.25);
+        border: 1px solid rgba(35, 83, 161, 0.3);
         background: $accent-soft;
         color: $accent;
         padding: 0;
@@ -667,7 +668,7 @@ $radius: 12px;
           &.has-items {
             background: $accent-soft;
             color: $accent;
-            border-color: rgba(163, 29, 88, 0.25);
+            border-color: rgba(35, 83, 161, 0.3);
           }
         }
 
@@ -982,53 +983,64 @@ $radius: 12px;
   .btn-send-queue {
     appearance: none;
     -webkit-appearance: none;
-    border: none;
-    background: linear-gradient(135deg, $accent, #801242);
+    border: 1px solid #1a4282;
+    background: #2353a1;
     color: #ffffff;
-    font-size: 0.88rem;
-    font-weight: 800;
-    padding: 8px 18px;
-    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 7px 16px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     cursor: pointer;
-    box-shadow: 0 3px 10px rgba(163, 29, 88, 0.35);
-    transition: all 0.18s ease;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 
     .send-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+    }
+
+    .send-text {
+      letter-spacing: 0.02em;
     }
 
     .shortcut-pill {
-      background: rgba(255, 255, 255, 0.22);
-      font-size: 0.64rem;
-      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      font-size: 0.65rem;
+      font-weight: 600;
       padding: 1px 6px;
       border-radius: 4px;
-      margin-left: 4px;
+      color: #ffffff;
+      letter-spacing: 0;
     }
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #b92466, #92174c);
-      transform: translateY(-1px);
-      box-shadow: 0 5px 14px rgba(163, 29, 88, 0.45);
+      background: #1b4588;
+      border-color: #14366e;
+      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.15);
     }
 
     &:active:not(:disabled) {
-      transform: translateY(0);
+      background: #14366e;
     }
 
     &:disabled {
-      background: #cbd5e1;
+      background: #f1f5f9;
       color: #94a3b8;
+      border: 1px solid #e2e8f0;
       box-shadow: none;
       cursor: not-allowed;
 
       .shortcut-pill {
-        background: rgba(0, 0, 0, 0.08);
+        background: #e2e8f0;
+        border-color: #cbd5e1;
         color: #94a3b8;
       }
     }

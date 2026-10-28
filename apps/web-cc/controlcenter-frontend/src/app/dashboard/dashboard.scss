@@ -1,19 +1,30 @@
-// ── Design Tokens ─────────────────────────────────────────────────────
-$accent:        #a31d58;
-$accent-soft:   #fce7f0;
-$accent-hover:  #8b1649;
-$border:        #e1e2e5;
-$border-light:  #edf0f4;
-$text:          #191c21;
-$text-muted:    #475569;
-$success:       #16a34a;
-$success-soft:  #ecfdf5;
+// ── RG+ Design Tokens (Control Center Dashboard) ────────────────────────
+$rg-blue:        #2353a1;
+$rg-blue-dark:   #1b4384;
+$rg-blue-hover:  #2d62b8;
+$rg-blue-soft:   #eef4fc;
+$rg-blue-border: #c2d7f3;
+
+$rg-red:         #d92632;
+$rg-red-dark:    #b81b26;
+$rg-red-soft:    #fef2f2;
+$rg-red-border:  #fecaca;
+
+$surface:        #ffffff;
+$canvas:         #f0f4fa;
+$border:         #d2deee;
+$border-light:   #e8eef8;
+$text:           #0f172a;
+$text-muted:     #475569;
+$success:        #16a34a;
+$success-soft:   #f0fdf4;
+$radius:         6px;
 
 .dashboard {
   box-sizing: border-box;
   min-height: 100vh;
-  padding: 20px clamp(14px, 3vw, 40px);
-  background: #f5f6f8;
+  padding: 24px clamp(16px, 3vw, 44px);
+  background: $canvas;
 }
 
 .dashboard-header,
@@ -25,51 +36,72 @@ $success-soft:  #ecfdf5;
 
 .dashboard-header {
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $border;
+
+  button[mat-icon-button] {
+    color: $rg-blue;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: $rg-blue-soft;
+    }
+  }
 }
 
 .eyebrow {
-  color: $accent;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  color: $rg-blue;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 h1 {
-  margin: 2px 0 0;
-  font-size: clamp(1.55rem, 4vw, 2.2rem);
-  line-height: 1.1;
+  margin: 3px 0 0;
+  font-size: clamp(1.4rem, 3.5vw, 1.85rem);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 section + section {
-  margin-top: 22px;
+  margin-top: 26px;
 }
 
 .section-title {
-  gap: 9px;
-  margin-bottom: 9px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
 .count,
 .status {
-  padding: 3px 8px;
-  color: #5f6368;
+  padding: 3px 9px;
+  color: #334155;
   font-size: 0.72rem;
   font-weight: 700;
-  border-radius: 999px;
-  background: #e7e8eb;
+  border-radius: 4px;
+  background: #e2ebf7;
+  border: 1px solid #c2d7f3;
 }
 
 .active-count,
 .active-status {
-  color: #9d174d;
-  background: $accent-soft;
+  color: $rg-red-dark;
+  background: $rg-red-soft;
+  border: 1px solid $rg-red-border;
+  font-weight: 800;
 }
 
 .emergency-list {
@@ -81,29 +113,34 @@ h2 {
 .emergency-row {
   display: grid;
   grid-template-columns: minmax(190px, 1.4fr) minmax(130px, 1fr) 115px 115px auto;
-  gap: 14px;
+  gap: 16px;
   min-height: 58px;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border: 1px solid $border;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.18s ease;
+  border-radius: $radius;
+  background: $surface;
+  box-shadow: 0 1px 3px rgba(35, 83, 161, 0.04);
+  transition: all 0.15s ease;
 
   &.clickable {
     cursor: pointer;
 
     &:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+      border-color: $rg-blue;
+      box-shadow: 0 4px 14px rgba(35, 83, 161, 0.10);
       transform: translateY(-1px);
     }
   }
 
   &.active {
     border-color: #fca5a5;
-    background: #fffbfa;
-    box-shadow: 0 0 0 1px #f87171, 0 4px 12px rgba(180, 35, 85, 0.08);
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(217, 38, 50, 0.08);
+
+    &:hover {
+      border-color: $rg-red;
+      box-shadow: 0 3px 10px rgba(217, 38, 50, 0.12);
+    }
   }
 }
 
@@ -125,13 +162,17 @@ h2 {
 .main-info span,
 .field span {
   margin-top: 2px;
-  color: #74777d;
+  color: $text-muted;
   font-size: 0.72rem;
+  font-weight: 500;
 }
 
 .main-info strong,
 .field strong {
-  font-size: 0.84rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: $text;
+  font-variant-numeric: tabular-nums;
 }
 
 // ── Row Actions & Status ─────────────────────────────────────────────
@@ -154,14 +195,14 @@ h2 {
       appearance: none;
       -webkit-appearance: none;
       border: 1px solid transparent;
-      border-radius: 6px;
-      padding: 4px 9px;
-      font-size: 0.73rem;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       transition: all 0.15s ease;
 
       mat-icon {
@@ -171,24 +212,26 @@ h2 {
       }
 
       &.protocol-btn {
-        background: #f1f5f9;
-        color: #334155;
-        border-color: #cbd5e1;
+        background: $rg-blue-soft;
+        color: $rg-blue;
+        border-color: $rg-blue-border;
 
         &:hover {
-          background: #e2e8f0;
-          color: #0f172a;
+          background: $rg-blue;
+          color: #ffffff;
+          border-color: $rg-blue;
         }
       }
 
       &.pdf-btn {
-        background: $accent-soft;
-        color: $accent;
-        border-color: #fbcfe8;
+        background: $rg-red-soft;
+        color: $rg-red;
+        border-color: $rg-red-border;
 
         &:hover {
-          background: $accent;
+          background: $rg-red;
           color: #ffffff;
+          border-color: $rg-red;
         }
       }
     }
@@ -197,16 +240,19 @@ h2 {
 
 .empty,
 .message {
-  padding: 22px;
-  color: #6c7077;
+  padding: 24px;
+  color: $text-muted;
   text-align: center;
-  border: 1px dashed #d2d4d8;
-  border-radius: 10px;
-  background: #fff;
+  border: 1px dashed $border;
+  border-radius: $radius;
+  background: $surface;
+  font-size: 0.88rem;
 }
 
 .message.error {
-  color: #9d174d;
+  color: $rg-red-dark;
+  background: $rg-red-soft;
+  border-color: $rg-red-border;
 }
 
 .spinning {
@@ -219,28 +265,28 @@ h2 {
   }
 }
 
-// ── Protokoll-Modal Styling (Issue 133 & 97) ────────────────────────
+// ── Protokoll-Modal Styling ──────────────────────────────────────────
 .modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.18s ease-out;
+  animation: fadeIn 0.15s ease-out;
 
   .protocol-modal {
     width: 95vw;
     max-width: 1100px;
     height: 90vh;
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid #cbd5e1;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -248,7 +294,7 @@ h2 {
     .modal-header {
       padding: 12px 20px;
       background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid #dce4ef;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -261,11 +307,12 @@ h2 {
         gap: 12px;
 
         .title-icon-bubble {
-          width: 36px;
-          height: 36px;
-          border-radius: 9px;
-          background: $accent-soft;
-          color: $accent;
+          width: 34px;
+          height: 34px;
+          border-radius: 6px;
+          background: $rg-blue-soft;
+          color: $rg-blue;
+          border: 1px solid $rg-blue-border;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -287,14 +334,15 @@ h2 {
             margin: 0;
             font-size: 1.05rem;
             font-weight: 800;
-            color: #0f172a;
+            color: $rg-blue;
             white-space: nowrap;
           }
 
           p {
             margin: 0;
             font-size: 0.78rem;
-            color: #64748b;
+            color: $text-muted;
+            font-weight: 500;
           }
         }
       }
@@ -309,10 +357,10 @@ h2 {
           -webkit-appearance: none;
           border: none;
           background: transparent;
-          color: #64748b;
+          color: $text-muted;
           width: 32px;
           height: 32px;
-          border-radius: 6px;
+          border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -326,8 +374,8 @@ h2 {
           }
 
           &:hover {
-            background: #fee2e2;
-            color: #dc2626;
+            background: $rg-red-soft;
+            color: $rg-red;
           }
         }
       }
@@ -356,14 +404,14 @@ h2 {
           font-size: 32px;
           width: 32px;
           height: 32px;
-          color: $accent;
+          color: $rg-blue;
         }
 
         &.error {
-          color: #b91c1c;
+          color: $rg-red-dark;
 
           mat-icon {
-            color: #ef4444;
+            color: $rg-red;
           }
         }
       }
@@ -383,9 +431,9 @@ h2 {
     }
 
     .modal-footer {
-      padding: 10px 20px;
+      padding: 12px 20px;
       background: #ffffff;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid #dce4ef;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -429,13 +477,13 @@ h2 {
       .btn-export-pdf {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid #fbcfe8;
-        background: $accent-soft;
-        color: $accent;
+        border: 1px solid $rg-red-border;
+        background: $rg-red-soft;
+        color: $rg-red;
         font-size: 0.82rem;
         font-weight: 700;
         padding: 7px 15px;
-        border-radius: 7px;
+        border-radius: 4px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -449,9 +497,9 @@ h2 {
         }
 
         &:hover:not(:disabled) {
-          background: #fbcfe8;
-          border-color: #f472b6;
-          color: $accent-hover;
+          background: $rg-red;
+          color: #ffffff;
+          border-color: $rg-red;
         }
 
         &:disabled {
@@ -463,13 +511,13 @@ h2 {
       .btn-save-changes {
         appearance: none;
         -webkit-appearance: none;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
+        border: 1px solid $rg-blue;
+        background: $rg-blue;
+        color: #ffffff;
         font-size: 0.82rem;
         font-weight: 700;
         padding: 7px 16px;
-        border-radius: 7px;
+        border-radius: 4px;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -483,8 +531,8 @@ h2 {
         }
 
         &:hover:not(:disabled) {
-          background: #f8fafc;
-          border-color: #94a3b8;
+          background: $rg-blue-dark;
+          border-color: $rg-blue-dark;
         }
 
         &.saved {
@@ -496,7 +544,7 @@ h2 {
         &:disabled {
           opacity: 0.45;
           cursor: not-allowed;
-          background: #f8fafc;
+          background: #f1f5f9;
           color: #94a3b8;
           border-color: #e2e8f0;
         }
@@ -506,7 +554,7 @@ h2 {
 }
 
 .animate-scale-up {
-  animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: scaleUp 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes fadeIn {
@@ -515,7 +563,7 @@ h2 {
 }
 
 @keyframes scaleUp {
-  from { transform: scale(0.96); opacity: 0; }
+  from { transform: scale(0.97); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
 }
 

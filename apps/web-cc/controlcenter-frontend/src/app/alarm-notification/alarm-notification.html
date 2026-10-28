@@ -2,7 +2,11 @@
   <div class="alarm-overlay">
     <div class="alarm-card">
       <div class="alarm-header">
-        <h2>DRINGENDER ALARM</h2>
+        <div class="alarm-badge">
+          <img src="assets/logo.png" alt="RescueGuide+" class="alarm-logo" />
+          <span class="alarm-badge-tag">PRIO 1 • NOTRUF</span>
+        </div>
+        <h2>Eingehender Einsatz</h2>
       </div>
 
       <div class="alarm-content">
@@ -24,8 +28,8 @@
       </div>
 
       <div class="alarm-actions">
-        <button class="btn-reject" (click)="onReject()">Ablehnen</button>
         <button class="btn-accept" (click)="onAccept()">Einsatz annehmen</button>
+        <button class="btn-reject" (click)="onReject()">Ablehnen</button>
       </div>
     </div>
   </div>

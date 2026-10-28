@@ -4,13 +4,13 @@
   gap: 10px;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #2b2d42;
+  color: #0f172a;
   padding: 20px 24px 10px 24px;
   margin: 0;
-  border-bottom: 1px solid #f1f3f5;
+  border-bottom: 1px solid #e2ebf7;
 
   .title-icon {
-    color: #e63946; // RescueGuide Rot
+    color: #d92632;
     font-size: 28px;
     height: 28px;
     width: 28px;
@@ -282,11 +282,11 @@
   }
 
   .submit-btn {
-    background-color: #e63946 !important;
+    background-color: #2353a1 !important;
     color: white !important;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 0 20px;
-    font-weight: 600;
+    font-weight: 700;
 
     &[disabled] {
       background-color: #f1f3f5 !important;

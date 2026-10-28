@@ -1,9 +1,9 @@
-$accent: #a31d58;
-$accent-hover: #8c164a;
-$accent-soft: #fdf2f6;
-$border: #e2e8f0;
-$text: #1f2328;
-$text-muted: #64748b;
+$accent:       #2353a1;
+$accent-hover: #1b4384;
+$accent-soft:  #eef4fc;
+$border:       #d2deee;
+$text:         #0f172a;
+$text-muted:   #475569;
 
 .dialog-title {
   display: flex;
@@ -131,7 +131,7 @@ $text-muted: #64748b;
   font-size: 0.82rem;
   flex-shrink: 0;
   margin-top: 12px;
-  box-shadow: 0 0 0 4px #ffffff, 0 2px 4px rgba(163, 29, 88, 0.2);
+  box-shadow: 0 0 0 4px #ffffff, 0 2px 4px rgba(35, 83, 161, 0.25);
 }
 
 .step-card {

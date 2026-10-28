@@ -1,8 +1,8 @@
-// ── Design Tokens ─────────────────────────────────────────────────────
-$accent:   #a31d58;
-$danger:   #b42355;
-$surface-dark: #0f1115;
-$border-dark:  #252930;
+// ── RG+ Design Tokens (Tactical Video Feed) ───────────────────────────
+$accent:       #2353a1;
+$danger:       #d92632;
+$surface-dark: #091220;
+$border-dark:  #1b2f52;
 
 :host {
   display: flex;
@@ -26,20 +26,20 @@ $border-dark:  #252930;
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 14px 20px;
-  background: #fff0f5;
-  border: 1px solid #f8cce0;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 12px rgba(180, 35, 85, 0.12);
+  padding: 12px 18px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
   width: 100%;
   max-width: 440px;
 
   .incoming-icon-ring {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: #fce4ed;
+    background: #fee2e2;
     color: $danger;
     display: flex;
     align-items: center;
@@ -47,9 +47,9 @@ $border-dark:  #252930;
     animation: ringPulse 1.4s infinite;
 
     mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
 
@@ -59,14 +59,14 @@ $border-dark:  #252930;
     h4 {
       margin: 0;
       font-size: 0.92rem;
-      font-weight: 700;
-      color: #1f2328;
+      font-weight: 800;
+      color: #0f172a;
     }
 
     p {
       margin: 2px 0 0;
       font-size: 0.8rem;
-      color: #656d76;
+      color: #526075;
     }
   }
 
@@ -76,10 +76,10 @@ $border-dark:  #252930;
 
     button {
       font-size: 0.8rem;
-      font-weight: 600;
-      border-radius: 999px;
+      font-weight: 700;
+      border-radius: 4px;
       padding: 0 12px;
-      height: 34px;
+      height: 32px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -97,7 +97,7 @@ $border-dark:  #252930;
 .video-wrapper {
   position: relative;
   background: $surface-dark;
-  border-radius: 18px;
+  border-radius: 8px;
   overflow: hidden;
   height: 100%;
   max-height: calc(100vh - 120px);
@@ -106,7 +106,7 @@ $border-dark:  #252930;
   align-items: center;
   justify-content: center;
   border: 2px solid $border-dark;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(11, 17, 28, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
 
   .remote-feed {
     width: 100%;
@@ -139,9 +139,9 @@ $border-dark:  #252930;
       font-size: 0.68rem;
       font-weight: 800;
       padding: 3px 8px;
-      border-radius: 6px;
+      border-radius: 4px;
       letter-spacing: 0.08em;
-      box-shadow: 0 2px 8px rgba(180, 35, 85, 0.6);
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);
 
       .live-pulse-dot {
         width: 6px;
@@ -153,12 +153,12 @@ $border-dark:  #252930;
     }
 
     .feed-status {
-      background: rgba(15, 17, 21, 0.72);
-      color: #f0f2f5;
+      background: rgba(11, 17, 28, 0.75);
+      color: #f1f5f9;
       font-size: 0.72rem;
       font-weight: 600;
       padding: 3px 10px;
-      border-radius: 6px;
+      border-radius: 4px;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -182,29 +182,28 @@ $border-dark:  #252930;
     top: 12px;
     right: 12px;
     z-index: 10;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 17, 21, 0.65);
+    background: rgba(11, 17, 28, 0.75);
     color: #ffffff;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    transition: all 0.18s ease;
+    transition: all 0.15s ease;
 
     mat-icon {
-      font-size: 19px;
-      width: 19px;
-      height: 19px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
 
     &:hover {
       background: rgba(255, 255, 255, 0.95);
-      color: #111316;
-      transform: scale(1.05);
+      color: #0f172a;
     }
   }
 
@@ -223,12 +222,12 @@ $border-dark:  #252930;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: rgba(15, 17, 21, 0.75);
-      color: rgba(255, 255, 255, 0.85);
+      background: rgba(11, 17, 28, 0.78);
+      color: rgba(255, 255, 255, 0.9);
       font-size: 0.68rem;
-      font-weight: 500;
+      font-weight: 600;
       padding: 3px 10px;
-      border-radius: 999px;
+      border-radius: 4px;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -253,11 +252,11 @@ $border-dark:  #252930;
     gap: 10px;
     padding: 24px;
     text-align: center;
-    color: #8b949e;
+    color: #94a3b8;
 
     .standby-radar {
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.04);
       border: 1px dashed rgba(255, 255, 255, 0.18);
@@ -267,22 +266,22 @@ $border-dark:  #252930;
       animation: standbyPulse 2.4s ease-in-out infinite;
 
       .standby-icon {
-        font-size: 28px;
-        width: 28px;
-        height: 28px;
+        font-size: 26px;
+        width: 26px;
+        height: 26px;
         color: rgba(255, 255, 255, 0.35);
       }
     }
 
     .standby-title {
       font-size: 0.88rem;
-      font-weight: 600;
-      color: #e6edf3;
+      font-weight: 700;
+      color: #f1f5f9;
     }
 
     .standby-sub {
       font-size: 0.72rem;
-      color: #8b949e;
+      color: #94a3b8;
       max-width: 200px;
       line-height: 1.35;
     }
@@ -314,10 +313,10 @@ $border-dark:  #252930;
 
 @keyframes standbyPulse {
   0%, 100% { transform: scale(1); border-color: rgba(255, 255, 255, 0.18); }
-  50%       { transform: scale(1.08); border-color: rgba(163, 29, 88, 0.4); }
+  50%       { transform: scale(1.06); border-color: rgba(22, 40, 70, 0.5); }
 }
 
 @keyframes ringPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(180, 35, 85, 0.4); }
-  50%       { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(180, 35, 85, 0); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+  50%       { transform: scale(1.04); box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
 }
