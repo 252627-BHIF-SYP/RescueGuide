@@ -279,8 +279,11 @@ $shadow-md:     0 4px 16px rgba(35, 83, 161, 0.12);
     }
 
     button.btn-end-call {
-      background-color: $danger !important;
-      color: #fff !important;
+      appearance: none;
+      -webkit-appearance: none;
+      background-color: #c92a2a !important;
+      border: 1px solid #a82020 !important;
+      color: #ffffff !important;
       font-weight: 700;
       font-size: 0.82rem;
       border-radius: 4px;
@@ -288,19 +291,27 @@ $shadow-md:     0 4px 16px rgba(35, 83, 161, 0.12);
       height: 34px;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      box-shadow: 0 1px 4px rgba(217, 38, 50, 0.35);
-      transition: all 0.15s ease;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 
       mat-icon {
-        font-size: 17px;
-        width: 17px;
-        height: 17px;
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
       }
 
       &:hover {
-        background-color: $danger-hover !important;
-        box-shadow: 0 3px 8px rgba(217, 38, 50, 0.45);
+        background-color: #b02323 !important;
+        border-color: #8c1b1b !important;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, 0.15);
+      }
+
+      &:active {
+        background-color: #9b1e1e !important;
+        box-shadow: none;
       }
     }
   }
