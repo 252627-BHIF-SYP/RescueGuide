@@ -27,33 +27,19 @@
   gap: 10px;
 
   .brand-logo {
-    height: 22px;
+    height: 19px;
     width: auto;
     object-fit: contain;
     flex-shrink: 0;
   }
 
-  .brand-text-col {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15;
-    min-width: 0;
-
-    .brand-title {
-      font-size: 0.98rem;
-      font-weight: 800;
-      color: #2353a1;
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-    }
-
-    .brand-sub {
-      font-size: 0.62rem;
-      font-weight: 800;
-      color: #556987;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+  .brand-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #2353a1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    line-height: 1;
   }
 }
 
