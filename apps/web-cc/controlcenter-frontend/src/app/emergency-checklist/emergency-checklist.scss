@@ -65,13 +65,6 @@ $pending-text:  #64748b;
   flex-direction: column;
   gap: 10px;
 
-  &.left-panel {
-    border-left: 3px solid $accent;
-  }
-
-  &.right-panel {
-    border-left: 3px solid #64748b;
-  }
 
   .panel-header {
     display: flex;

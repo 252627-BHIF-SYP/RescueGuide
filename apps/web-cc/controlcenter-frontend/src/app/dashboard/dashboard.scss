@@ -5,7 +5,7 @@ $accent-hover:  #8b1649;
 $border:        #e1e2e5;
 $border-light:  #edf0f4;
 $text:          #191c21;
-$text-muted:    #6c7077;
+$text-muted:    #475569;
 $success:       #16a34a;
 $success-soft:  #ecfdf5;
 
@@ -101,8 +101,9 @@ h2 {
   }
 
   &.active {
-    border-left: 4px solid #b42355;
+    border-color: #fca5a5;
     background: #fffbfa;
+    box-shadow: 0 0 0 1px #f87171, 0 4px 12px rgba(180, 35, 85, 0.08);
   }
 }
 
