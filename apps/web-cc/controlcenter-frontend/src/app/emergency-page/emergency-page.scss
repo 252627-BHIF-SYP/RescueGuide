@@ -122,21 +122,16 @@ $shadow-md:     0 4px 16px rgba(35, 83, 161, 0.12);
       min-width: 0;
 
       .loc-icon-bubble {
-        width: 28px;
-        height: 28px;
-        border-radius: 4px;
-        background: $danger-soft;
         color: $danger;
-        border: 1px solid $danger-border;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
 
         mat-icon {
-          font-size: 17px;
-          width: 17px;
-          height: 17px;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
         }
       }
 
