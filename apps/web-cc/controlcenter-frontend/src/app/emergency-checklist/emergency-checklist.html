@@ -1,42 +1,34 @@
 <mat-card class="checklist-card">
-  <!-- Card Header with filled count badge -->
-  <mat-card-header class="protocol-header">
-    <div class="header-main-row">
-      <div class="protocol-title">
-        <mat-icon class="card-icon">fact_check</mat-icon>
-        <h3>Einsatzprotokoll</h3>
-      </div>
-      <div
-        class="fill-status-badge"
-        [class.completed]="filledFieldsCount === totalFields"
-        [matTooltip]="filledFieldsCount + ' von ' + totalFields + ' Kernfeldern sind ausgefüllt'"
-      >
-        <mat-icon class="badge-icon">{{
-          filledFieldsCount === totalFields ? 'task_alt' : 'check_circle'
-        }}</mat-icon>
-        <span>{{ filledFieldsCount }}/{{ totalFields }} Felder befüllt</span>
-      </div>
-    </div>
-
-    <!-- Mini Progress Bar -->
-    <div class="protocol-progress-track">
-      <div class="protocol-progress-fill" [style.width.%]="progressPercent"></div>
-    </div>
-  </mat-card-header>
-
   <mat-card-content class="protocol-content">
     <form class="protocol-form" (ngSubmit)="$event.preventDefault()">
-      <!-- ── LINKER BLOCK: Einsatzdaten & Ort ── -->
-      <section class="form-card-panel">
+      <!-- ── LINKER BLOCK: Einsatzdaten, Lage & Alarmierung (Issue 135) ── -->
+      <section class="form-card-panel left-panel">
         <div class="panel-header">
-          <mat-icon class="panel-icon">location_on</mat-icon>
-          <span class="panel-title">Einsatzdaten &amp; Ort</span>
+          <div class="panel-header-title">
+            <mat-icon class="panel-icon">crisis_alert</mat-icon>
+            <span class="panel-title">Einsatzdaten &amp; Lage</span>
+          </div>
         </div>
 
         <div class="panel-body">
           <!-- Art des Notrufs -->
-          <div class="input-group">
-            <label class="input-label" for="emergencyType">Art des Notrufs</label>
+          <div
+            class="input-group"
+            [class.field-filled]="isFilled('type')"
+            [class.field-pending]="!isFilled('type')"
+          >
+            <div class="label-row">
+              <label class="input-label" for="emergencyType">Art des Notrufs</label>
+              @if (isFilled('type')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> Ausgefüllt
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
+                </span>
+              }
+            </div>
             <div class="select-wrapper">
               <mat-icon class="field-icon">emergency</mat-icon>
               <select
@@ -55,12 +47,30 @@
                 <option value="Sonstiges">Sonstiges</option>
               </select>
               <mat-icon class="select-arrow">expand_more</mat-icon>
+              @if (isFilled('type')) {
+                <mat-icon class="field-check-icon">check</mat-icon>
+              }
             </div>
           </div>
 
           <!-- Einsatzadresse / Standort -->
-          <div class="input-group">
-            <label class="input-label" for="address">Einsatzadresse / Standort</label>
+          <div
+            class="input-group"
+            [class.field-filled]="isFilled('address')"
+            [class.field-pending]="!isFilled('address')"
+          >
+            <div class="label-row">
+              <label class="input-label" for="address">Einsatzadresse / Standort</label>
+              @if (isFilled('address')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> Ausgefüllt
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
+                </span>
+              }
+            </div>
             <div class="input-wrapper">
               <mat-icon class="field-icon">place</mat-icon>
               <input
@@ -72,45 +82,66 @@
                 (ngModelChange)="onFieldChange()"
                 placeholder="Straße, Hausnummer, Ort..."
               />
+              @if (isFilled('address')) {
+                <mat-icon class="field-check-icon">check</mat-icon>
+              }
             </div>
           </div>
 
-          <!-- Datum & Uhrzeit nebeneinander -->
-          <div class="input-row-2">
-            <div class="input-group">
-              <label class="input-label" for="emergencyDate">Datum</label>
-              <div class="input-wrapper">
-                <mat-icon class="field-icon">calendar_today</mat-icon>
-                <input
-                  id="emergencyDate"
-                  type="date"
-                  class="custom-input"
-                  [(ngModel)]="emergencyData().date"
-                  name="emergencyDate"
-                  (ngModelChange)="onFieldChange()"
-                />
-              </div>
+          <!-- ANZAHL VERLETZTE (Issue 135: Nach links verschoben) -->
+          <div
+            class="input-group"
+            [class.field-filled]="isFilled('injuredCount')"
+            [class.field-pending]="!isFilled('injuredCount')"
+          >
+            <div class="label-row">
+              <label class="input-label" for="injuredCount">Anzahl Verletzte</label>
+              @if (isFilled('injuredCount')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> Erfasst
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
+                </span>
+              }
             </div>
-
-            <div class="input-group">
-              <label class="input-label" for="emergencyTime">Uhrzeit</label>
-              <div class="input-wrapper">
-                <mat-icon class="field-icon">schedule</mat-icon>
-                <input
-                  id="emergencyTime"
-                  type="time"
-                  class="custom-input"
-                  [(ngModel)]="emergencyData().time"
-                  name="emergencyTime"
-                  (ngModelChange)="onFieldChange()"
-                />
-              </div>
+            <div class="input-wrapper">
+              <mat-icon class="field-icon">personal_injury</mat-icon>
+              <input
+                id="injuredCount"
+                type="number"
+                min="0"
+                class="custom-input"
+                [(ngModel)]="emergencyData().injuredCount"
+                name="injuredCount"
+                (ngModelChange)="onFieldChange()"
+                placeholder="0"
+              />
+              @if (isFilled('injuredCount')) {
+                <mat-icon class="field-check-icon">check</mat-icon>
+              }
             </div>
           </div>
 
           <!-- Lagebericht / Beschreibung -->
-          <div class="input-group">
-            <label class="input-label" for="description">Lagebeschreibung (Was ist passiert?)</label>
+          <div
+            class="input-group"
+            [class.field-filled]="isFilled('description')"
+            [class.field-pending]="!isFilled('description')"
+          >
+            <div class="label-row">
+              <label class="input-label" for="description">Lagebeschreibung (Was ist passiert?)</label>
+              @if (isFilled('description')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> Ausgefüllt
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
+                </span>
+              }
+            </div>
             <textarea
               id="description"
               class="custom-textarea"
@@ -118,23 +149,40 @@
               [(ngModel)]="emergencyData().description"
               name="description"
               (ngModelChange)="onFieldChange()"
-              placeholder="Schilderung der Situation, Bewusstseinszustand, Symptome..."
+              placeholder="Schilderung der Situation, Bewusstseinszustand, Verletzungsmuster, Vitalzeichen..."
             ></textarea>
           </div>
         </div>
       </section>
 
-      <!-- ── RECHTER BLOCK: Anrufer & Disposition ── -->
-      <section class="form-card-panel">
+      <!-- ── RECHTER BLOCK: Anrufer & Alarmierung ── -->
+      <section class="form-card-panel right-panel">
         <div class="panel-header">
-          <mat-icon class="panel-icon">person</mat-icon>
-          <span class="panel-title">Anrufer &amp; Disposition</span>
+          <div class="panel-header-title">
+            <mat-icon class="panel-icon">person</mat-icon>
+            <span class="panel-title">Anrufer &amp; Alarmierung</span>
+          </div>
         </div>
 
         <div class="panel-body">
           <!-- Name des Anrufers -->
-          <div class="input-group">
-            <label class="input-label" for="callerName">Name des Anrufers</label>
+          <div
+            class="input-group"
+            [class.field-filled]="isFilled('callerName')"
+            [class.field-pending]="!isFilled('callerName')"
+          >
+            <div class="label-row">
+              <label class="input-label" for="callerName">Name des Anrufers</label>
+              @if (isFilled('callerName')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> Ausgefüllt
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
+                </span>
+              }
+            </div>
             <div class="input-wrapper">
               <mat-icon class="field-icon">person</mat-icon>
               <input
@@ -146,13 +194,27 @@
                 (ngModelChange)="onFieldChange()"
                 placeholder="Vor- und Nachname des Anrufers"
               />
+              @if (isFilled('callerName')) {
+                <mat-icon class="field-check-icon">check</mat-icon>
+              }
             </div>
           </div>
 
           <!-- Rückrufnummer & Anrufer-Typ -->
           <div class="input-row-2">
-            <div class="input-group">
-              <label class="input-label" for="callbackNumber">Rückrufnummer</label>
+            <div
+              class="input-group"
+              [class.field-filled]="isFilled('callbackNumber')"
+              [class.field-pending]="!isFilled('callbackNumber')"
+            >
+              <div class="label-row">
+                <label class="input-label" for="callbackNumber">Rückrufnummer</label>
+                @if (isFilled('callbackNumber')) {
+                  <span class="status-indicator filled"><mat-icon>check_circle</mat-icon></span>
+                } @else {
+                  <span class="status-indicator pending"><mat-icon>radio_button_unchecked</mat-icon></span>
+                }
+              </div>
               <div class="input-wrapper">
                 <mat-icon class="field-icon">phone</mat-icon>
                 <input
@@ -167,8 +229,19 @@
               </div>
             </div>
 
-            <div class="input-group">
-              <label class="input-label" for="callerType">Anrufer-Typ</label>
+            <div
+              class="input-group"
+              [class.field-filled]="isFilled('callerType')"
+              [class.field-pending]="!isFilled('callerType')"
+            >
+              <div class="label-row">
+                <label class="input-label" for="callerType">Anrufer-Typ</label>
+                @if (isFilled('callerType')) {
+                  <span class="status-indicator filled"><mat-icon>check_circle</mat-icon></span>
+                } @else {
+                  <span class="status-indicator pending"><mat-icon>radio_button_unchecked</mat-icon></span>
+                }
+              </div>
               <div class="input-wrapper">
                 <input
                   id="callerType"
@@ -183,45 +256,60 @@
             </div>
           </div>
 
-          <!-- Verletzte & Disponent -->
-          <div class="input-row-2">
-            <div class="input-group">
-              <label class="input-label" for="injuredCount">Anzahl Verletzte</label>
-              <div class="input-wrapper">
-                <mat-icon class="field-icon">personal_injury</mat-icon>
-                <input
-                  id="injuredCount"
-                  type="number"
-                  min="0"
-                  class="custom-input"
-                  [(ngModel)]="emergencyData().injuredCount"
-                  name="injuredCount"
-                  (ngModelChange)="onFieldChange()"
-                  placeholder="0"
-                />
-              </div>
+          <!-- Disponent -->
+          <div
+            class="input-group"
+            [class.field-filled]="isFilled('dispatcherName')"
+            [class.field-pending]="!isFilled('dispatcherName')"
+          >
+            <div class="label-row">
+              <label class="input-label" for="dispatcherName">Disponent (Leitstelle)</label>
+              @if (isFilled('dispatcherName')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> Ausgefüllt
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
+                </span>
+              }
             </div>
-
-            <div class="input-group">
-              <label class="input-label" for="dispatcherName">Disponent</label>
-              <div class="input-wrapper">
-                <mat-icon class="field-icon">badge</mat-icon>
-                <input
-                  id="dispatcherName"
-                  type="text"
-                  class="custom-input"
-                  [(ngModel)]="emergencyData().dispatcherName"
-                  name="dispatcherName"
-                  (ngModelChange)="onFieldChange()"
-                  placeholder="Name des Operators"
-                />
-              </div>
+            <div class="input-wrapper">
+              <mat-icon class="field-icon">badge</mat-icon>
+              <input
+                id="dispatcherName"
+                type="text"
+                class="custom-input"
+                [(ngModel)]="emergencyData().dispatcherName"
+                name="dispatcherName"
+                (ngModelChange)="onFieldChange()"
+                placeholder="Name des Operators"
+              />
+              @if (isFilled('dispatcherName')) {
+                <mat-icon class="field-check-icon">check</mat-icon>
+              }
             </div>
           </div>
 
-          <!-- Alarmierung -->
-          <div class="input-group">
-            <label class="input-label">Einsatzmittel-Alarmierung</label>
+          <!-- EINSATZMITTEL-ALARMIERUNG -->
+          <div
+            class="input-group alarm-section"
+            [class.field-filled]="isFilled('alarms')"
+            [class.field-pending]="!isFilled('alarms')"
+          >
+            <div class="label-row">
+              <label class="input-label">Einsatzmittel-Alarmierung</label>
+              @if (isFilled('alarms')) {
+                <span class="status-indicator filled">
+                  <mat-icon>check_circle</mat-icon> {{ alarmedUnitsCount }} alarmiert
+                </span>
+              } @else {
+                <span class="status-indicator pending">
+                  <mat-icon>radio_button_unchecked</mat-icon> Keine Einheiten alarmiert
+                </span>
+              }
+            </div>
+
             <div class="alarm-grid-2x2">
               <!-- RD: Rettungsdienst -->
               <button
@@ -288,6 +376,7 @@
               </button>
             </div>
           </div>
+
         </div>
       </section>
     </form>

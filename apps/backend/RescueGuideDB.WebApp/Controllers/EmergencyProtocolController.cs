@@ -54,7 +54,22 @@ public class EmergencyProtocolController : ControllerBase
         var protocol = await _context.EmergencyProtocols
             .FirstOrDefaultAsync(p => p.EmergencyId == emergencyId);
             
-        if (protocol == null) return NotFound();
+        if (protocol == null)
+        {
+            var emergency = await _context.Emergencies.FindAsync(emergencyId);
+            if (emergency == null) return NotFound("Emergency not found.");
+
+            protocol = new EmergencyProtocol
+            {
+                EmergencyId = emergencyId,
+                Date = emergency.StartedAt.ToString("yyyy-MM-dd"),
+                Time = emergency.StartedAt.ToString("HH:mm"),
+                Type = emergency.Einsatzart
+            };
+            _context.EmergencyProtocols.Add(protocol);
+            await _context.SaveChangesAsync();
+        }
+
         return protocol;
     }
 
@@ -81,6 +96,12 @@ public class EmergencyProtocolController : ControllerBase
         existingProtocol.AlarmedNA = protocol.AlarmedNA;
         existingProtocol.AlarmedPol = protocol.AlarmedPol;
         existingProtocol.AlarmedFW = protocol.AlarmedFW;
+
+        var emergency = await _context.Emergencies.FindAsync(existingProtocol.EmergencyId);
+        if (emergency != null && !string.IsNullOrWhiteSpace(protocol.Type))
+        {
+            emergency.Einsatzart = protocol.Type;
+        }
 
         try
         {

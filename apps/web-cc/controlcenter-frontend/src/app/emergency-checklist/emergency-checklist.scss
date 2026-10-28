@@ -9,7 +9,11 @@ $border-input:  #cbd5e1;
 $text:          #191c21;
 $text-muted:    #64748b;
 $success:       #16a34a;
-$success-soft:  #ecfdf5;
+$success-soft:  #f0fdf4;
+$success-border:#86efac;
+$pending-soft:  #f8fafc;
+$pending-border:#cbd5e1;
+$pending-text:  #64748b;
 
 :host {
   display: block;
@@ -26,89 +30,6 @@ $success-soft:  #ecfdf5;
   border-radius: 14px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-
-  // ── Header Bar with Progress ───────────────────────────────────────
-  .protocol-header {
-    padding: 12px 18px 8px;
-    border-bottom: 1px solid $border;
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-
-    .header-main-row {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      .protocol-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        .card-icon {
-          color: $accent;
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-
-        h3 {
-          margin: 0;
-          font-size: 0.98rem;
-          font-weight: 700;
-          color: $text;
-        }
-      }
-
-      .fill-status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: #f1f5f9;
-        color: #475569;
-        font-size: 0.74rem;
-        font-weight: 700;
-        padding: 3px 10px;
-        border-radius: 999px;
-        border: 1px solid #cbd5e1;
-        transition: all 0.2s ease;
-
-        .badge-icon {
-          font-size: 14px;
-          width: 14px;
-          height: 14px;
-          color: #64748b;
-        }
-
-        &.completed {
-          background: $success-soft;
-          color: #065f46;
-          border-color: #a7f3d0;
-
-          .badge-icon {
-            color: $success;
-          }
-        }
-      }
-    }
-
-    .protocol-progress-track {
-      width: 100%;
-      height: 4px;
-      background: #e2e8f0;
-      border-radius: 999px;
-      overflow: hidden;
-
-      .protocol-progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #10b981, #059669);
-        border-radius: 999px;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-    }
-  }
 
   // ── Scrollable Protocol Content ────────────────────────────────────
   .protocol-content {
@@ -144,26 +65,51 @@ $success-soft:  #ecfdf5;
   flex-direction: column;
   gap: 10px;
 
+
   .panel-header {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
     padding-bottom: 8px;
     border-bottom: 1px solid #f1f5f9;
 
-    .panel-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: $accent;
+    .panel-header-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .panel-icon {
+        font-size: 17px;
+        width: 17px;
+        height: 17px;
+        color: $accent;
+      }
+
+      .panel-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
     }
 
-    .panel-title {
-      font-size: 0.8rem;
+    .panel-badge {
+      font-size: 0.65rem;
       font-weight: 700;
-      color: #334155;
-      letter-spacing: 0.02em;
       text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 6px;
+
+      &.primary {
+        background: $accent-soft;
+        color: $accent;
+      }
+
+      &.secondary {
+        background: #f1f5f9;
+        color: #475569;
+      }
     }
   }
 
@@ -174,17 +120,97 @@ $success-soft:  #ecfdf5;
   }
 }
 
-// ── Form Input Groups & Rows ────────────────────────────────────────
+// ── Form Input Groups & Status Highlighting (Issue 134) ─────────────
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  position: relative;
+  transition: all 0.2s ease;
 
-  .input-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #475569;
-    letter-spacing: 0.01em;
+  .label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+
+    .input-label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: #334155;
+      letter-spacing: 0.01em;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 11px;
+        width: 11px;
+        height: 11px;
+      }
+
+      &.filled {
+        background: $success-soft;
+        color: #15803d;
+        border: 1px solid $success-border;
+      }
+
+      &.pending {
+        background: #f1f5f9;
+        color: $pending-text;
+        border: 1px solid #e2e8f0;
+      }
+    }
+  }
+
+  // ── Farbliche Differenzierung des Felds (Issue 134) ──
+  &.field-filled {
+    .custom-input,
+    .custom-select,
+    .custom-textarea {
+      background: #f0fdf4 !important;
+      border-color: $success-border !important;
+      color: #0f172a;
+
+      &:hover {
+        border-color: #4ade80 !important;
+      }
+
+      &:focus {
+        border-color: $success !important;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
+      }
+    }
+
+    .field-icon {
+      color: $success !important;
+    }
+  }
+
+  &.field-pending {
+    .custom-input,
+    .custom-select,
+    .custom-textarea {
+      background: #ffffff;
+      border-color: $border-input;
+
+      &:hover {
+        border-color: #94a3b8;
+      }
+
+      &:focus {
+        border-color: $accent;
+        box-shadow: 0 0 0 3px rgba(163, 29, 88, 0.12);
+      }
+    }
   }
 }
 
@@ -211,11 +237,23 @@ $success-soft:  #ecfdf5;
     color: #94a3b8;
     pointer-events: none;
     z-index: 2;
+    transition: color 0.15s ease;
+  }
+
+  .field-check-icon {
+    position: absolute;
+    right: 9px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: $success;
+    pointer-events: none;
+    z-index: 2;
   }
 
   .select-arrow {
     position: absolute;
-    right: 8px;
+    right: 28px;
     font-size: 20px;
     width: 20px;
     height: 20px;
@@ -234,7 +272,7 @@ $success-soft:  #ecfdf5;
   font-family: inherit;
   font-size: 0.83rem;
   color: $text;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid $border-input;
   border-radius: 7px;
   box-sizing: border-box;
@@ -244,23 +282,11 @@ $success-soft:  #ecfdf5;
     color: #94a3b8;
     font-size: 0.8rem;
   }
-
-  &:hover {
-    border-color: #94a3b8;
-    background: #ffffff;
-  }
-
-  &:focus {
-    outline: none;
-    background: #ffffff;
-    border-color: $accent;
-    box-shadow: 0 0 0 3px rgba(163, 29, 88, 0.12);
-  }
 }
 
 .custom-input {
   height: 35px;
-  padding: 0 10px 0 32px;
+  padding: 0 28px 0 32px;
 
   &.no-icon {
     padding-left: 10px;
@@ -269,7 +295,7 @@ $success-soft:  #ecfdf5;
 
 .custom-select {
   height: 35px;
-  padding: 0 28px 0 32px;
+  padding: 0 46px 0 32px;
   cursor: pointer;
 
   option {
@@ -286,18 +312,32 @@ $success-soft:  #ecfdf5;
 }
 
 // ── Alarm Section (2x2 Grid) ────────────────────────────────────────
+.alarm-section {
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &.field-filled {
+    background: #f0fdf4;
+    border-color: $success-border;
+    border-style: solid;
+  }
+}
+
 .alarm-grid-2x2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 7px;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .alarm-chip {
   appearance: none;
   -webkit-appearance: none;
   border: 1px solid #cbd5e1;
-  background: #f8fafc;
+  background: #ffffff;
   border-radius: 8px;
   padding: 6px 8px;
   display: flex;
@@ -417,3 +457,5 @@ $success-soft:  #ecfdf5;
     }
   }
 }
+
+

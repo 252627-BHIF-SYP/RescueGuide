@@ -4,7 +4,13 @@
       <span class="eyebrow">Leitstelle</span>
       <h1>Notruf-Dashboard</h1>
     </div>
-    <button mat-icon-button (click)="loadEmergencies()" [disabled]="loading() || refreshing()" aria-label="Notrufe aktualisieren">
+    <button
+      mat-icon-button
+      (click)="loadEmergencies()"
+      [disabled]="loading() || refreshing()"
+      aria-label="Notrufe aktualisieren"
+      matTooltip="Notrufe aktualisieren"
+    >
       <mat-icon [class.spinning]="refreshing()">refresh</mat-icon>
     </button>
   </header>
@@ -17,6 +23,7 @@
       <button mat-button (click)="loadEmergencies()">Erneut versuchen</button>
     </div>
   } @else {
+    <!-- Aktive Notrufe -->
     <section>
       <div class="section-title">
         <h2>Aktive Notrufe</h2>
@@ -25,7 +32,11 @@
 
       <div class="emergency-list">
         @for (emergency of activeEmergencies(); track emergency.id) {
-          <mat-card class="emergency-row active">
+          <mat-card
+            class="emergency-row active clickable"
+            (click)="openProtocolDialog(emergency)"
+            matTooltip="Klicken, um das Einsatzprotokoll zu öffnen und zu bearbeiten"
+          >
             <div class="main-info">
               <strong>{{ emergency.emergencyType || 'Einsatzart nicht erfasst' }}</strong>
               <span>{{ getLocationLabel(emergency) }}</span>
@@ -42,7 +53,29 @@
               <span>Ende</span>
               <strong>–</strong>
             </div>
-            <span class="status active-status">Aktiv</span>
+            <div class="row-status-and-actions">
+              <span class="status active-status">Aktiv</span>
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="row-btn protocol-btn"
+                  (click)="openProtocolDialog(emergency); $event.stopPropagation()"
+                  title="Protokoll bearbeiten"
+                >
+                  <mat-icon>edit_note</mat-icon>
+                  <span>Protokoll</span>
+                </button>
+                <button
+                  type="button"
+                  class="row-btn pdf-btn"
+                  (click)="exportEmergencyPdf(emergency, $event)"
+                  title="Protokoll als PDF exportieren"
+                >
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>PDF</span>
+                </button>
+              </div>
+            </div>
           </mat-card>
         } @empty {
           <div class="empty">Keine aktiven Notrufe.</div>
@@ -50,6 +83,7 @@
       </div>
     </section>
 
+    <!-- Vergangene Notrufe -->
     <section>
       <div class="section-title">
         <h2>Vergangene Notrufe</h2>
@@ -58,7 +92,11 @@
 
       <div class="emergency-list">
         @for (emergency of completedEmergencies(); track emergency.id) {
-          <mat-card class="emergency-row">
+          <mat-card
+            class="emergency-row clickable"
+            (click)="openProtocolDialog(emergency)"
+            matTooltip="Klicken, um das Protokoll im Nachhinein einzusehen oder zu bearbeiten"
+          >
             <div class="main-info">
               <strong>{{ emergency.emergencyType || 'Einsatzart nicht erfasst' }}</strong>
               <span>{{ getLocationLabel(emergency) }}</span>
@@ -77,13 +115,135 @@
                 {{ emergency.endedAt ? (emergency.endedAt | date: 'dd.MM., HH:mm') : '–' }}
               </strong>
             </div>
-            <span class="status">Beendet</span>
+            <div class="row-status-and-actions">
+              <span class="status">Beendet</span>
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="row-btn protocol-btn"
+                  (click)="openProtocolDialog(emergency); $event.stopPropagation()"
+                  title="Protokoll nachbearbeiten"
+                >
+                  <mat-icon>edit_note</mat-icon>
+                  <span>Protokoll</span>
+                </button>
+                <button
+                  type="button"
+                  class="row-btn pdf-btn"
+                  (click)="exportEmergencyPdf(emergency, $event)"
+                  title="Protokoll als PDF exportieren"
+                >
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>PDF</span>
+                </button>
+              </div>
+            </div>
           </mat-card>
         } @empty {
           <div class="empty">Keine vergangenen Notrufe.</div>
         }
       </div>
     </section>
+  }
 
+  <!-- ── PROTOKOLL-BEARBEITUNGS-MODAL (Issue 133 & 97) ── -->
+  @if (selectedEmergency()) {
+    <div class="modal-backdrop" (click)="closeProtocolDialog()">
+      <div class="protocol-modal animate-scale-up" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <header class="modal-header">
+          <div class="modal-title-left">
+            <div class="title-icon-bubble">
+              <mat-icon>edit_document</mat-icon>
+            </div>
+            <div class="title-text">
+              <h2>Einsatzprotokoll #{{ selectedEmergency()!.id }}</h2>
+              <p>
+                Status: {{ selectedEmergency()!.status === 'Active' ? 'Aktiv' : 'Abgeschlossen' }}
+                &bull; Notrufbeginn: {{ selectedEmergency()!.startedAt | date: 'dd.MM.yyyy, HH:mm' }} Uhr
+                @if (selectedEmergency()!.handlerName) {
+                  &bull; Bearbeiter: {{ selectedEmergency()!.handlerName }}
+                }
+              </p>
+            </div>
+          </div>
+
+          <div class="modal-header-actions">
+            <button
+              type="button"
+              class="btn-close-modal"
+              (click)="closeProtocolDialog()"
+              aria-label="Schließen"
+              title="Fenster schließen"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </header>
+
+        <!-- Modal Body: Checklist / Loading / Error -->
+        <div class="modal-body">
+          @if (loadingProtocol()) {
+            <div class="modal-status-box loading">
+              <mat-icon class="spinning">sync</mat-icon>
+              <span>Einsatzprotokoll wird aus der Datenbank geladen...</span>
+            </div>
+          } @else if (protocolError()) {
+            <div class="modal-status-box error">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ protocolError() }}</span>
+              <button mat-stroked-button (click)="openProtocolDialog(selectedEmergency()!)">
+                Erneut versuchen
+              </button>
+            </div>
+          } @else if (selectedProtocol()) {
+            <div class="modal-form-container">
+              <app-emergency-checklist
+                [emergencyData]="selectedProtocol()!"
+                [meta]="currentSelectedMeta"
+                [showExportButton]="false"
+                (protocolChange)="onProtocolChanged($event)"
+              ></app-emergency-checklist>
+            </div>
+          }
+        </div>
+
+        <!-- Modal Footer -->
+        <footer class="modal-footer">
+          <div class="footer-left">
+            <button
+              type="button"
+              class="btn-export-pdf"
+              (click)="exportEmergencyPdf(selectedEmergency()!)"
+              [disabled]="loadingProtocol() || !selectedProtocol()"
+              title="Dieses Protokoll als offizielles PDF exportieren"
+            >
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span>Protokoll exportieren</span>
+            </button>
+          </div>
+
+          <div class="footer-right">
+            @if (saveSuccess()) {
+              <span class="save-toast-msg success">
+                <mat-icon>check_circle</mat-icon> Änderungen erfolgreich gespeichert!
+              </span>
+            }
+
+            <button
+              type="button"
+              class="btn-save-changes"
+              [class.saved]="saveSuccess()"
+              (click)="saveSelectedProtocol()"
+              [disabled]="isSavingProtocol() || loadingProtocol() || !selectedProtocol() || !hasUnsavedChanges()"
+              title="Änderungen im Einsatzprotokoll speichern"
+            >
+              <mat-icon>{{ saveSuccess() ? 'check' : 'save' }}</mat-icon>
+              <span>{{ isSavingProtocol() ? 'Speichern...' : (saveSuccess() ? 'Gespeichert' : 'Änderungen speichern') }}</span>
+            </button>
+          </div>
+        </footer>
+      </div>
+    </div>
   }
 </main>

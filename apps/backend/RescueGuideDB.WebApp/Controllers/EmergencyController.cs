@@ -40,7 +40,8 @@ public class EmergencyController : ControllerBase
                 EndedAt = emergency.EndedAt,
                 EmergencyType = emergency.Protocol != null ? emergency.Protocol.Type : null,
                 HandlerName = emergency.Protocol != null ? emergency.Protocol.DispatcherName : null,
-                Address = emergency.Protocol != null ? emergency.Protocol.Address : null
+                Address = emergency.Protocol != null ? emergency.Protocol.Address : null,
+                ProtocolId = emergency.Protocol != null ? emergency.Protocol.Id : null
             })
             .ToListAsync(cancellationToken);
 
