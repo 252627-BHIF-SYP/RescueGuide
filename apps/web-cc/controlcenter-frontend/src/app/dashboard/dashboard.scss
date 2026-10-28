@@ -133,14 +133,13 @@ h2 {
   }
 
   &.active {
-    border-color: $rg-red-border;
-    border-left: 4px solid $rg-red;
+    border-color: #fca5a5;
     background: #ffffff;
     box-shadow: 0 1px 4px rgba(217, 38, 50, 0.08);
 
     &:hover {
       border-color: $rg-red;
-      box-shadow: 0 4px 14px rgba(217, 38, 50, 0.15);
+      box-shadow: 0 3px 10px rgba(217, 38, 50, 0.12);
     }
   }
 }
