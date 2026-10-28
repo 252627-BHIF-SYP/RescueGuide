@@ -1,17 +1,22 @@
 <main class="dashboard">
   <header class="dashboard-header">
-    <div>
-      <span class="eyebrow">Leitstelle</span>
+    <div class="header-title-block">
+      <div class="eyebrow-badge">
+        <span class="eyebrow-dot"></span>
+        <span class="eyebrow">RescueGuide+ • Leitstellen-Konsole</span>
+      </div>
       <h1>Notruf-Dashboard</h1>
     </div>
     <button
-      mat-icon-button
+      type="button"
+      class="refresh-btn"
       (click)="loadEmergencies()"
       [disabled]="loading() || refreshing()"
       aria-label="Notrufe aktualisieren"
       matTooltip="Notrufe aktualisieren"
     >
       <mat-icon [class.spinning]="refreshing()">refresh</mat-icon>
+      <span>Aktualisieren</span>
     </button>
   </header>
 

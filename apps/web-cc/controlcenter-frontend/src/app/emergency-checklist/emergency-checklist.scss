@@ -1,21 +1,27 @@
 // ── RG+ Design Tokens (Emergency Checklist / CAD Protocol) ─────────────
-$accent:        #162846;
-$accent-soft:   #f0f4fa;
-$accent-hover:  #0f1d33;
-$accent-border: #d2deee;
-$surface:       #ffffff;
-$border:        #dce2ea;
-$border-light:  #edf1f6;
-$border-input:  #cbd5e1;
-$text:          #0f172a;
-$text-muted:    #526075;
-$success:       #16a34a;
-$success-soft:  #f0fdf4;
-$success-border:#86efac;
-$pending-soft:  #f8fafc;
-$pending-border:#cbd5e1;
-$pending-text:  #64748b;
-$radius:        6px;
+$rg-navy:         #162846;
+$rg-navy-vibrant: #1e3a6a;
+$rg-navy-soft:    #edf3fa;
+$rg-navy-border:  #c8d8ec;
+
+$rg-red:          #dc2626;
+$rg-red-soft:     #fef2f2;
+$rg-red-tint:     #fee2e2;
+$rg-red-border:   #fecaca;
+
+$surface:         #ffffff;
+$border:          #dce2ea;
+$border-light:    #edf1f6;
+$border-input:    #cbd5e1;
+$text:            #0f172a;
+$text-muted:      #526075;
+$success:         #16a34a;
+$success-soft:    #f0fdf4;
+$success-border:  #86efac;
+$pending-soft:    #f8fafc;
+$pending-border:  #cbd5e1;
+$pending-text:    #64748b;
+$radius:          6px;
 
 :host {
   display: block;
@@ -27,8 +33,8 @@ $radius:        6px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #f4f6f9;
-  border: 1px solid $border;
+  background: #f0f4fa;
+  border: 1px solid $rg-navy-border;
   border-radius: $radius;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
   overflow: hidden;
@@ -60,8 +66,9 @@ $radius:        6px;
 .form-card-panel {
   background: #ffffff;
   border: 1px solid #dce2ea;
+  border-top: 3px solid $rg-navy;
   border-radius: $radius;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -80,16 +87,16 @@ $radius:        6px;
       gap: 6px;
 
       .panel-icon {
-        font-size: 17px;
-        width: 17px;
-        height: 17px;
-        color: $accent;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: $rg-navy-vibrant;
       }
 
       .panel-title {
-        font-size: 0.82rem;
+        font-size: 0.84rem;
         font-weight: 800;
-        color: $accent;
+        color: $rg-navy;
         letter-spacing: 0.03em;
         text-transform: uppercase;
       }
@@ -97,21 +104,21 @@ $radius:        6px;
 
     .panel-badge {
       font-size: 0.65rem;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 4px;
 
       &.primary {
-        background: $accent-soft;
-        color: $accent;
-        border: 1px solid $accent-border;
+        background: $rg-navy;
+        color: #ffffff;
+        box-shadow: 0 1px 3px rgba(22, 40, 70, 0.2);
       }
 
       &.secondary {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #e2e8f0;
+        background: $rg-navy-soft;
+        color: $rg-navy;
+        border: 1px solid $rg-navy-border;
       }
     }
   }
@@ -138,9 +145,9 @@ $radius:        6px;
     gap: 6px;
 
     .input-label {
-      font-size: 0.73rem;
+      font-size: 0.74rem;
       font-weight: 700;
-      color: #334155;
+      color: #1e293b;
       letter-spacing: 0.01em;
     }
 
@@ -149,7 +156,7 @@ $radius:        6px;
       align-items: center;
       gap: 3px;
       font-size: 0.68rem;
-      font-weight: 600;
+      font-weight: 700;
       padding: 1px 6px;
       border-radius: 4px;
       transition: all 0.15s ease;
@@ -188,7 +195,7 @@ $radius:        6px;
 
       &:focus {
         border-color: $success !important;
-        box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.18) !important;
+        box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
       }
     }
 
@@ -205,12 +212,12 @@ $radius:        6px;
       border-color: $border-input;
 
       &:hover {
-        border-color: #94a3b8;
+        border-color: $rg-navy-vibrant;
       }
 
       &:focus {
-        border-color: $accent;
-        box-shadow: 0 0 0 2px rgba(22, 40, 70, 0.15);
+        border-color: $rg-navy-vibrant;
+        box-shadow: 0 0 0 2px rgba(30, 58, 106, 0.18);
       }
     }
   }
@@ -236,7 +243,7 @@ $radius:        6px;
     font-size: 17px;
     width: 17px;
     height: 17px;
-    color: #94a3b8;
+    color: #64748b;
     pointer-events: none;
     z-index: 2;
     transition: color 0.15s ease;
@@ -315,24 +322,23 @@ $radius:        6px;
 
 // ── Alarm Section (2x2 Grid) ────────────────────────────────────────
 .alarm-section {
-  padding: 8px 10px;
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  padding: 10px 12px;
+  background: $rg-navy-soft;
+  border: 1px solid $rg-navy-border;
   border-radius: 6px;
   transition: all 0.15s ease;
 
   &.field-filled {
     background: #f0fdf4;
     border-color: $success-border;
-    border-style: solid;
   }
 }
 
 .alarm-grid-2x2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 7px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .alarm-chip {
@@ -341,13 +347,14 @@ $radius:        6px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
   border-radius: 4px;
-  padding: 6px 8px;
+  padding: 7px 9px;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 
   .chip-check-box {
     width: 18px;
@@ -377,14 +384,14 @@ $radius:        6px;
     line-height: 1.1;
 
     .chip-code {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #334155;
+      font-size: 0.84rem;
+      font-weight: 900;
+      color: #1e293b;
     }
 
     .chip-name {
       font-size: 0.63rem;
-      font-weight: 500;
+      font-weight: 600;
       color: #64748b;
       white-space: nowrap;
       overflow: hidden;
@@ -393,8 +400,8 @@ $radius:        6px;
   }
 
   &:hover {
-    background: #edf2f7;
-    border-color: #94a3b8;
+    background: #edf3fa;
+    border-color: $rg-navy-border;
   }
 
   &.active {
@@ -406,6 +413,7 @@ $radius:        6px;
     &.rd {
       background: #fef2f2;
       border-color: #ef4444;
+      box-shadow: 0 1px 4px rgba(220, 38, 38, 0.2);
 
       .chip-check-box {
         background: #dc2626;
@@ -421,6 +429,7 @@ $radius:        6px;
     &.na {
       background: #fffbeb;
       border-color: #f59e0b;
+      box-shadow: 0 1px 4px rgba(217, 119, 6, 0.2);
 
       .chip-check-box {
         background: #d97706;
@@ -436,6 +445,7 @@ $radius:        6px;
     &.pol {
       background: #eff6ff;
       border-color: #3b82f6;
+      box-shadow: 0 1px 4px rgba(37, 99, 235, 0.2);
 
       .chip-check-box {
         background: #2563eb;
@@ -451,6 +461,7 @@ $radius:        6px;
     &.fw {
       background: #fff7ed;
       border-color: #f97316;
+      box-shadow: 0 1px 4px rgba(234, 88, 12, 0.2);
 
       .chip-check-box {
         background: #ea580c;
