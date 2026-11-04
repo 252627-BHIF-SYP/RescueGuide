@@ -1,0 +1,52 @@
+<div class="confirm-dialog-shell">
+  <div class="confirm-header">
+    <div class="warning-icon-bubble">
+      <mat-icon>warning_amber</mat-icon>
+    </div>
+    <div class="title-group">
+      <h2 mat-dialog-title class="dialog-title">
+        {{ data.type === 'plan' ? 'Einsatzplan löschen?' : 'Sofortmaßnahme löschen?' }}
+      </h2>
+      <p class="subtitle">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+    </div>
+  </div>
+
+  <mat-dialog-content class="confirm-body">
+    <p class="main-prompt">
+      Möchten Sie {{ data.type === 'plan' ? 'den Einsatzplan' : 'die Sofortmaßnahme' }}
+      <strong class="target-name">„{{ data.name }}“</strong> wirklich endgültig aus dem System entfernen?
+    </p>
+
+    @if (data.type === 'measure' && data.affectedPlansCount && data.affectedPlansCount > 0) {
+      <div class="danger-warning-box">
+        <mat-icon class="box-icon">report_problem</mat-icon>
+        <div class="box-content">
+          <strong>Achtung: Abhängigkeiten vorhanden!</strong>
+          <p>
+            Diese Maßnahme wird aktuell in <strong>{{ data.affectedPlansCount }}</strong>
+            {{ data.affectedPlansCount === 1 ? 'Einsatzplan' : 'Einsatzplänen' }} verwendet.
+            Beim Löschen wird sie aus allen Plänen entfernt.
+          </p>
+          @if (data.planNames && data.planNames.length > 0) {
+            <ul class="plan-list">
+              @for (pName of data.planNames; track pName) {
+                <li>{{ pName }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions-row">
+    <button mat-button [mat-dialog-close]="false" class="btn-cancel" type="button">
+      Abbrechen
+    </button>
+    <button mat-flat-button [mat-dialog-close]="true" class="btn-delete-confirm" type="button">
+      <mat-icon>delete_forever</mat-icon>
+      <span>Unwiderruflich löschen</span>
+    </button>
+  </mat-dialog-actions>
+</div>
+

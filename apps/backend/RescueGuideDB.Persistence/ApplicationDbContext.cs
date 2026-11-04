@@ -48,6 +48,12 @@ public class ApplicationDbContext : DbContext
                 {
                     j.HasKey(t => new { t.PlanId, t.MeasureId });
                 });
+
+        modelBuilder.Entity<Measure>()
+            .Property(m => m.Tags);
+
+        modelBuilder.Entity<Plan>()
+            .Property(p => p.Tags);
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

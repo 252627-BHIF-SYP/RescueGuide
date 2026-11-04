@@ -1,0 +1,157 @@
+$danger: #d92632;
+$danger-dark: #b91c1c;
+$danger-soft: #fef2f2;
+$danger-border: #fecaca;
+$text: #0f172a;
+$muted: #475569;
+$border: #d2deee;
+
+.confirm-dialog-shell {
+  padding: 0;
+  max-width: 480px;
+}
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid $border;
+
+  .warning-icon-bubble {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: $danger-soft;
+    border: 1px solid $danger-border;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      color: $danger;
+      font-size: 26px;
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .title-group {
+    display: flex;
+    flex-direction: column;
+
+    .dialog-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: $text;
+      margin: 0;
+      padding: 0;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: $muted;
+      margin: 2px 0 0;
+    }
+  }
+}
+
+.confirm-body {
+  padding: 20px 24px !important;
+
+  .main-prompt {
+    font-size: 0.95rem;
+    color: $text;
+    line-height: 1.5;
+    margin: 0 0 16px;
+
+    .target-name {
+      color: $danger-dark;
+      font-weight: 700;
+    }
+  }
+}
+
+.danger-warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: $danger-soft;
+  border: 1px solid $danger-border;
+  border-radius: 8px;
+  padding: 12px 14px;
+
+  .box-icon {
+    color: $danger;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .box-content {
+    font-size: 0.82rem;
+    color: #7f1d1d;
+    line-height: 1.45;
+
+    strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin: 0 0 6px;
+    }
+
+    .plan-list {
+      margin: 4px 0 0;
+      padding-left: 18px;
+
+      li {
+        margin-bottom: 2px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.dialog-actions-row {
+  padding: 14px 24px 18px !important;
+  border-top: 1px solid $border;
+  gap: 10px;
+  background: #fafbfc;
+
+  .btn-cancel {
+    color: $muted;
+    border-radius: 6px;
+    padding: 0 16px;
+    font-weight: 600;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+  }
+
+  .btn-delete-confirm {
+    background: $danger !important;
+    color: #fff !important;
+    border-radius: 6px;
+    padding: 0 20px;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(217, 38, 50, 0.25);
+    transition: background 0.15s, box-shadow 0.15s;
+
+    mat-icon {
+      font-size: 18px;
+      margin-right: 4px;
+    }
+
+    &:hover {
+      background: $danger-dark !important;
+      box-shadow: 0 4px 10px rgba(217, 38, 50, 0.35);
+    }
+  }
+}
+

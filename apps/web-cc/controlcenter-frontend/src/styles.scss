@@ -414,3 +414,26 @@ body:has(.auth-wrapper) {
 }
 
 
+
+// Compact Autocomplete Panel for Tags (Consistent Material 3 Theme)
+.compact-tag-autocomplete.mat-mdc-autocomplete-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+  border: 1px solid #d2deee !important;
+  max-height: 220px !important;
+  background: #ffffff !important;
+
+  .mat-mdc-option {
+    min-height: 36px !important;
+    height: 36px !important;
+    font-size: 0.83rem !important;
+    color: #1e293b !important;
+    padding: 0 12px !important;
+    transition: background 0.12s ease;
+
+    &:hover, &.mat-mdc-option-active {
+      background: #eef4fc !important;
+      color: #2353a1 !important;
+    }
+  }
+}

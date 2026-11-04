@@ -26,6 +26,7 @@ export interface QueueItem {
   plan?: Plan;
   measure?: Measure;
   stepsCount: number;
+  tags?: string[];
 }
 
 interface DispatchProgress {
@@ -139,7 +140,7 @@ export class PlanSelector implements OnInit, OnDestroy {
     PlanSelector.savedFilterCategory = this.filterCategory;
   }
 
-  // ── Filtering ───────────────────────────────────────────────────────
+  // ── Filtering (Search indexes name, description and assigned tags) ──
   applyFilter(): void {
     this.syncSavedState();
     const term = this.searchTerm.toLowerCase().trim();
@@ -153,11 +154,19 @@ export class PlanSelector implements OnInit, OnDestroy {
     this.filteredPlans = this.allPlans.filter(
       (p) =>
         p.name.toLowerCase().includes(term) ||
-        p.measures?.some((m) => m.name.toLowerCase().includes(term)),
+        p.tags?.some((t) => t.toLowerCase().includes(term)) ||
+        p.measures?.some(
+          (m) =>
+            m.name.toLowerCase().includes(term) ||
+            m.tags?.some((t) => t.toLowerCase().includes(term)),
+        ),
     );
 
     this.filteredMeasures = this.allMeasures.filter(
-      (m) => m.name.toLowerCase().includes(term) || m.description?.toLowerCase().includes(term),
+      (m) =>
+        m.name.toLowerCase().includes(term) ||
+        m.description?.toLowerCase().includes(term) ||
+        m.tags?.some((t) => t.toLowerCase().includes(term)),
     );
   }
 
@@ -188,6 +197,7 @@ export class PlanSelector implements OnInit, OnDestroy {
         name: plan.name,
         plan,
         stepsCount: plan.measures?.length || 0,
+        tags: plan.tags ? [...plan.tags] : [],
       });
     } else {
       const measure = rawItem as Measure;
@@ -200,6 +210,7 @@ export class PlanSelector implements OnInit, OnDestroy {
         imageUrl: measure.imageUrl,
         measure,
         stepsCount: 1,
+        tags: measure.tags ? [...measure.tags] : [],
       });
     }
 
@@ -239,6 +250,7 @@ export class PlanSelector implements OnInit, OnDestroy {
                 name: rawData.name,
                 plan: rawData,
                 stepsCount: rawData.measures?.length || 0,
+                tags: rawData.tags ? [...rawData.tags] : [],
               }
             : {
                 uid,
@@ -249,6 +261,7 @@ export class PlanSelector implements OnInit, OnDestroy {
                 imageUrl: rawData.imageUrl,
                 measure: rawData,
                 stepsCount: 1,
+                tags: rawData.tags ? [...rawData.tags] : [],
               };
 
         this.queue.splice(event.currentIndex, 0, newItem);
@@ -278,7 +291,6 @@ export class PlanSelector implements OnInit, OnDestroy {
       data: {
         plan,
         isSelected: this.countInQueue('plan', plan.id) > 0,
-        toggleSelection: () => this.addToQueue('plan', plan),
       },
     });
   }
@@ -289,12 +301,12 @@ export class PlanSelector implements OnInit, OnDestroy {
     }
 
     this.dialog.open(PreviewMeasureDialog, {
-      width: '560px',
+      width: '550px',
       panelClass: 'preview-measure-dialog',
       data: {
         measure,
         isSelected: this.countInQueue('measure', measure.id) > 0,
-        toggleSelection: () => this.addToQueue('measure', measure),
+        toggleSelection: true,
       },
     });
   }
@@ -318,6 +330,7 @@ export class PlanSelector implements OnInit, OnDestroy {
       description: string;
       imageUrl?: string;
       planName?: string;
+      tags?: string[];
     }[] = [];
     const titles: string[] = [];
 
@@ -326,11 +339,18 @@ export class PlanSelector implements OnInit, OnDestroy {
       if (q.type === 'plan' && q.plan) {
         titles.push(q.plan.name);
         for (const m of q.plan.measures ?? []) {
-          steps.push({ ...m, planName: q.plan.name });
+          steps.push({
+            ...m,
+            planName: q.plan.name,
+            tags: m.tags || q.plan.tags || [],
+          });
         }
       } else if (q.type === 'measure' && q.measure) {
         titles.push(q.measure.name);
-        steps.push({ ...q.measure });
+        steps.push({
+          ...q.measure,
+          tags: q.measure.tags || [],
+        });
       }
     }
 
@@ -378,27 +398,20 @@ export class PlanSelector implements OnInit, OnDestroy {
   }
 
   advanceMobileInstruction(): void {
+    if (!this.canAdvanceInstruction) return;
+
     const targetId = this.callContext.getActiveCallId();
-    if (!targetId || !this.canAdvanceInstruction) return;
+    if (!targetId) return;
 
     this.advancePending = true;
-    this.signaling.emit('instruction-next', {
+    this.signaling.emit('advance-instruction', {
       from: 'controlcenter',
       to: targetId,
     });
-  }
 
-  private showDispatchNotice(message: string, isError: boolean): void {
-    this.dispatchNotice = message;
-    this.dispatchError = isError;
-
-    if (this.dispatchTimer) {
-      clearTimeout(this.dispatchTimer);
-    }
-    this.dispatchTimer = setTimeout(() => {
-      this.dispatchNotice = null;
-      this.dispatchTimer = null;
-    }, 4500);
+    setTimeout(() => {
+      this.advancePending = false;
+    }, 1500);
   }
 
   dismissNotice(): void {
@@ -407,5 +420,18 @@ export class PlanSelector implements OnInit, OnDestroy {
       clearTimeout(this.dispatchTimer);
       this.dispatchTimer = null;
     }
+  }
+
+  private showDispatchNotice(msg: string, isError = false): void {
+    this.dispatchNotice = msg;
+    this.dispatchError = isError;
+
+    if (this.dispatchTimer) {
+      clearTimeout(this.dispatchTimer);
+    }
+    this.dispatchTimer = setTimeout(() => {
+      this.dispatchNotice = null;
+      this.dispatchTimer = null;
+    }, 6000);
   }
 }

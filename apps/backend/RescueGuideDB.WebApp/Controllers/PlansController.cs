@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RescueGuideDB.Core;
 using RescueGuideDB.Core.Entities;
 using RescueGuideDB.Persistence;
 
@@ -54,6 +55,13 @@ public class PlansController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Plan>> PostPlan(Plan plan)
     {
+        var (isValid, errorMessage) = TagValidator.ValidateTags(plan.Tags);
+        if (!isValid)
+        {
+            return BadRequest(errorMessage);
+        }
+        plan.Tags = TagValidator.CleanAndNormalize(plan.Tags);
+
         var existingMeasureIds = plan.Measures.Select(m => m.Id).ToList();
         plan.Measures.Clear(); // Clear the measures list as we use PlanMeasures now
 
@@ -96,6 +104,12 @@ public class PlansController : ControllerBase
             return BadRequest();
         }
 
+        var (isValid, errorMessage) = TagValidator.ValidateTags(plan.Tags);
+        if (!isValid)
+        {
+            return BadRequest(errorMessage);
+        }
+
         var existingPlan = await _context.Plans
             .Include(p => p.PlanMeasures)
             .FirstOrDefaultAsync(p => p.Id == id);
@@ -107,6 +121,7 @@ public class PlansController : ControllerBase
 
         existingPlan.Name = plan.Name;
         existingPlan.Author = plan.Author;
+        existingPlan.Tags = TagValidator.CleanAndNormalize(plan.Tags);
         
         var newMeasureIds = plan.Measures.Select(m => m.Id).ToList();
         
