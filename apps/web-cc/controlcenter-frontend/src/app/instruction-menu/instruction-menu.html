@@ -1,44 +1,97 @@
 <div class="container">
+
+  <!-- ── OBERE TITEL-LEISTE ── -->
+  <header class="instruction-toolbar">
+    <div class="toolbar-title-group">
+      <div class="title-icon-bubble">
+        <mat-icon>library_books</mat-icon>
+      </div>
+      <div class="title-meta">
+        <h1>Instruktions-Katalog</h1>
+        <p>Einsatzpläne und Sofortmaßnahmen für Leitstellendisponenten verwalten</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── 2-SPALTEN LAYOUT (Pläne & Maßnahmen unabhängig durchsuchbar) ── -->
   <div class="content">
 
+    <!-- LINKE SPALTE: EINSATZPLÄNE -->
     <div class="left-column">
       <mat-card class="plan-card" appearance="outlined">
         <mat-card-header>
-          <mat-card-title>
-            <mat-icon class="title-icon">assignment</mat-icon>
-            <span>Einsatzpläne / Leitfäden</span>
-          </mat-card-title>
+          <div class="card-header-flex">
+            <mat-card-title>
+              <mat-icon class="title-icon">assignment</mat-icon>
+              <span>Einsatzpläne / Leitfäden</span>
+            </mat-card-title>
+            <span class="header-count-badge">{{ filteredPlans.length }} Pläne</span>
+          </div>
         </mat-card-header>
+
+        <!-- Unabhängige Suchleiste für Einsatzpläne -->
+        <div class="card-search-strip">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            class="card-search-input"
+            [(ngModel)]="planSearchTerm"
+            placeholder="Pläne nach Name oder Thema suchen..."
+            aria-label="Einsatzpläne suchen"
+          />
+          @if (planSearchTerm) {
+            <button type="button" class="btn-clear-search" (click)="clearPlanSearch()" title="Suche leeren" aria-label="Suche leeren">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
 
         <mat-card-content>
           <mat-list class="styled-list">
-            @for (plan of plans; track plan.id) {
-              <mat-list-item class="custom-list-item">
+            @for (plan of filteredPlans; track plan.id) {
+              <mat-list-item
+                class="custom-list-item clickable-row"
+                role="button"
+                tabindex="0"
+                (click)="previewPlan(plan)"
+                (keydown.enter)="previewPlan(plan)"
+                (keydown.space)="previewPlan(plan); $event.preventDefault()"
+                aria-label="Einsatzplan Vorschau anzeigen"
+              >
                 <div class="plan-item">
                   <div class="plan-header">
-                    <span class="plan-name">{{ plan.name }}</span>
-                    @if (plan.author && plan.createdAt) {
-                      <span class="plan-meta">von {{ plan.author }} am {{ plan.createdAt | date:'short' }}</span>
-                    }
+                    <div class="plan-title-row">
+                      <span class="plan-name">{{ plan.name }}</span>
+                      <span class="step-count-badge" title="Anzahl der Maßnahmen">
+                        {{ plan.measures.length || 0 }} {{ (plan.measures.length === 1) ? 'Schritt' : 'Schritte' }}
+                      </span>
+                    </div>
                   </div>
+
                   <div class="actions">
-                    <button mat-icon-button (click)="previewPlan(plan)" title="Vorschau" type="button">
-                      <mat-icon>visibility</mat-icon>
-                    </button>
-                    <button mat-icon-button (click)="editPlan(plan)" title="Bearbeiten" type="button">
+                    <button mat-icon-button (click)="$event.stopPropagation(); editPlan(plan)" title="Bearbeiten" aria-label="Plan bearbeiten" type="button">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button class="btn-delete" (click)="deletePlan(plan)" title="Löschen" type="button">
+                    <button mat-icon-button class="btn-delete" (click)="$event.stopPropagation(); deletePlan(plan)" title="Löschen" aria-label="Plan löschen" type="button">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
                 </div>
               </mat-list-item>
             }
-            @if (plans.length === 0) {
+
+            @if (filteredPlans.length === 0) {
               <div class="empty-state-info">
-                <mat-icon>info</mat-icon>
-                <span>Keine Pläne vorhanden</span>
+                <mat-icon>assignment_late</mat-icon>
+                <span>{{ planSearchTerm ? 'Keine Einsatzpläne für diese Suchanfrage gefunden.' : 'Keine Einsatzpläne vorhanden.' }}</span>
+                @if (planSearchTerm) {
+                  <button type="button" class="btn-empty-reset" (click)="clearPlanSearch()">Suche leeren</button>
+                } @else {
+                  <button mat-flat-button class="create-btn empty-cta" (click)="createPlan()" type="button">
+                    <mat-icon>add</mat-icon>
+                    Ersten Einsatzplan erstellen
+                  </button>
+                }
               </div>
             }
           </mat-list>
@@ -47,58 +100,87 @@
         <mat-card-actions>
           <button mat-flat-button class="create-btn" (click)="createPlan()" type="button">
             <mat-icon>add</mat-icon>
-            Plan erstellen
+            <span>Plan erstellen</span>
           </button>
         </mat-card-actions>
       </mat-card>
     </div>
 
+    <!-- RECHTE SPALTE: SOFORTMASSNAHMEN -->
     <div class="right-column">
       <mat-card class="measures-card" appearance="outlined">
         <mat-card-header>
-          <mat-card-title>
-            <mat-icon class="title-icon">healing</mat-icon>
-            <span>Verfügbare Sofortmaßnahmen</span>
-          </mat-card-title>
+          <div class="card-header-flex">
+            <mat-card-title>
+              <mat-icon class="title-icon">healing</mat-icon>
+              <span>Verfügbare Sofortmaßnahmen</span>
+            </mat-card-title>
+            <span class="header-count-badge">{{ filteredMeasures.length }} Maßnahmen</span>
+          </div>
         </mat-card-header>
+
+        <!-- Unabhängige Suchleiste für Sofortmaßnahmen -->
+        <div class="card-search-strip">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            class="card-search-input"
+            [(ngModel)]="measureSearchTerm"
+            placeholder="Maßnahmen nach Name oder Thema suchen..."
+            aria-label="Sofortmaßnahmen suchen"
+          />
+          @if (measureSearchTerm) {
+            <button type="button" class="btn-clear-search" (click)="clearMeasureSearch()" title="Suche leeren" aria-label="Suche leeren">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
 
         <mat-card-content>
           <mat-list class="styled-list">
-            @for (measure of availableMeasures; track measure.id) {
-              <mat-list-item class="custom-list-item expandable-item">
+            @for (measure of filteredMeasures; track measure.id) {
+              <mat-list-item
+                class="custom-list-item clickable-row"
+                role="button"
+                tabindex="0"
+                (click)="previewMeasure(measure)"
+                (keydown.enter)="previewMeasure(measure)"
+                (keydown.space)="previewMeasure(measure); $event.preventDefault()"
+                aria-label="Sofortmaßnahme Vorschau anzeigen"
+              >
                 <div class="measure-item">
                   <div class="measure-main-row">
-                    <div class="measure-header" (click)="toggleDescription(measure.id)">
-                      <span class="measure-name">{{ measure.name }}</span>
-                      <mat-icon class="toggle-arrow">{{ expandedDescriptions[measure.id] ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    <div class="measure-header">
+                      <div class="measure-title-row">
+                        <span class="measure-name">{{ measure.name }}</span>
+                      </div>
                     </div>
+
                     <div class="actions">
-                      <button mat-icon-button (click)="editMeasure(measure)" title="Bearbeiten" type="button">
+                      <button mat-icon-button (click)="$event.stopPropagation(); editMeasure(measure)" title="Bearbeiten" aria-label="Maßnahme bearbeiten" type="button">
                         <mat-icon>edit</mat-icon>
                       </button>
-                      <button mat-icon-button class="btn-delete" (click)="deleteMeasure(measure)" title="Löschen" type="button">
+                      <button mat-icon-button class="btn-delete" (click)="$event.stopPropagation(); deleteMeasure(measure)" title="Löschen" aria-label="Maßnahme löschen" type="button">
                         <mat-icon>delete</mat-icon>
                       </button>
                     </div>
                   </div>
-
-                  @if (expandedDescriptions[measure.id]) {
-                    <div class="measure-description">
-                      <div class="description-text">{{ measure.description }}</div>
-                      @if (measure.imageUrl) {
-                        <div class="image-container">
-                          <img class="measure-image" [src]="measure.imageUrl" alt="{{ measure.name }}">
-                        </div>
-                      }
-                    </div>
-                  }
                 </div>
               </mat-list-item>
             }
-            @if (availableMeasures.length === 0) {
+
+            @if (filteredMeasures.length === 0) {
               <div class="empty-state-info">
-                <mat-icon>info</mat-icon>
-                <span>Keine Maßnahmen vorhanden</span>
+                <mat-icon>healing_off</mat-icon>
+                <span>{{ measureSearchTerm ? 'Keine Sofortmaßnahmen für diese Suchanfrage gefunden.' : 'Keine Sofortmaßnahmen vorhanden.' }}</span>
+                @if (measureSearchTerm) {
+                  <button type="button" class="btn-empty-reset" (click)="clearMeasureSearch()">Suche leeren</button>
+                } @else {
+                  <button mat-flat-button class="create-btn empty-cta" (click)="createMeasure()" type="button">
+                    <mat-icon>add</mat-icon>
+                    Erste Maßnahme anlegen
+                  </button>
+                }
               </div>
             }
           </mat-list>
@@ -107,7 +189,7 @@
         <mat-card-actions>
           <button mat-flat-button class="create-btn" (click)="createMeasure()" type="button">
             <mat-icon>add</mat-icon>
-            Neue Maßnahme erstellen
+            <span>Neue Maßnahme erstellen</span>
           </button>
         </mat-card-actions>
       </mat-card>

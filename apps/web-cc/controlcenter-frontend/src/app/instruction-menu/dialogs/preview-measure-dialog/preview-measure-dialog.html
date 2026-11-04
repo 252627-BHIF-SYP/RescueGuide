@@ -4,22 +4,20 @@
 </h2>
 
 <mat-dialog-content class="custom-dialog-content">
-  @if (data.measure.author || data.measure.createdAt) {
-    <div class="measure-meta-banner">
-      @if (data.measure.author) {
-        <div class="meta-item">
-          <mat-icon>person</mat-icon>
-          <span><strong>Ersteller:</strong> {{ data.measure.author }}</span>
-        </div>
-      }
-      @if (data.measure.createdAt) {
-        <div class="meta-item">
-          <mat-icon>calendar_today</mat-icon>
-          <span><strong>Erstellt am:</strong> {{ data.measure.createdAt | date:'medium' }}</span>
-        </div>
-      }
-    </div>
-  }
+  <div class="measure-meta-banner">
+    @if (data.measure.author) {
+      <div class="meta-item">
+        <mat-icon>person</mat-icon>
+        <span><strong>Ersteller:</strong> {{ data.measure.author }}</span>
+      </div>
+    }
+    @if (data.measure.createdAt) {
+      <div class="meta-item">
+        <mat-icon>calendar_today</mat-icon>
+        <span><strong>Erstellt am:</strong> {{ data.measure.createdAt | date:'medium' }}</span>
+      </div>
+    }
+  </div>
 
   <div class="measure-detail-card">
     <div class="section-heading">

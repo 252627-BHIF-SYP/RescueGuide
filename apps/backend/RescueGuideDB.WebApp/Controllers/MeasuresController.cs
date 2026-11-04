@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RescueGuideDB.Core;
 using RescueGuideDB.Core.Entities;
 using RescueGuideDB.Persistence;
 
@@ -38,6 +39,13 @@ public class MeasuresController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Measure>> PostMeasure(Measure measure)
     {
+        var (isValid, errorMessage) = TagValidator.ValidateTags(measure.Tags);
+        if (!isValid)
+        {
+            return BadRequest(errorMessage);
+        }
+        measure.Tags = TagValidator.CleanAndNormalize(measure.Tags);
+
         _context.Measures.Add(measure);
         await _context.SaveChangesAsync();
 
@@ -51,6 +59,13 @@ public class MeasuresController : ControllerBase
         {
             return BadRequest();
         }
+
+        var (isValid, errorMessage) = TagValidator.ValidateTags(measure.Tags);
+        if (!isValid)
+        {
+            return BadRequest(errorMessage);
+        }
+        measure.Tags = TagValidator.CleanAndNormalize(measure.Tags);
 
         _context.Entry(measure).State = EntityState.Modified;
 

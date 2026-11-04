@@ -1,59 +1,163 @@
 <h2 mat-dialog-title class="dialog-title">
-  <mat-icon class="title-icon">{{ data?.measure ? 'edit' : 'add_circle' }}</mat-icon>
-  <span>{{ data?.measure ? 'Maßnahme bearbeiten' : 'Neue Sofortmaßnahme' }}</span>
+  <mat-icon class="title-icon">{{ data?.measure ? 'edit_note' : 'healing' }}</mat-icon>
+  <span>{{ data?.measure ? 'Sofortmaßnahme bearbeiten' : 'Neue Sofortmaßnahme erstellen' }}</span>
 </h2>
 
 <mat-dialog-content class="custom-dialog-content">
-  <form [formGroup]="measureForm" class="dialog-form">
+  <form [formGroup]="measureForm" class="dialog-form-grid">
 
-    @if (data?.measure) {
-      <div class="meta-fields-row">
-        <mat-form-field appearance="outline" class="full-width read-only-field">
-          <mat-label>Ersteller (Author)</mat-label>
-          <mat-icon matPrefix>person</mat-icon>
-          <input matInput [value]="data.measure.author || 'System'" readonly>
-        </mat-form-field>
+    <!-- LINKE SPALTE: Stammdaten & Tags (analog zum Einsatzplan) -->
+    <div class="form-column main-info">
+      @if (data?.measure) {
+        <div class="meta-info-box">
+          <mat-form-field appearance="outline" class="full-width read-only-field">
+            <mat-label>Ersteller (Author)</mat-label>
+            <mat-icon matPrefix>person</mat-icon>
+            <input matInput [value]="data.measure.author || 'System'" readonly>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width read-only-field">
-          <mat-label>Erstellt am</mat-label>
-          <mat-icon matPrefix>calendar_today</mat-icon>
-          <input matInput [value]="data.measure.createdAt | date:'short'" readonly>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width read-only-field">
+            <mat-label>Erstellt am</mat-label>
+            <mat-icon matPrefix>calendar_today</mat-icon>
+            <input matInput [value]="data.measure.createdAt | date:'short'" readonly>
+          </mat-form-field>
+        </div>
+      }
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name der Sofortmaßnahme</mat-label>
+        <input matInput formControlName="name" placeholder="z.B. Herzdruckmassage Erwachsene" required autocomplete="off">
+        @if (measureForm.get('name')?.hasError('required') && measureForm.get('name')?.touched) {
+          <mat-error>Ein Name ist zwingend erforderlich</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- ── TAGS FÜR DIE MASSNAHME (zur Suchindizierung) ── -->
+      <div class="tags-manager-section">
+        <div class="tags-header-label">
+          <mat-icon>sell</mat-icon>
+          <span>Such-Schlagwörter / Tags</span>
+        </div>
+
+        <div class="tag-input-row">
+          <input
+            type="text"
+            class="custom-tag-field"
+            [(ngModel)]="customTagInput"
+            [ngModelOptions]="{standalone: true}"
+            [matAutocomplete]="autoMeasureTag"
+            placeholder="Such-Tag eingeben (Enter)..."
+            (keydown)="onTagKeydown($event)"
+            (input)="onTagInput()"
+            aria-label="Such-Tag eingeben"
+            autocomplete="off"
+          />
+          <mat-autocomplete #autoMeasureTag="matAutocomplete" (optionSelected)="onTagSelected($event)" class="compact-tag-autocomplete">
+            @for (sug of filteredTagSuggestions; track sug) {
+              <mat-option [value]="sug">
+                {{ sug }}
+              </mat-option>
+            }
+          </mat-autocomplete>
+          <button
+            type="button"
+            mat-stroked-button
+            class="btn-add-tag"
+            (click)="addTag(customTagInput)"
+            [disabled]="!customTagInput.trim()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Hinzufügen</span>
+          </button>
+        </div>
+        @if (tagError) {
+          <div class="tag-error-message">{{ tagError }}</div>
+        }
+
+        <!-- Bereits ausgewählte Tags unten -->
+        <div class="active-tags-row">
+          @for (tag of tags; track tag) {
+            <span class="tag-chip active-chip">
+              <span class="tag-text">{{ tag }}</span>
+              <button type="button" class="btn-remove-tag" (click)="removeTag(tag)" aria-label="Tag entfernen" title="Tag entfernen">
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          }
+        </div>
       </div>
-    }
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Name der Maßnahme</mat-label>
-      <mat-icon matPrefix>label</mat-icon>
-      <input matInput formControlName="name" placeholder="z.B. Herzdruckmassage" required autocomplete="off">
-      @if (measureForm.get('name')?.hasError('required') && measureForm.get('name')?.touched) {
-        <mat-error>Ein Name ist zwingend erforderlich</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Anweisungen / Beschreibung</mat-label>
-      <mat-icon matPrefix>description</mat-icon>
-      <textarea matInput formControlName="description" rows="4" placeholder="Schritt-für-Schritt-Anleitung für den Ersthelfer..."></textarea>
-    </mat-form-field>
-
-    <div class="file-upload-section">
-      <button mat-stroked-button type="button" class="upload-btn" [class.has-file]="imagePreview" (click)="triggerFileSelect()">
-        <mat-icon>{{ imagePreview ? 'image' : 'cloud_upload' }}</mat-icon>
-        <span>{{ imagePreview ? 'Bild / GIF ändern' : 'Bild / GIF hinzufügen' }}</span>
-      </button>
-      <input type="file" #fileInput accept="image/*,.svg,.webp" style="display:none" (change)="onImageSelected($event)">
-
-      @if (imagePreview) {
-        <span class="file-status-text">Vorschau geladen</span>
-      }
     </div>
 
-    @if (imagePreview) {
-      <div class="preview-container">
-        <img class="preview-image" [src]="imagePreview" alt="Vorschau der Maßnahme">
+    <!-- RECHTE SPALTE: Anweisungen & Bildmaterial -->
+    <div class="form-column details-column">
+      <div class="section-header">
+        <div class="header-title-box">
+          <h3>Anweisungen & Bildmaterial</h3>
+        </div>
       </div>
-    }
+
+      <mat-form-field appearance="outline" class="full-width instructions-field">
+        <mat-label>Anweisungen für den Ersthelfer</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="4"
+          placeholder="Detaillierte Schritt-für-Schritt-Anleitung, die der Leitstellendisponent dem Anrufer durchgibt..."
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Drag & Drop fähige Media Box -->
+      <div
+        class="media-box"
+        [class.drag-over]="isDraggingOver"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onFileDrop($event)"
+      >
+        <div class="media-header">
+          <span class="media-title">Anschauliche Grafik / Illustration</span>
+          @if (imagePreview) {
+            <button type="button" class="btn-remove-media" (click)="removeImage()" title="Bild entfernen">
+              <mat-icon>delete_outline</mat-icon>
+              <span>Entfernen</span>
+            </button>
+          }
+        </div>
+
+        @if (fileError) {
+          <div class="file-error-banner">
+            <mat-icon>warning</mat-icon>
+            <span>{{ fileError }}</span>
+          </div>
+        }
+
+        <div class="media-body">
+          @if (imagePreview) {
+            <div class="preview-container">
+              <img class="preview-image" [src]="imagePreview" alt="Vorschau der Maßnahme">
+            </div>
+            <div class="upload-action-row">
+              <button mat-stroked-button type="button" class="upload-btn" (click)="triggerFileSelect()">
+                <mat-icon>photo_camera</mat-icon>
+                <span>Anderes Bild wählen</span>
+              </button>
+              <span class="file-status-text">
+                <mat-icon>check_circle</mat-icon>
+                <span>Grafik verknüpft</span>
+              </span>
+            </div>
+          } @else {
+            <div class="empty-dropzone" (click)="triggerFileSelect()">
+              <mat-icon class="drop-icon">cloud_upload</mat-icon>
+              <span class="drop-primary-text">Grafik hierher ziehen oder einfügen</span>
+              <span class="drop-secondary-text">Klicken zum Durchsuchen oder Strg+V • PNG, JPG, SVG bis 5 MB</span>
+            </div>
+          }
+
+          <input type="file" #fileInput accept="image/*,.svg,.webp" style="display:none" (change)="onImageSelected($event)">
+        </div>
+      </div>
+    </div>
 
   </form>
 </mat-dialog-content>
@@ -62,9 +166,9 @@
   <button mat-button mat-dialog-close class="cancel-btn">Abbrechen</button>
   <button mat-flat-button
           class="submit-btn"
-          [mat-dialog-close]="measureForm.value"
+          (click)="submit()"
           [disabled]="!measureForm.valid">
     <mat-icon>{{ data?.measure ? 'save' : 'check' }}</mat-icon>
-    <span>{{ data?.measure ? 'Speichern' : 'Erstellen' }}</span>
+    <span>{{ data?.measure ? 'Speichern' : 'Maßnahme erstellen' }}</span>
   </button>
 </mat-dialog-actions>

@@ -4,22 +4,24 @@
 </h2>
 
 <mat-dialog-content class="custom-dialog-content">
-  @if (data.plan.author || data.plan.createdAt) {
-    <div class="plan-meta-banner">
-      @if (data.plan.author) {
-        <div class="meta-item">
-          <mat-icon>person</mat-icon>
-          <span><strong>Ersteller:</strong> {{ data.plan.author }}</span>
-        </div>
-      }
-      @if (data.plan.createdAt) {
-        <div class="meta-item">
-          <mat-icon>calendar_today</mat-icon>
-          <span><strong>Erstellt am:</strong> {{ data.plan.createdAt | date:'medium' }}</span>
-        </div>
-      }
+  <div class="plan-meta-banner">
+    @if (data.plan.author) {
+      <div class="meta-item">
+        <mat-icon>person</mat-icon>
+        <span><strong>Ersteller:</strong> {{ data.plan.author }}</span>
+      </div>
+    }
+    @if (data.plan.createdAt) {
+      <div class="meta-item">
+        <mat-icon>calendar_today</mat-icon>
+        <span><strong>Erstellt am:</strong> {{ data.plan.createdAt | date:'medium' }}</span>
+      </div>
+    }
+    <div class="meta-item">
+      <mat-icon>checklist</mat-icon>
+      <span><strong>Schritte:</strong> {{ data.plan.measures?.length || 0 }}</span>
     </div>
-  }
+  </div>
 
   <div class="plan-detail-card">
     <div class="section-heading">
@@ -27,7 +29,7 @@
       <h3>Chronologische Abfolge</h3>
     </div>
 
-    @if (data.plan.measures.length > 0) {
+    @if (data.plan.measures && data.plan.measures.length > 0) {
       <div class="plan-timeline">
         @for (measure of data.plan.measures; track measure.id; let i = $index) {
           <div class="timeline-step">
@@ -36,7 +38,9 @@
             <div class="step-card">
               <div class="step-body">
                 <div class="step-text-content">
-                  <h4>{{ measure.name }}</h4>
+                  <div class="step-header-row">
+                    <h4>{{ measure.name }}</h4>
+                  </div>
                   <p class="measure-description">{{ measure.description }}</p>
 
                   @if (measure.author && measure.createdAt) {
@@ -58,25 +62,14 @@
       </div>
     } @else {
       <div class="empty-state">
-        <mat-icon>healing_off</mat-icon>
-        <p>Dieser Plan enthält momentan keine hinterlegten Maßnahmen.</p>
+        <mat-icon>info</mat-icon>
+        <span>Dieser Einsatzplan enthält noch keine Maßnahmen.</span>
       </div>
     }
   </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="dialog-actions-row">
-  @if (data.toggleSelection) {
-    <button
-      mat-stroked-button
-      type="button"
-      class="select-toggle-btn"
-      [class.selected]="data.isSelected"
-      (click)="data.toggleSelection(); data.isSelected = !data.isSelected">
-      <mat-icon>{{ data.isSelected ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
-      <span>{{ data.isSelected ? 'Ausgewählt' : 'Plan auswählen' }}</span>
-    </button>
-  }
   <button mat-flat-button color="primary" mat-dialog-close class="close-btn" type="button">
     <mat-icon>close</mat-icon>
     <span>Schließen</span>

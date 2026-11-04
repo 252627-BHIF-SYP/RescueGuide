@@ -9,6 +9,7 @@ public class Measure
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? Author { get; set; }
     public string? ImageUrl { get; set; }
+    public List<string> Tags { get; set; } = [];
 
     public ICollection<Plan> Plans { get; set; } = [];
     public ICollection<PlanMeasure> PlanMeasures { get; set; } = [];

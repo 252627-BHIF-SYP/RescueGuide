@@ -6,6 +6,7 @@
 <mat-dialog-content class="custom-dialog-content">
   <form [formGroup]="planForm" class="dialog-form-grid">
 
+    <!-- LINKE SPALTE: Plan-Stammdaten & Tags -->
     <div class="form-column main-info">
       @if (data?.plan) {
         <div class="meta-info-box">
@@ -32,51 +33,196 @@
         }
       </mat-form-field>
 
-      <div class="inline-info-card">
-        <mat-icon>info_outline</mat-icon>
-        <p>Wählen Sie rechts die erforderlichen Sofortmaßnahmen aus und bringen Sie diese in die gewünschte Reihenfolge.</p>
+      <!-- ── TAGS FÜR DEN EINSATZPLAN (zur Suchindizierung) ── -->
+      <div class="tags-manager-section">
+        <div class="tags-header-label">
+          <div class="tags-header-left">
+            <mat-icon>sell</mat-icon>
+            <span>Such-Schlagwörter / Tags</span>
+          </div>
+          @if (canShowMeasureTagsImport) {
+            <div class="measure-tags-pill-group">
+              <button
+                type="button"
+                class="btn-measure-tags-pill"
+                (click)="importTagsFromMeasures()"
+                title="Tags aus gewählten Maßnahmen übernehmen"
+              >
+                <mat-icon class="pill-sparkle">auto_awesome</mat-icon>
+                <span>Aus Maßnahmen (+{{ availableMeasureTags.length }})</span>
+              </button>
+              <button
+                type="button"
+                class="btn-dismiss-pill"
+                (click)="dismissMeasureTagsPrompt($event)"
+                title="Vorschlag verwerfen"
+                aria-label="Vorschlag verwerfen"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="tag-input-row">
+          <input
+            type="text"
+            class="custom-tag-field"
+            [(ngModel)]="customTagInput"
+            [ngModelOptions]="{standalone: true}"
+            [matAutocomplete]="autoPlanTag"
+            placeholder="Such-Tag eingeben (Enter)..."
+            (keydown)="onTagKeydown($event)"
+            (input)="onTagInput()"
+            aria-label="Plan-Tag eingeben"
+            autocomplete="off"
+          />
+          <mat-autocomplete #autoPlanTag="matAutocomplete" (optionSelected)="onTagSelected($event)" class="compact-tag-autocomplete">
+            @for (sug of filteredTagSuggestions; track sug) {
+              <mat-option [value]="sug">
+                {{ sug }}
+              </mat-option>
+            }
+          </mat-autocomplete>
+          <button
+            type="button"
+            mat-stroked-button
+            class="btn-add-tag"
+            (click)="addTag(customTagInput)"
+            [disabled]="!customTagInput.trim()"
+          >
+            <mat-icon>add</mat-icon>
+            <span>Hinzufügen</span>
+          </button>
+        </div>
+        @if (tagError) {
+          <div class="tag-error-message">{{ tagError }}</div>
+        }
+
+        <!-- Bereits ausgewählte Tags unten -->
+        <div class="active-tags-row">
+          @for (tag of tags; track tag) {
+            <span class="tag-chip active-chip">
+              <span class="tag-text">{{ tag }}</span>
+              <button type="button" class="btn-remove-tag" (click)="removeTag(tag)" aria-label="Tag entfernen" title="Tag entfernen">
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          }
+        </div>
       </div>
     </div>
 
+    <!-- RECHTE SPALTE: Maßnahmen-Auswahl & Drag & Drop Reihenfolge -->
     <div class="form-column measures-selection">
-      <div class="section-header">
-        <h3>Zugeordnete Sofortmaßnahmen</h3>
-        <button mat-stroked-button type="button" class="add-inline-measure-btn" (click)="createNewMeasure()">
-          <mat-icon>add</mat-icon>
-          Neue Maßnahme
-        </button>
-      </div>
 
-      <div class="ordered-measures-container" *ngIf="orderedSelectedMeasures.length > 0">
-        <h4>Ausgewählte Reihenfolge (Drag & Drop)</h4>
+      <!-- 1. OBERE BOX: Ablaufplan für den Ersthelfer -->
+      <div class="ordered-measures-container">
+        <div class="ordered-header">
+          <div class="ordered-header-title">
+            <mat-icon class="sub-icon">format_list_numbered</mat-icon>
+            <h4>Reihenfolge Ersthelfer</h4>
+            <span class="selected-count-badge">{{ orderedSelectedMeasures.length }} Schritte</span>
+          </div>
+          @if (orderedSelectedMeasures.length > 1) {
+            <span class="drag-hint">Ziehen zum Sortieren</span>
+          }
+        </div>
+
         <div cdkDropList class="drag-drop-list" (cdkDropListDropped)="drop($event)">
-          @for (measure of orderedSelectedMeasures; track measure.id) {
+          @if (orderedSelectedMeasures.length === 0) {
+            <div class="empty-ordered-state">
+              <mat-icon>touch_app</mat-icon>
+              <span>Wählen Sie unten Maßnahmen aus dem Katalog aus.</span>
+            </div>
+          }
+
+          @for (measure of orderedSelectedMeasures; track measure.id; let idx = $index) {
             <div class="drag-drop-box" cdkDrag>
-              <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
-              <span class="measure-title">{{ measure.name }}</span>
+              <!-- Dropmarker: saubere Platzhalter-Lücke -->
+              <div class="custom-drop-placeholder" *cdkDragPlaceholder></div>
+
+              <!-- Drag-Preview während des Ziehens -->
+              <ng-template cdkDragPreview [matchSize]="true">
+                <div class="custom-drag-preview">
+                  <span class="step-num-badge">{{ idx + 1 }}</span>
+                  <mat-icon class="drag-handle-icon">drag_indicator</mat-icon>
+                  <div class="box-text-content">
+                    <span class="measure-title">{{ measure.name }}</span>
+                  </div>
+                </div>
+              </ng-template>
+
+              <!-- Reguläre Listendarstellung (Gesamte Zeile ziehbar) -->
+              <span class="step-num-badge">{{ idx + 1 }}</span>
+              <mat-icon class="drag-handle-icon" title="Klicken & Ziehen zum Sortieren">drag_indicator</mat-icon>
+              <div class="box-text-content">
+                <span class="measure-title">{{ measure.name }}</span>
+              </div>
+
+              <button
+                type="button"
+                class="btn-remove-step"
+                (mousedown)="$event.stopPropagation()"
+                (click)="removeSelectedMeasure(idx, $event)"
+                title="Schritt entfernen"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
             </div>
           }
         </div>
       </div>
 
-      <div class="selection-list-container">
-        <mat-selection-list formControlName="selectedMeasures" [compareWith]="compareMeasures" color="primary">
-          @for (measure of availableMeasures; track measure.id) {
-            <mat-list-option [value]="measure" class="custom-select-option">
-              <mat-icon matListItemMeta class="option-icon">healing</mat-icon>
-              <div class="option-text-wrapper">
-                <span class="measure-title">{{ measure.name }}</span>
+      <!-- 2. UNTERE BOX: Maßnahmen-Katalog (mit Suchleiste & Neuer Maßnahme) -->
+      <div class="available-catalog-box">
+        <div class="catalog-header-row">
+          <div class="catalog-header-title">
+            <mat-icon class="sub-icon">healing</mat-icon>
+            <h4>Verfügbare Maßnahmen</h4>
+          </div>
+          <button mat-stroked-button type="button" class="add-inline-measure-btn" (click)="createNewMeasure()">
+            <mat-icon>add</mat-icon>
+            <span>Neue Maßnahme</span>
+          </button>
+        </div>
+
+        <div class="measure-search-field">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            class="search-inner-input"
+            [(ngModel)]="measureSearch"
+            [ngModelOptions]="{standalone: true}"
+            (ngModelChange)="applyMeasureFilter()"
+            placeholder="Maßnahme nach Name oder Thema filtern..."
+            aria-label="Maßnahme filtern"
+          />
+          @if (measureSearch) {
+            <button type="button" class="clear-search-btn" (click)="clearMeasureSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
+
+        <div class="selection-list-container">
+          <mat-selection-list formControlName="selectedMeasures" [compareWith]="compareMeasures" color="primary">
+            @for (measure of filteredAvailableMeasures; track measure.id) {
+              <mat-list-option [value]="measure" class="custom-select-option">
+                <mat-icon matListItemIcon class="option-icon">medical_services</mat-icon>
+                <span matListItemTitle class="measure-title">{{ measure.name }}</span>
+              </mat-list-option>
+            }
+            @if (filteredAvailableMeasures.length === 0) {
+              <div class="empty-state-nested">
+                <mat-icon>healing_off</mat-icon>
+                <span>Keine Maßnahmen entsprechen dem Suchfilter</span>
               </div>
-            </mat-list-option>
-          }
-          @if (availableMeasures.length === 0) {
-            <div class="empty-state-nested">
-              <mat-icon>healing_off</mat-icon>
-              <span>Keine Maßnahmen zur Auswahl verfügbar</span>
-            </div>
-          }
-        </mat-selection-list>
+            }
+          </mat-selection-list>
+        </div>
       </div>
+
     </div>
 
   </form>
@@ -84,7 +230,7 @@
 
 <mat-dialog-actions align="end" class="dialog-actions-row">
   <button mat-button mat-dialog-close class="cancel-btn">Abbrechen</button>
-  <button mat-flat-button class="submit-btn" (click)="submit()" [disabled]="!planForm.valid">
+  <button mat-flat-button class="submit-btn" (click)="submit()" [disabled]="!isPlanValid()">
     <mat-icon>{{ data?.plan ? 'save' : 'check' }}</mat-icon>
     <span>{{ data?.plan ? 'Speichern' : 'Plan erstellen' }}</span>
   </button>

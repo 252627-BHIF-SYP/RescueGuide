@@ -6,6 +6,7 @@ public class Plan
     public required string Name { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? Author { get; set; }
+    public List<string> Tags { get; set; } = [];
 
     public ICollection<Measure> Measures { get; set; } = [];
     public ICollection<PlanMeasure> PlanMeasures { get; set; } = [];

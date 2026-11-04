@@ -81,7 +81,7 @@
           >
         </div>
 
-        <!-- Search Input -->
+        <!-- Search Input (sucht nach Name, Beschreibung & Tags) -->
         <div class="catalog-search-box">
           <mat-icon class="search-icon">search</mat-icon>
           <input
@@ -89,7 +89,7 @@
             class="search-input"
             [(ngModel)]="searchTerm"
             (ngModelChange)="applyFilter()"
-            placeholder="Maßnahme oder Plan suchen..."
+            placeholder="Maßnahme oder Plan nach Name oder Thema suchen..."
             aria-label="Plan oder Maßnahme suchen"
           />
           @if (searchTerm) {
@@ -322,6 +322,9 @@
               <mat-icon>playlist_play</mat-icon>
             </div>
             <h4>Vorbereitung zur Übertragung ist leer</h4>
+            <p>
+              Klicken Sie im Katalog auf <strong>+</strong> oder ziehen Sie Pläne und Maßnahmen hierher, um sie für den Ersthelfer vorzubereiten.
+            </p>
           </div>
         }
 
