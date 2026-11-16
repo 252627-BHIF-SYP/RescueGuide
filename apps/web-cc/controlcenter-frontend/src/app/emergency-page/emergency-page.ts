@@ -7,6 +7,7 @@ import {
   computed,
   ViewChild,
   ElementRef,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -140,8 +141,61 @@ export class EmergencyPage implements OnInit, OnDestroy {
       });
   }
 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement | null;
+    const tag = target?.tagName?.toLowerCase();
+    const isEditable =
+      tag === 'input' ||
+      tag === 'textarea' ||
+      tag === 'select' ||
+      !!target?.isContentEditable;
+
+    if (this.showEndConfirm()) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.cancelEndCall();
+      }
+      return;
+    }
+
+    if (this.showMap() && event.key === 'Escape') {
+      event.preventDefault();
+      this.showMap.set(false);
+      return;
+    }
+
+    if (
+      event.key === 'Tab' &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.altKey &&
+      !this.showEndConfirm() &&
+      !this.showMap() &&
+      !this.isPostEmergencyReview() &&
+      !document.querySelector('.mat-mdc-dialog-container')
+    ) {
+      event.preventDefault();
+      this.activeTab = this.activeTab === 'checklist' ? 'plans' : 'checklist';
+      return;
+    }
+
+    if (
+      !isEditable &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.altKey &&
+      (event.key === 'm' || event.key === 'M') &&
+      !this.isPostEmergencyReview() &&
+      this.mapUrl !== null
+    ) {
+      event.preventDefault();
+      this.toggleMap();
+    }
+  }
+
   requestEndCall() {
-    this.endCall();
+    this.showEndConfirm.set(true);
   }
 
   cancelEndCall() {
@@ -149,6 +203,7 @@ export class EmergencyPage implements OnInit, OnDestroy {
   }
 
   confirmEndCall() {
+    this.showEndConfirm.set(false);
     this.endCall();
   }
 

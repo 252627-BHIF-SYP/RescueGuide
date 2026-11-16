@@ -48,6 +48,7 @@
             [class.active]="showMap()"
             (click)="toggleMap()"
             [disabled]="mapUrl === null"
+            title="Einsatzort-Karte umschalten (Taste M)"
           >
             <mat-icon>{{ showMap() ? 'layers_clear' : 'map' }}</mat-icon>
             <span>{{ showMap() ? 'Karte schließen' : 'Karte' }}</span>
@@ -93,6 +94,7 @@
               [attr.aria-selected]="activeTab === 'checklist'"
               [class.active]="activeTab === 'checklist'"
               (click)="activeTab = 'checklist'"
+              title="Zwischen Tabs wechseln (Tab)"
             >
               <mat-icon class="tab-icon">fact_check</mat-icon>
               <span class="tab-label">Protokoll</span>
@@ -105,6 +107,7 @@
               [attr.aria-selected]="activeTab === 'plans'"
               [class.active]="activeTab === 'plans'"
               (click)="activeTab = 'plans'"
+              title="Zwischen Tabs wechseln (Tab)"
             >
               <mat-icon class="tab-icon">send</mat-icon>
               <span class="tab-label">Maßnahmen senden</span>
@@ -167,6 +170,49 @@
               style="border:0; display:block;"
               loading="lazy"
             ></iframe>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- End Call Confirmation Modal (P0 Safety Barrier) -->
+    @if (showEndConfirm()) {
+      <div
+        class="confirm-modal-backdrop"
+        (click)="cancelEndCall()"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="end-call-confirm-title"
+        aria-describedby="end-call-confirm-desc"
+      >
+        <div class="confirm-modal-card animate-scale-up" (click)="$event.stopPropagation()">
+          <div class="confirm-modal-header">
+            <div class="confirm-icon-ring">
+              <mat-icon>warning_amber</mat-icon>
+            </div>
+            <div class="confirm-title-group">
+              <h3 id="end-call-confirm-title">Notrufeinsatz wirklich beenden?</h3>
+              <p id="end-call-confirm-desc">
+                Der aktive Live-Stream zum Ersthelfer wird getrennt und das Einsatzprotokoll zur Nachbearbeitung geöffnet.
+              </p>
+            </div>
+          </div>
+          <div class="confirm-modal-actions">
+            <button
+              type="button"
+              class="btn-confirm-cancel"
+              (click)="cancelEndCall()"
+            >
+              Abbrechen (Esc)
+            </button>
+            <button
+              type="button"
+              class="btn-confirm-end"
+              (click)="confirmEndCall()"
+            >
+              <mat-icon>call_end</mat-icon>
+              <span>Einsatz beenden</span>
+            </button>
           </div>
         </div>
       </div>

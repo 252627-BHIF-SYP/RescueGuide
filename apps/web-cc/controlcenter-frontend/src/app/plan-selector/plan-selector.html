@@ -85,11 +85,12 @@
         <div class="catalog-search-box">
           <mat-icon class="search-icon">search</mat-icon>
           <input
+            #catalogSearchInput
             type="text"
             class="search-input"
             [(ngModel)]="searchTerm"
             (ngModelChange)="applyFilter()"
-            placeholder="Maßnahme oder Plan nach Name oder Thema suchen..."
+            placeholder="Maßnahme oder Plan nach Name oder Thema suchen (/)..."
             aria-label="Plan oder Maßnahme suchen"
           />
           @if (searchTerm) {

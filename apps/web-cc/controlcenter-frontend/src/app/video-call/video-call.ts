@@ -34,6 +34,7 @@ export class VideoCall implements OnInit, OnDestroy {
   incomingFrom: string | null = null;
   activeCallId: string | null = null;
   pendingOffer: any = null;
+  videoFitMode: 'cover' | 'contain' = 'cover';
 
   // TEMP: Preview-Modus für Styling – auf false setzen wenn fertig
   private readonly PREVIEW_MODE = false;
@@ -283,6 +284,10 @@ export class VideoCall implements OnInit, OnDestroy {
     }
     this.callContext.clearPendingOffer();
     this.closeConnection();
+  }
+
+  toggleVideoFitMode() {
+    this.videoFitMode = this.videoFitMode === 'cover' ? 'contain' : 'cover';
   }
 
   toggleVideoFullscreen() {

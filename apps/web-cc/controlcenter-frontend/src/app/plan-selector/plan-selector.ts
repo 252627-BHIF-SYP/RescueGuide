@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -53,6 +53,8 @@ interface DispatchProgress {
   styleUrl: './plan-selector.scss',
 })
 export class PlanSelector implements OnInit, OnDestroy {
+  @ViewChild('catalogSearchInput') catalogSearchInput?: ElementRef<HTMLInputElement>;
+
   // Persisted state across component lifecycles / tab switching
   private static savedQueue: QueueItem[] = [];
   private static savedSearchTerm = '';
@@ -123,10 +125,25 @@ export class PlanSelector implements OnInit, OnDestroy {
   // ── Keyboard shortcuts ──────────────────────────────────────────────
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement | null;
+    const tag = target?.tagName?.toLowerCase();
+    const isEditable =
+      tag === 'input' ||
+      tag === 'textarea' ||
+      tag === 'select' ||
+      !!target?.isContentEditable;
+
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
       if (this.queue.length > 0) {
         event.preventDefault();
         this.sendQueue();
+      }
+    } else if (!isEditable && event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const inputEl = this.catalogSearchInput?.nativeElement;
+      if (inputEl && inputEl.offsetParent !== null) {
+        event.preventDefault();
+        inputEl.focus();
+        inputEl.select();
       }
     } else if (event.key === 'Escape' && this.searchTerm) {
       event.preventDefault();

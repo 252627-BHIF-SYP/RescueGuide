@@ -1,4 +1,3 @@
-
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
 // components according to the Material 3 design spec.
@@ -69,30 +68,59 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   flex-shrink: 0;
 }
 
+:root {
+  --rg-primary: #2353a1;
+  --rg-primary-dark: #1b4384;
+  --rg-primary-hover: #2d62b8;
+  --rg-primary-soft: #eef4fc;
+  --rg-primary-border: #c2d7f3;
+
+  --rg-danger: #d92632;
+  --rg-danger-dark: #b81b26;
+  --rg-danger-soft: #fef2f2;
+  --rg-danger-border: #fecaca;
+
+  --rg-success: #16a34a;
+  --rg-success-soft: #f0fdf4;
+  --rg-success-border: #86efac;
+
+  --rg-bg: #f0f4fa;
+  --rg-surface: #ffffff;
+  --rg-surface-dark: #091220;
+  --rg-border: #d2deee;
+  --rg-border-light: #e8eef8;
+  --rg-text: #0f172a;
+  --rg-text-muted: #334155;
+
+  --rg-radius-sm: 4px;
+  --rg-radius-md: 8px;
+  --rg-radius-pill: 999px;
+}
+
 // ── RG+ Brand Design Tokens & Auth Pages ──
-$rg-blue:          #2353a1;
-$rg-blue-dark:     #1b4384;
-$rg-blue-hover:    #2d62b8;
-$rg-blue-soft:     #eef4fc;
-$rg-blue-border:   #c2d7f3;
+$rg-blue:          var(--rg-primary);
+$rg-blue-dark:     var(--rg-primary-dark);
+$rg-blue-hover:    var(--rg-primary-hover);
+$rg-blue-soft:     var(--rg-primary-soft);
+$rg-blue-border:   var(--rg-primary-border);
 
-$rg-red:           #d92632;
-$rg-red-dark:      #b81b26;
-$rg-red-soft:      #fef2f2;
-$rg-red-border:    #fecaca;
+$rg-red:           var(--rg-danger);
+$rg-red-dark:      var(--rg-danger-dark);
+$rg-red-soft:      var(--rg-danger-soft);
+$rg-red-border:    var(--rg-danger-border);
 
-$auth-bg:          #f0f4fa;
-$auth-surface:     #ffffff;
-$auth-border:      #d2deee;
+$auth-bg:          var(--rg-bg);
+$auth-surface:     var(--rg-surface);
+$auth-border:      var(--rg-border);
 $auth-border-subtle:#e5eef9;
 $auth-accent:      $rg-blue;
 $auth-accent-hover:$rg-blue-dark;
 $auth-accent-soft: $rg-blue-soft;
 $auth-accent-border:$rg-blue-border;
 $auth-danger:      $rg-red;
-$auth-text:        #0f172a;
-$auth-text-muted:  #475569;
-$auth-radius:      6px;
+$auth-text:        var(--rg-text);
+$auth-text-muted:  var(--rg-text-muted);
+$auth-radius:      var(--rg-radius-md);
 $auth-shadow-sm:   0 1px 4px rgba(35, 83, 161, 0.08);
 $auth-shadow-md:   0 6px 20px rgba(35, 83, 161, 0.12);
 
@@ -217,7 +245,7 @@ body:has(.auth-wrapper) {
 }
 
 .auth-hint {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: $auth-text-muted;
   margin-top: -3px;
   margin-bottom: 2px;
@@ -232,12 +260,12 @@ body:has(.auth-wrapper) {
 .password-checklist {
   background: $rg-blue-soft;
   border: 1px solid $rg-blue-border;
-  border-radius: 6px;
+  border-radius: var(--rg-radius-md);
   padding: 8px 10px;
   margin: 2px 0;
 
   .checklist-title {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: $rg-blue;
     text-transform: uppercase;
@@ -281,7 +309,7 @@ body:has(.auth-wrapper) {
   border: 1px solid #bbf7d0;
   color: #15803d;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--rg-radius-md);
   font-size: 0.76rem;
   font-weight: 600;
   margin: 2px 0;
@@ -303,7 +331,7 @@ body:has(.auth-wrapper) {
   border: 1px solid $rg-red-border;
   color: $rg-red-dark;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--rg-radius-md);
   font-size: 0.76rem;
   font-weight: 600;
   margin: 2px 0;
@@ -326,7 +354,7 @@ body:has(.auth-wrapper) {
   border: 1px solid $rg-red-border;
   color: $rg-red-dark;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: var(--rg-radius-md);
   font-size: 0.8rem;
   font-weight: 600;
   line-height: 1.35;
@@ -352,7 +380,7 @@ body:has(.auth-wrapper) {
     height: 40px;
     font-size: 0.88rem;
     font-weight: 700;
-    border-radius: 6px !important;
+    border-radius: var(--rg-radius-sm) !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -392,7 +420,7 @@ body:has(.auth-wrapper) {
     background: transparent !important;
     background-color: transparent !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 6px !important;
+    border-radius: var(--rg-radius-sm) !important;
     transition: all 0.15s ease;
 
     .mdc-button__label {
@@ -413,11 +441,9 @@ body:has(.auth-wrapper) {
   }
 }
 
-
-
 // Compact Autocomplete Panel for Tags (Consistent Material 3 Theme)
 .compact-tag-autocomplete.mat-mdc-autocomplete-panel {
-  border-radius: 8px !important;
+  border-radius: var(--rg-radius-md) !important;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
   border: 1px solid #d2deee !important;
   max-height: 220px !important;
