@@ -1,7 +1,7 @@
 // ── RG+ Design Tokens (Tactical Video Feed) ───────────────────────────
-$accent:       #2353a1;
-$danger:       #d92632;
-$surface-dark: #091220;
+$accent:       var(--rg-primary);
+$danger:       var(--rg-danger);
+$surface-dark: var(--rg-surface-dark);
 $border-dark:  #1b2f52;
 
 :host {
@@ -29,7 +29,7 @@ $border-dark:  #1b2f52;
   padding: 12px 18px;
   background: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: 6px;
+  border-radius: var(--rg-radius-md);
   margin-bottom: 14px;
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
   width: 100%;
@@ -97,7 +97,7 @@ $border-dark:  #1b2f52;
 .video-wrapper {
   position: relative;
   background: $surface-dark;
-  border-radius: 8px;
+  border-radius: var(--rg-radius-md);
   overflow: hidden;
   height: 100%;
   max-height: calc(100vh - 120px);
@@ -117,6 +117,11 @@ $border-dark:  #1b2f52;
     position: absolute;
     top: 0;
     left: 0;
+
+    &.fit-contain {
+      object-fit: contain;
+      background: #000000;
+    }
   }
 
   // ── Overlay Top (LIVE & Status) ─────────────────────────────────────
@@ -136,7 +141,7 @@ $border-dark:  #1b2f52;
       gap: 5px;
       background: $danger;
       color: #fff;
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       font-weight: 800;
       padding: 3px 8px;
       border-radius: 4px;
@@ -155,7 +160,7 @@ $border-dark:  #1b2f52;
     .feed-status {
       background: rgba(11, 17, 28, 0.75);
       color: #f1f5f9;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 600;
       padding: 3px 10px;
       border-radius: 4px;
@@ -169,41 +174,50 @@ $border-dark:  #1b2f52;
     }
   }
 
-  // ── Fullscreen Button ───────────────────────────────────────────────
-  .fullscreen-btn {
-    appearance: none;
-    -webkit-appearance: none;
-    border: none;
-    outline: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
+  // ── Video Controls (Fit Mode & Fullscreen) ──────────────────────────
+  .feed-controls {
     position: absolute;
     top: 12px;
     right: 12px;
     z-index: 10;
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(11, 17, 28, 0.75);
-    color: #ffffff;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    transition: all 0.15s ease;
+    gap: 6px;
 
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
+    .video-ctrl-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(11, 17, 28, 0.75);
+      color: #ffffff;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.15s ease;
 
-    &:hover {
-      background: rgba(255, 255, 255, 0.95);
-      color: #0f172a;
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.95);
+        color: #0f172a;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px $accent;
+      }
     }
   }
 
@@ -224,7 +238,7 @@ $border-dark:  #1b2f52;
       gap: 5px;
       background: rgba(11, 17, 28, 0.78);
       color: rgba(255, 255, 255, 0.9);
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       font-weight: 600;
       padding: 3px 10px;
       border-radius: 4px;
@@ -280,7 +294,7 @@ $border-dark:  #1b2f52;
     }
 
     .standby-sub {
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       color: #94a3b8;
       max-width: 200px;
       line-height: 1.35;

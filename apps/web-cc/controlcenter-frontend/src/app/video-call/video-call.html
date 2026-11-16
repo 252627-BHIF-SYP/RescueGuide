@@ -1,60 +1,85 @@
 <div class="video-call">
 
   <!-- Eingehender Anruf Banner falls noch nicht angenommen -->
-  <div *ngIf="incomingFrom && !activeCallId" class="incoming-banner">
-    <div class="incoming-icon-ring">
-      <mat-icon>phone_in_talk</mat-icon>
+  @if (incomingFrom && !activeCallId) {
+    <div class="incoming-banner">
+      <div class="incoming-icon-ring">
+        <mat-icon>phone_in_talk</mat-icon>
+      </div>
+      <div class="incoming-text">
+        <h4>Eingehender Notruf-Stream</h4>
+        <p>Ersthelfer: <strong>{{ incomingFrom }}</strong></p>
+      </div>
+      <div class="incoming-actions">
+        <button mat-flat-button color="primary" class="btn-accept" (click)="acceptCall()">
+          <mat-icon>videocam</mat-icon>
+          Annehmen
+        </button>
+        <button mat-stroked-button color="warn" class="btn-reject" (click)="rejectCall()">
+          <mat-icon>close</mat-icon>
+          Ablehnen
+        </button>
+      </div>
     </div>
-    <div class="incoming-text">
-      <h4>Eingehender Notruf-Stream</h4>
-      <p>Ersthelfer: <strong>{{ incomingFrom }}</strong></p>
-    </div>
-    <div class="incoming-actions">
-      <button mat-flat-button color="primary" class="btn-accept" (click)="acceptCall()">
-        <mat-icon>videocam</mat-icon>
-        Annehmen
-      </button>
-      <button mat-stroked-button color="warn" class="btn-reject" (click)="rejectCall()">
-        <mat-icon>close</mat-icon>
-        Ablehnen
-      </button>
-    </div>
-  </div>
+  }
 
   <!-- Video Box im Hochformat (9:16) -->
   <div #videoWrapper class="video-wrapper">
 
     <!-- Top Overlay (Status & Badges) -->
-    <div class="feed-overlay" *ngIf="activeCallId">
-      <div class="live-pill">
-        <span class="live-pulse-dot"></span>
-        <span>LIVE</span>
+    @if (activeCallId) {
+      <div class="feed-overlay">
+        <div class="live-pill">
+          <span class="live-pulse-dot"></span>
+          <span>LIVE</span>
+        </div>
+        <span class="feed-status">{{ activeCallId }}</span>
       </div>
-      <span class="feed-status">{{ activeCallId }}</span>
-    </div>
+    }
 
-    <!-- Fullscreen Button oben rechts -->
-    <button
-      *ngIf="activeCallId"
-      class="fullscreen-btn"
-      (click)="toggleVideoFullscreen()"
-      aria-label="Video Vollbild"
-      title="Vollbild anzeigen">
-      <mat-icon>fullscreen</mat-icon>
-    </button>
-
-
+    <!-- Video Controls oben rechts (Fit-Mode & Fullscreen) -->
+    @if (activeCallId) {
+      <div class="feed-controls">
+        <button
+          type="button"
+          class="video-ctrl-btn fit-toggle-btn"
+          (click)="toggleVideoFitMode()"
+          [attr.aria-label]="videoFitMode === 'cover' ? 'Gesamtes Bild anzeigen (Contain)' : 'Hochformat füllen (Cover)'"
+          [title]="videoFitMode === 'cover' ? 'Gesamtes Bild anzeigen (Contain)' : 'Hochformat füllen (Cover)'"
+        >
+          <mat-icon>{{ videoFitMode === 'cover' ? 'fit_screen' : 'crop_free' }}</mat-icon>
+        </button>
+        <button
+          type="button"
+          class="video-ctrl-btn fullscreen-btn"
+          (click)="toggleVideoFullscreen()"
+          aria-label="Video Vollbild"
+          title="Vollbild anzeigen"
+        >
+          <mat-icon>fullscreen</mat-icon>
+        </button>
+      </div>
+    }
 
     <!-- Standby Overlay (wenn kein aktiver Call) -->
-    <div class="feed-standby" *ngIf="!activeCallId && !incomingFrom">
-      <div class="standby-radar">
-        <mat-icon class="standby-icon">videocam</mat-icon>
+    @if (!activeCallId && !incomingFrom) {
+      <div class="feed-standby">
+        <div class="standby-radar">
+          <mat-icon class="standby-icon">videocam</mat-icon>
+        </div>
+        <span class="standby-title">Warte auf Video-Feed</span>
+        <span class="standby-sub">Der Stream des Ersthelfers wird hier live übertragen</span>
       </div>
-      <span class="standby-title">Warte auf Video-Feed</span>
-      <span class="standby-sub">Der Stream des Ersthelfers wird hier live übertragen</span>
-    </div>
+    }
 
-    <video #remoteVideo autoplay playsinline muted class="remote-feed"></video>
+    <video
+      #remoteVideo
+      autoplay
+      playsinline
+      muted
+      class="remote-feed"
+      [class.fit-contain]="videoFitMode === 'contain'"
+    ></video>
   </div>
 
 </div>

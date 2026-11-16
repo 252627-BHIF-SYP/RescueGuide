@@ -19,15 +19,6 @@
           >
             <div class="label-row">
               <label class="input-label" for="emergencyType">Art des Notrufs</label>
-              @if (isFilled('type')) {
-                <span class="status-indicator filled">
-                  <mat-icon>check_circle</mat-icon> Ausgefüllt
-                </span>
-              } @else {
-                <span class="status-indicator pending">
-                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
-                </span>
-              }
             </div>
             <div class="select-wrapper">
               <mat-icon class="field-icon">emergency</mat-icon>
@@ -61,15 +52,6 @@
           >
             <div class="label-row">
               <label class="input-label" for="address">Einsatzadresse / Standort</label>
-              @if (isFilled('address')) {
-                <span class="status-indicator filled">
-                  <mat-icon>check_circle</mat-icon> Ausgefüllt
-                </span>
-              } @else {
-                <span class="status-indicator pending">
-                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
-                </span>
-              }
             </div>
             <div class="input-wrapper">
               <mat-icon class="field-icon">place</mat-icon>
@@ -96,15 +78,6 @@
           >
             <div class="label-row">
               <label class="input-label" for="injuredCount">Anzahl Verletzte</label>
-              @if (isFilled('injuredCount')) {
-                <span class="status-indicator filled">
-                  <mat-icon>check_circle</mat-icon> Erfasst
-                </span>
-              } @else {
-                <span class="status-indicator pending">
-                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
-                </span>
-              }
             </div>
             <div class="input-wrapper">
               <mat-icon class="field-icon">personal_injury</mat-icon>
@@ -132,15 +105,6 @@
           >
             <div class="label-row">
               <label class="input-label" for="description">Lagebeschreibung (Was ist passiert?)</label>
-              @if (isFilled('description')) {
-                <span class="status-indicator filled">
-                  <mat-icon>check_circle</mat-icon> Ausgefüllt
-                </span>
-              } @else {
-                <span class="status-indicator pending">
-                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
-                </span>
-              }
             </div>
             <textarea
               id="description"
@@ -173,15 +137,6 @@
           >
             <div class="label-row">
               <label class="input-label" for="callerName">Name des Anrufers</label>
-              @if (isFilled('callerName')) {
-                <span class="status-indicator filled">
-                  <mat-icon>check_circle</mat-icon> Ausgefüllt
-                </span>
-              } @else {
-                <span class="status-indicator pending">
-                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
-                </span>
-              }
             </div>
             <div class="input-wrapper">
               <mat-icon class="field-icon">person</mat-icon>
@@ -209,11 +164,6 @@
             >
               <div class="label-row">
                 <label class="input-label" for="callbackNumber">Rückrufnummer</label>
-                @if (isFilled('callbackNumber')) {
-                  <span class="status-indicator filled"><mat-icon>check_circle</mat-icon></span>
-                } @else {
-                  <span class="status-indicator pending"><mat-icon>radio_button_unchecked</mat-icon></span>
-                }
               </div>
               <div class="input-wrapper">
                 <mat-icon class="field-icon">phone</mat-icon>
@@ -236,11 +186,6 @@
             >
               <div class="label-row">
                 <label class="input-label" for="callerType">Anrufer-Typ</label>
-                @if (isFilled('callerType')) {
-                  <span class="status-indicator filled"><mat-icon>check_circle</mat-icon></span>
-                } @else {
-                  <span class="status-indicator pending"><mat-icon>radio_button_unchecked</mat-icon></span>
-                }
               </div>
               <div class="input-wrapper">
                 <input
@@ -264,15 +209,6 @@
           >
             <div class="label-row">
               <label class="input-label" for="dispatcherName">Disponent (Leitstelle)</label>
-              @if (isFilled('dispatcherName')) {
-                <span class="status-indicator filled">
-                  <mat-icon>check_circle</mat-icon> Ausgefüllt
-                </span>
-              } @else {
-                <span class="status-indicator pending">
-                  <mat-icon>radio_button_unchecked</mat-icon> Ausstehend
-                </span>
-              }
             </div>
             <div class="input-wrapper">
               <mat-icon class="field-icon">badge</mat-icon>

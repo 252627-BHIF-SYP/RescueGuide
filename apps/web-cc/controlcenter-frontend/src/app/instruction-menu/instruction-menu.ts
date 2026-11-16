@@ -20,6 +20,7 @@ import { CreatePlanDialog } from './dialogs/create-plan-dialog/create-plan-dialo
 import { PreviewPlanDialog } from './dialogs/preview-plan-dialog/preview-plan-dialog';
 import { PreviewMeasureDialog } from './dialogs/preview-measure-dialog/preview-measure-dialog';
 import { ConfirmDeleteDialog } from './dialogs/confirm-delete-dialog/confirm-delete-dialog';
+import { openDialogFromTrigger } from '../utils/dialog-origin.util';
 
 @Component({
   selector: 'app-instruction-menu',
@@ -125,12 +126,17 @@ export class InstructionMenu implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  createMeasure(): void {
-    const dialogRef = this.dialog.open(CreateMeasureDialog, {
-      width: '840px',
-      maxWidth: '95vw',
-      data: {}
-    });
+  createMeasure(event?: Event): void {
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      CreateMeasureDialog,
+      {
+        width: '840px',
+        maxWidth: '95vw',
+        data: {},
+      },
+      event,
+    );
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -151,12 +157,17 @@ export class InstructionMenu implements OnInit, OnDestroy {
     });
   }
 
-  editMeasure(measure: Measure): void {
-    const dialogRef = this.dialog.open(CreateMeasureDialog, {
-      width: '840px',
-      maxWidth: '95vw',
-      data: { measure }
-    });
+  editMeasure(measure: Measure, event?: Event): void {
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      CreateMeasureDialog,
+      {
+        width: '840px',
+        maxWidth: '95vw',
+        data: { measure },
+      },
+      event,
+    );
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -176,18 +187,23 @@ export class InstructionMenu implements OnInit, OnDestroy {
     });
   }
 
-  deleteMeasure(measure: Measure): void {
+  deleteMeasure(measure: Measure, event?: Event): void {
     const affectedPlans = this.plans.filter(p => p.measures?.some(m => m.id === measure.id));
 
-    const dialogRef = this.dialog.open(ConfirmDeleteDialog, {
-      width: '460px',
-      data: {
-        type: 'measure',
-        name: measure.name,
-        affectedPlansCount: affectedPlans.length,
-        planNames: affectedPlans.map(p => p.name)
-      }
-    });
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      ConfirmDeleteDialog,
+      {
+        width: '460px',
+        data: {
+          type: 'measure',
+          name: measure.name,
+          affectedPlansCount: affectedPlans.length,
+          planNames: affectedPlans.map(p => p.name),
+        },
+      },
+      event,
+    );
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
@@ -207,12 +223,17 @@ export class InstructionMenu implements OnInit, OnDestroy {
     });
   }
 
-  createPlan(): void {
-    const dialogRef = this.dialog.open(CreatePlanDialog, {
-      width: '840px',
-      maxWidth: '95vw',
-      data: { availableMeasures: this.availableMeasures }
-    });
+  createPlan(event?: Event): void {
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      CreatePlanDialog,
+      {
+        width: '840px',
+        maxWidth: '95vw',
+        data: { availableMeasures: this.availableMeasures },
+      },
+      event,
+    );
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -232,12 +253,17 @@ export class InstructionMenu implements OnInit, OnDestroy {
     });
   }
 
-  editPlan(plan: Plan): void {
-    const dialogRef = this.dialog.open(CreatePlanDialog, {
-      width: '840px',
-      maxWidth: '95vw',
-      data: { availableMeasures: this.availableMeasures, plan }
-    });
+  editPlan(plan: Plan, event?: Event): void {
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      CreatePlanDialog,
+      {
+        width: '840px',
+        maxWidth: '95vw',
+        data: { availableMeasures: this.availableMeasures, plan },
+      },
+      event,
+    );
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -257,14 +283,19 @@ export class InstructionMenu implements OnInit, OnDestroy {
     });
   }
 
-  deletePlan(plan: Plan): void {
-    const dialogRef = this.dialog.open(ConfirmDeleteDialog, {
-      width: '460px',
-      data: {
-        type: 'plan',
-        name: plan.name
-      }
-    });
+  deletePlan(plan: Plan, event?: Event): void {
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      ConfirmDeleteDialog,
+      {
+        width: '460px',
+        data: {
+          type: 'plan',
+          name: plan.name,
+        },
+      },
+      event,
+    );
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
@@ -284,17 +315,27 @@ export class InstructionMenu implements OnInit, OnDestroy {
     });
   }
 
-  previewPlan(plan: Plan): void {
-    this.dialog.open(PreviewPlanDialog, {
-      width: '650px',
-      data: { plan }
-    });
+  previewPlan(plan: Plan, event?: Event): void {
+    openDialogFromTrigger(
+      this.dialog,
+      PreviewPlanDialog,
+      {
+        width: '650px',
+        data: { plan },
+      },
+      event,
+    );
   }
 
-  previewMeasure(measure: Measure): void {
-    this.dialog.open(PreviewMeasureDialog, {
-      width: '550px',
-      data: { measure }
-    });
+  previewMeasure(measure: Measure, event?: Event): void {
+    openDialogFromTrigger(
+      this.dialog,
+      PreviewMeasureDialog,
+      {
+        width: '550px',
+        data: { measure },
+      },
+      event,
+    );
   }
 }

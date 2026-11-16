@@ -1,162 +1,343 @@
-/* Das Overlay legt sich über den gesamten Bildschirm */
+// ── RG+ Design Tokens (Incoming Emergency Notification Modal) ────────
+$primary:        var(--rg-primary);
+$primary-soft:   var(--rg-primary-soft);
+$primary-border: var(--rg-primary-border);
+$danger:         var(--rg-danger);
+$danger-dark:    var(--rg-danger-dark);
+$danger-soft:    var(--rg-danger-soft);
+$danger-border:  var(--rg-danger-border);
+$surface:        var(--rg-surface);
+$text:           var(--rg-text);
+$text-muted:     var(--rg-text-muted);
+
+$border-subtle:  rgb(15 23 42 / 0.12);
+$border-inner:   rgb(15 23 42 / 0.08);
+$border-control: rgb(15 23 42 / 0.16);
+
 .alarm-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(15, 23, 42, 0.75);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  backdrop-filter: blur(4px);
-  padding: 16px;
+  padding: 20px;
   box-sizing: border-box;
+  animation: alarmFadeIn 150ms ease-out forwards;
+
+  &.is-closing {
+    animation: alarmFadeOut 140ms ease-in forwards;
+    pointer-events: none;
+  }
 }
 
-/* Die Alarm-Karte */
 .alarm-card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 28px 24px 24px;
   width: 100%;
-  max-width: 440px;
-  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.35);
-  border: 2px solid #d92632;
-  text-align: center;
-  animation: slideIn 0.2s ease-out;
+  max-width: 448px;
+  background: $surface;
+  border: 1px solid $border-subtle;
+  border-radius: 12px;
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.28);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: alarmScaleUp 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &.is-closing {
+    animation: alarmScaleDown 140ms cubic-bezier(0.4, 0, 1, 1) forwards;
+    pointer-events: none;
+  }
 }
 
-/* Header-Bereich */
 .alarm-header {
-  margin-bottom: 20px;
+  padding: 14px 20px;
+  background: $surface;
+  border-bottom: 1px solid $border-inner;
+  display: flex;
+  align-items: center;
 
-  .alarm-badge {
+  .header-title-group {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 12px;
+    min-width: 0;
 
     .alarm-logo {
-      height: 22px;
+      height: 20px;
       width: auto;
       object-fit: contain;
+      flex-shrink: 0;
     }
 
-    .alarm-badge-tag {
-      background: #fef2f2;
-      color: #d92632;
-      border: 1px solid #fecaca;
-      font-size: 0.72rem;
+    .header-divider {
+      width: 1px;
+      height: 18px;
+      background: $border-subtle;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.05rem;
       font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      color: $text;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
     }
-  }
-
-  h2 {
-    color: #0f172a;
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
   }
 }
 
-/* Container für die Grunddaten (Standort, Anrufer) */
+.alarm-body {
+  padding: 16px 20px;
+  background: #f8fafc;
+}
+
 .alarm-content {
-  background: #f0f5fc;
-  border: 1px solid #c2d7f3;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
-  text-align: left;
+  background: #ffffff;
+  border: 1px solid $border-subtle;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .data-row {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid $border-inner;
 
   &:last-child {
-    margin-bottom: 0;
+    border-bottom: none;
+  }
+
+  .row-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background: $primary-soft;
+    border: 1px solid $primary-border;
+    color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.2;
+    }
+
+    .value {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: $text;
+      line-height: 1.35;
+      word-break: break-word;
+
+      &.is-pending {
+        color: $text-muted;
+        font-style: italic;
+        font-weight: 600;
+        animation: alarmPendingPulse 1600ms ease-in-out infinite;
+      }
+    }
+  }
+
+  &.primary-row {
+    background: rgb(217 38 50 / 0.02);
+
+    .row-icon {
+      background: $danger-soft;
+      border-color: $danger-border;
+      color: $danger;
+    }
+
+    .row-text .value {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: $text;
+    }
+  }
+
+  &.meta-row {
+    .row-icon {
+      background: #f1f5f9;
+      border-color: $border-subtle;
+      color: $text-muted;
+    }
+
+    .row-text .value {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: $text-muted;
+      font-variant-numeric: tabular-nums;
+    }
   }
 }
 
-.label {
-  font-size: 0.75rem;
-  color: #2353a1;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 800;
-  margin-bottom: 2px;
-}
-
-.value {
-  font-size: 1.02rem;
-  color: #0f172a;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid #dbe6f6;
-  margin: 10px 0;
-}
-
-/* Action Buttons */
 .alarm-actions {
+  padding: 14px 20px;
+  background: #ffffff;
+  border-top: 1px solid $border-inner;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
-}
 
-.btn-accept {
-  background-color: #d92632;
-  color: #ffffff;
-  border: none;
-  padding: 14px 24px;
-  border-radius: 6px;
-  font-size: 1.05rem;
-  font-weight: 800;
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 2px 6px rgba(217, 38, 50, 0.35);
-  letter-spacing: 0.02em;
+  .btn-reject,
+  .btn-accept {
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 0 18px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease-out,
+      border-color 150ms ease-out,
+      box-shadow 150ms ease-out,
+      transform 120ms ease-out;
 
-  &:hover {
-    background-color: #b81b26;
-    box-shadow: 0 4px 12px rgba(217, 38, 50, 0.45);
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgb(217 38 50 / 0.28);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: default;
+    }
+  }
+
+  .btn-reject {
+    background: #ffffff;
+    color: $text-muted;
+    border: 1px solid $border-control;
+
+    &:hover:not(:disabled) {
+      background: #f8fafc;
+      color: $text;
+      border-color: rgb(15 23 42 / 0.28);
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px rgb(35 83 161 / 0.25);
+    }
+  }
+
+  .btn-accept {
+    flex: 1;
+    min-width: 190px;
+    background: $danger;
+    color: #ffffff;
+    border: 1px solid $danger-dark;
+    box-shadow: 0 2px 6px rgb(217 38 50 / 0.28);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover:not(:disabled) {
+      background: $danger-dark;
+      box-shadow: 0 4px 12px rgb(217 38 50 / 0.36);
+    }
+
+    &:active:not(:disabled) {
+      box-shadow: 0 1px 3px rgb(217 38 50 / 0.24);
+    }
   }
 }
 
-.btn-reject {
-  background: transparent;
-  color: #64748b;
-  border: 1px solid #dce2ea;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: #f1f5f9;
-    color: #0f172a;
-    border-color: #cbd5e1;
+@keyframes alarmFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
-/* Animationen */
-@keyframes slideIn {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+@keyframes alarmFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes alarmScaleUp {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes alarmScaleDown {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+}
+
+@keyframes alarmPendingPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alarm-overlay,
+  .alarm-overlay.is-closing,
+  .alarm-card,
+  .alarm-card.is-closing,
+  .data-row .row-text .value.is-pending {
+    animation: none;
+  }
 }

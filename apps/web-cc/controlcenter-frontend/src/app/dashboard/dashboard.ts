@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,11 @@ import { DashboardEmergency, DashboardService } from '../services/dashboard.serv
 import { EmergencyProtocol, EmergencyService } from '../services/emergency.service';
 import { PdfExportService, PdfExportMetadata } from '../services/pdf-export.service';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
+import {
+  computeOriginVars,
+  ORIGIN_CLOSE_DURATION_MS,
+  resolveTriggerElement,
+} from '../utils/dialog-origin.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -43,7 +48,11 @@ export class Dashboard implements OnInit, OnDestroy {
   readonly isSavingProtocol = signal<boolean>(false);
   readonly saveSuccess = signal<boolean>(false);
   readonly hasUnsavedChanges = signal<boolean>(false);
+  readonly isClosingProtocolModal = signal<boolean>(false);
+  readonly protocolOriginStyle = signal<Record<string, string>>({});
   private initialProtocolSnapshot = '';
+  private lastProtocolTriggerEl: HTMLElement | null = null;
+  private closeModalTimer?: ReturnType<typeof setTimeout>;
 
   readonly activeEmergencies = computed(() =>
     this.emergencies().filter((emergency) => emergency.status === 'Active'),
@@ -69,6 +78,16 @@ export class Dashboard implements OnInit, OnDestroy {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
+    if (this.closeModalTimer) {
+      clearTimeout(this.closeModalTimer);
+    }
+  }
+
+  @HostListener('window:keydown.escape')
+  onEscapeKey(): void {
+    if (this.selectedEmergency()) {
+      this.closeProtocolDialog();
+    }
   }
 
   loadEmergencies(silent = false): void {
@@ -90,7 +109,18 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   // ── Protokoll im Nachhinein aufrufen und bearbeiten (Issue 133) ──
-  openProtocolDialog(emergency: DashboardEmergency): void {
+  openProtocolDialog(emergency: DashboardEmergency, event?: Event): void {
+    if (this.closeModalTimer) {
+      clearTimeout(this.closeModalTimer);
+      this.closeModalTimer = undefined;
+    }
+
+    if (event) {
+      this.lastProtocolTriggerEl = resolveTriggerElement(event);
+    }
+    this.protocolOriginStyle.set(computeOriginVars(this.lastProtocolTriggerEl));
+    this.isClosingProtocolModal.set(false);
+
     this.selectedEmergency.set(emergency);
     this.selectedProtocol.set(null);
     this.loadingProtocol.set(true);
@@ -113,12 +143,20 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   closeProtocolDialog(): void {
-    this.selectedEmergency.set(null);
-    this.selectedProtocol.set(null);
-    this.protocolError.set('');
-    this.saveSuccess.set(false);
-    this.hasUnsavedChanges.set(false);
-    this.initialProtocolSnapshot = '';
+    if (!this.selectedEmergency() || this.isClosingProtocolModal()) return;
+
+    this.protocolOriginStyle.set(computeOriginVars(this.lastProtocolTriggerEl));
+    this.isClosingProtocolModal.set(true);
+    this.closeModalTimer = setTimeout(() => {
+      this.selectedEmergency.set(null);
+      this.selectedProtocol.set(null);
+      this.protocolError.set('');
+      this.saveSuccess.set(false);
+      this.hasUnsavedChanges.set(false);
+      this.initialProtocolSnapshot = '';
+      this.isClosingProtocolModal.set(false);
+      this.closeModalTimer = undefined;
+    }, ORIGIN_CLOSE_DURATION_MS);
   }
 
   onProtocolChanged(updated: EmergencyProtocol): void {
