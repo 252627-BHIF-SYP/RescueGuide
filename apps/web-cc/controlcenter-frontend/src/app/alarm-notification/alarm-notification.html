@@ -1,36 +1,76 @@
 @if (activeAlarm()) {
-  <div class="alarm-overlay">
-    <div class="alarm-card">
-      <div class="alarm-header">
-        <div class="alarm-badge">
+  <div
+    class="alarm-overlay"
+    [class.is-closing]="isClosing()"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="alarm-dialog-title"
+  >
+    <div class="alarm-card" [class.is-closing]="isClosing()">
+      <header class="alarm-header">
+        <div class="header-title-group">
           <img src="assets/logo.png" alt="RescueGuide+" class="alarm-logo" />
-          <span class="alarm-badge-tag">PRIO 1 • NOTRUF</span>
+          <div class="header-divider"></div>
+          <h2 id="alarm-dialog-title">Eingehender Einsatz</h2>
         </div>
-        <h2>Eingehender Einsatz</h2>
+      </header>
+
+      <div class="alarm-body">
+        <div class="alarm-content">
+          <div class="data-row primary-row">
+            <div class="row-icon">
+              <mat-icon>emergency</mat-icon>
+            </div>
+            <div class="row-text">
+              <span class="label">Einsatzart</span>
+              <span class="value">{{ activeAlarm()?.type }}</span>
+            </div>
+          </div>
+
+          <div class="data-row">
+            <div class="row-icon">
+              <mat-icon>location_on</mat-icon>
+            </div>
+            <div class="row-text">
+              <span class="label">Standort</span>
+              <span class="value" [class.is-pending]="isLocationPending()">
+                {{ activeAlarm()?.location }}
+              </span>
+            </div>
+          </div>
+
+          <div class="data-row meta-row">
+            <div class="row-icon">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="row-text">
+              <span class="label">Anrufer</span>
+              <span class="value">{{ activeAlarm()?.caller }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="alarm-content">
-        <div class="data-row">
-          <span class="label">Einsatzart:</span>
-          <span class="value"
-            ><strong>{{ activeAlarm()?.type }}</strong></span
-          >
-        </div>
-        <hr />
-        <div class="data-row">
-          <span class="label">Standort:</span>
-          <span class="value">{{ activeAlarm()?.location }}</span>
-        </div>
-        <div class="data-row">
-          <span class="label">Anrufer:</span>
-          <span class="value">{{ activeAlarm()?.caller }}</span>
-        </div>
-      </div>
-
-      <div class="alarm-actions">
-        <button class="btn-accept" (click)="onAccept()">Einsatz annehmen</button>
-        <button class="btn-reject" (click)="onReject()">Ablehnen</button>
-      </div>
+      <footer class="alarm-actions">
+        <button
+          type="button"
+          class="btn-reject"
+          [disabled]="isClosing()"
+          (click)="onReject()"
+        >
+          Ablehnen
+        </button>
+        <button
+          #acceptBtn
+          type="button"
+          class="btn-accept"
+          [disabled]="isClosing()"
+          (click)="onAccept()"
+        >
+          <mat-icon>call</mat-icon>
+          <span>Einsatz annehmen</span>
+        </button>
+      </footer>
     </div>
   </div>
 }

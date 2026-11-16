@@ -21,8 +21,15 @@ export class AlarmService {
   private signaling = inject(SignalingService);
   private emergencyService = inject(EmergencyService);
 
-  // BehaviorSubject hält den aktuellsten Alarm-Zustand (wichtig für Echtzeit-Updates)
-  private alarmSubject = new BehaviorSubject<AlarmData | null>(null);
+  // TEMP: Mock-Alarm für Styling-Zwecke – vor dem Commit wieder auf null zurücksetzen
+  private alarmSubject = new BehaviorSubject<AlarmData | null>({
+    id: 'caller-101',
+    type: 'Medizinischer Notfall',
+    location: 'Landstraße 42, 4020 Linz',
+    caller: 'Ersthelfer #101',
+    lat: 48.3069,
+    lng: 14.2858,
+  });
   public alarmStream$ = this.alarmSubject.asObservable();
 
   constructor() {
