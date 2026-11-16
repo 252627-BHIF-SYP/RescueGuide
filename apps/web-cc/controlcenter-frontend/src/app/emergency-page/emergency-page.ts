@@ -22,6 +22,11 @@ import { LocationService, Notruf } from '../services/location.service';
 import { EmergencyProtocol, EmergencyService } from '../services/emergency.service';
 import { PdfExportService } from '../services/pdf-export.service';
 import { AuthService } from '../services/auth.service';
+import {
+  computeOriginVars,
+  ORIGIN_CLOSE_DURATION_MS,
+  resolveTriggerElement,
+} from '../utils/dialog-origin.util';
 
 @Component({
   selector: 'app-emergency-page',
@@ -33,15 +38,24 @@ import { AuthService } from '../services/auth.service';
 export class EmergencyPage implements OnInit, OnDestroy {
   @ViewChild(VideoCall) videoCallComponent!: VideoCall;
   @ViewChild('mapIframe') mapIframe?: ElementRef<HTMLIFrameElement>;
+  @ViewChild('mapToggleBtn') mapToggleBtn?: ElementRef<HTMLElement>;
+  @ViewChild('endCallBtn', { read: ElementRef }) endCallBtn?: ElementRef<HTMLElement>;
 
   // Tab State für den Arbeitsbereich
   activeTab: 'checklist' | 'plans' = 'checklist';
 
   // Karten & Standort-Zustände
   showMap = signal<boolean>(false);
+  isMapClosing = signal<boolean>(false);
+  mapOriginStyle = signal<Record<string, string>>({});
   geocodedAddress = signal<string | null>(null);
   copiedCoords = signal<boolean>(false);
   showEndConfirm = signal<boolean>(false);
+  isEndConfirmClosing = signal<boolean>(false);
+  endConfirmOriginStyle = signal<Record<string, string>>({});
+
+  private mapCloseTimer?: ReturnType<typeof setTimeout>;
+  private endConfirmCloseTimer?: ReturnType<typeof setTimeout>;
 
   // Nachbearbeitungs-Zustand (Issue 133)
   isPostEmergencyReview = signal<boolean>(false);
@@ -115,11 +129,42 @@ export class EmergencyPage implements OnInit, OnDestroy {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
+    if (this.mapCloseTimer) {
+      clearTimeout(this.mapCloseTimer);
+    }
+    if (this.endConfirmCloseTimer) {
+      clearTimeout(this.endConfirmCloseTimer);
+    }
     this.emergencyService.stopTimer();
   }
 
-  toggleMap() {
-    this.showMap.update((v) => !v);
+  toggleMap(event?: Event) {
+    if (this.showMap()) {
+      this.closeMap();
+      return;
+    }
+
+    if (this.mapCloseTimer) {
+      clearTimeout(this.mapCloseTimer);
+      this.mapCloseTimer = undefined;
+    }
+
+    const triggerEl = resolveTriggerElement(event) ?? this.mapToggleBtn?.nativeElement ?? null;
+    this.mapOriginStyle.set(computeOriginVars(triggerEl));
+    this.isMapClosing.set(false);
+    this.showMap.set(true);
+  }
+
+  closeMap() {
+    if (!this.showMap() || this.isMapClosing()) return;
+
+    this.mapOriginStyle.set(computeOriginVars(this.mapToggleBtn?.nativeElement ?? null));
+    this.isMapClosing.set(true);
+    this.mapCloseTimer = setTimeout(() => {
+      this.showMap.set(false);
+      this.isMapClosing.set(false);
+      this.mapCloseTimer = undefined;
+    }, ORIGIN_CLOSE_DURATION_MS);
   }
 
   copyCoordinates() {
@@ -161,7 +206,7 @@ export class EmergencyPage implements OnInit, OnDestroy {
 
     if (this.showMap() && event.key === 'Escape') {
       event.preventDefault();
-      this.showMap.set(false);
+      this.closeMap();
       return;
     }
 
@@ -194,15 +239,36 @@ export class EmergencyPage implements OnInit, OnDestroy {
     }
   }
 
-  requestEndCall() {
+  requestEndCall(event?: Event) {
+    if (this.endConfirmCloseTimer) {
+      clearTimeout(this.endConfirmCloseTimer);
+      this.endConfirmCloseTimer = undefined;
+    }
+
+    const triggerEl = resolveTriggerElement(event) ?? this.endCallBtn?.nativeElement ?? null;
+    this.endConfirmOriginStyle.set(computeOriginVars(triggerEl));
+    this.isEndConfirmClosing.set(false);
     this.showEndConfirm.set(true);
   }
 
   cancelEndCall() {
-    this.showEndConfirm.set(false);
+    if (!this.showEndConfirm() || this.isEndConfirmClosing()) return;
+
+    this.endConfirmOriginStyle.set(computeOriginVars(this.endCallBtn?.nativeElement ?? null));
+    this.isEndConfirmClosing.set(true);
+    this.endConfirmCloseTimer = setTimeout(() => {
+      this.showEndConfirm.set(false);
+      this.isEndConfirmClosing.set(false);
+      this.endConfirmCloseTimer = undefined;
+    }, ORIGIN_CLOSE_DURATION_MS);
   }
 
   confirmEndCall() {
+    if (this.endConfirmCloseTimer) {
+      clearTimeout(this.endConfirmCloseTimer);
+      this.endConfirmCloseTimer = undefined;
+    }
+    this.isEndConfirmClosing.set(false);
     this.showEndConfirm.set(false);
     this.endCall();
   }

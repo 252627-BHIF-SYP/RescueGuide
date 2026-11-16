@@ -13,6 +13,7 @@ import { PreviewMeasureDialog } from '../instruction-menu/dialogs/preview-measur
 import { SignalingService } from '../services/signaling.service';
 import { CallContextService } from '../services/call-context.service';
 import { environment } from '../../environments/environment';
+import { openDialogFromTrigger } from '../utils/dialog-origin.util';
 
 export type FilterCategory = 'all' | 'plans' | 'measures';
 
@@ -302,14 +303,19 @@ export class PlanSelector implements OnInit, OnDestroy {
       event.stopPropagation();
     }
 
-    this.dialog.open(PreviewPlanDialog, {
-      width: '650px',
-      panelClass: 'preview-plan-dialog',
-      data: {
-        plan,
-        isSelected: this.countInQueue('plan', plan.id) > 0,
+    openDialogFromTrigger(
+      this.dialog,
+      PreviewPlanDialog,
+      {
+        width: '650px',
+        panelClass: 'preview-plan-dialog',
+        data: {
+          plan,
+          isSelected: this.countInQueue('plan', plan.id) > 0,
+        },
       },
-    });
+      event,
+    );
   }
 
   previewMeasure(measure: Measure, event?: Event): void {
@@ -317,15 +323,20 @@ export class PlanSelector implements OnInit, OnDestroy {
       event.stopPropagation();
     }
 
-    this.dialog.open(PreviewMeasureDialog, {
-      width: '550px',
-      panelClass: 'preview-measure-dialog',
-      data: {
-        measure,
-        isSelected: this.countInQueue('measure', measure.id) > 0,
-        toggleSelection: true,
+    openDialogFromTrigger(
+      this.dialog,
+      PreviewMeasureDialog,
+      {
+        width: '550px',
+        panelClass: 'preview-measure-dialog',
+        data: {
+          measure,
+          isSelected: this.countInQueue('measure', measure.id) > 0,
+          toggleSelection: true,
+        },
       },
-    });
+      event,
+    );
   }
 
   // ── Send queue action ───────────────────────────────────────────────

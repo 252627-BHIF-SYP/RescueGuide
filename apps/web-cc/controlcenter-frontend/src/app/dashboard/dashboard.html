@@ -33,7 +33,7 @@
         @for (emergency of activeEmergencies(); track emergency.id) {
           <mat-card
             class="emergency-row active clickable"
-            (click)="openProtocolDialog(emergency)"
+            (click)="openProtocolDialog(emergency, $event)"
             matTooltip="Klicken, um das Einsatzprotokoll zu öffnen und zu bearbeiten"
           >
             <div class="main-info">
@@ -58,7 +58,7 @@
                 <button
                   type="button"
                   class="row-btn protocol-btn"
-                  (click)="openProtocolDialog(emergency); $event.stopPropagation()"
+                  (click)="openProtocolDialog(emergency, $event); $event.stopPropagation()"
                   title="Protokoll bearbeiten"
                 >
                   <mat-icon>edit_note</mat-icon>
@@ -92,7 +92,7 @@
         @for (emergency of completedEmergencies(); track emergency.id) {
           <mat-card
             class="emergency-row clickable"
-            (click)="openProtocolDialog(emergency)"
+            (click)="openProtocolDialog(emergency, $event)"
             matTooltip="Klicken, um das Protokoll im Nachhinein einzusehen oder zu bearbeiten"
           >
             <div class="main-info">
@@ -136,8 +136,17 @@
 
   <!-- ── PROTOKOLL-BEARBEITUNGS-MODAL (Issue 133 & 97) ── -->
   @if (selectedEmergency()) {
-    <div class="modal-backdrop" (click)="closeProtocolDialog()">
-      <div class="protocol-modal animate-scale-up" (click)="$event.stopPropagation()">
+    <div
+      class="modal-backdrop rg-origin-backdrop"
+      [class.is-closing]="isClosingProtocolModal()"
+      (click)="closeProtocolDialog()"
+    >
+      <div
+        class="protocol-modal rg-origin-modal"
+        [class.is-closing]="isClosingProtocolModal()"
+        [ngStyle]="protocolOriginStyle()"
+        (click)="$event.stopPropagation()"
+      >
         <!-- Modal Header -->
         <header class="modal-header">
           <div class="modal-title-left">

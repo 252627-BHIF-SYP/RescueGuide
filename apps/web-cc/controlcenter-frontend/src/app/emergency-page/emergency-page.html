@@ -43,10 +43,11 @@
           <div class="loc-pill-divider"></div>
 
           <button
+            #mapToggleBtn
             type="button"
             class="loc-map-toggle"
             [class.active]="showMap()"
-            (click)="toggleMap()"
+            (click)="toggleMap($event)"
             [disabled]="mapUrl === null"
             title="Einsatzort-Karte umschalten (Taste M)"
           >
@@ -66,7 +67,7 @@
           </div>
         </div>
 
-        <button mat-flat-button color="warn" class="btn-end-call" (click)="requestEndCall()">
+        <button #endCallBtn mat-flat-button color="warn" class="btn-end-call" (click)="requestEndCall($event)">
           <mat-icon>close</mat-icon>
           <span>Ende</span>
         </button>
@@ -132,8 +133,13 @@
 
     <!-- Google Maps Modal Overlay -->
     @if (showMap() && mapUrl !== null) {
-      <div class="map-modal-backdrop" (click)="toggleMap()">
-        <div class="map-modal-window animate-scale-up" (click)="$event.stopPropagation()">
+      <div class="map-modal-backdrop rg-origin-backdrop" [class.is-closing]="isMapClosing()" (click)="closeMap()">
+        <div
+          class="map-modal-window rg-origin-modal"
+          [class.is-closing]="isMapClosing()"
+          [ngStyle]="mapOriginStyle()"
+          (click)="$event.stopPropagation()"
+        >
           <div class="map-modal-header">
             <div class="map-title-left">
               <mat-icon class="map-icon">map</mat-icon>
@@ -153,7 +159,7 @@
               <button
                 type="button"
                 class="map-header-btn close-btn"
-                (click)="toggleMap()"
+                (click)="closeMap()"
                 aria-label="Schließen"
                 title="Karte schließen"
               >
@@ -178,14 +184,20 @@
     <!-- End Call Confirmation Modal (P0 Safety Barrier) -->
     @if (showEndConfirm()) {
       <div
-        class="confirm-modal-backdrop"
+        class="confirm-modal-backdrop rg-origin-backdrop"
+        [class.is-closing]="isEndConfirmClosing()"
         (click)="cancelEndCall()"
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="end-call-confirm-title"
         aria-describedby="end-call-confirm-desc"
       >
-        <div class="confirm-modal-card animate-scale-up" (click)="$event.stopPropagation()">
+        <div
+          class="confirm-modal-card rg-origin-modal"
+          [class.is-closing]="isEndConfirmClosing()"
+          [ngStyle]="endConfirmOriginStyle()"
+          (click)="$event.stopPropagation()"
+        >
           <div class="confirm-modal-header">
             <div class="confirm-icon-ring">
               <mat-icon>warning_amber</mat-icon>

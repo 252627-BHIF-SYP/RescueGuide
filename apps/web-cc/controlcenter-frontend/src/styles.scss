@@ -463,3 +463,112 @@ body:has(.auth-wrapper) {
     }
   }
 }
+
+// ── Spatial Continuity / Origin-Based Modal & Dialog Transitions ──────
+@keyframes rgBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rgBackdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes rgOriginOpen {
+  from {
+    transform: translate3d(var(--origin-dx, 0px), var(--origin-dy, 0px), 0) scale(0.22);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes rgOriginClose {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(var(--origin-dx, 0px), var(--origin-dy, 0px), 0) scale(0.22);
+    opacity: 0;
+  }
+}
+
+.rg-origin-backdrop {
+  animation: rgBackdropFadeIn 180ms ease-out forwards !important;
+
+  &.is-closing {
+    animation: rgBackdropFadeOut 140ms ease-in forwards !important;
+    pointer-events: none;
+  }
+}
+
+.rg-origin-modal {
+  animation: rgOriginOpen 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  will-change: transform, opacity;
+
+  &.is-closing {
+    animation: rgOriginClose 140ms cubic-bezier(0.4, 0, 1, 1) forwards !important;
+    pointer-events: none;
+  }
+}
+
+.cdk-overlay-pane.rg-origin-dialog {
+  .mat-mdc-dialog-inner-container {
+    transition: opacity var(--mat-dialog-transition-duration, 180ms) ease-out !important;
+  }
+
+  .mdc-dialog--closing .mat-mdc-dialog-inner-container {
+    transition: opacity var(--mat-dialog-transition-duration, 140ms) ease-in !important;
+  }
+
+  .mat-mdc-dialog-surface {
+    transform: translate3d(var(--origin-dx, 0px), var(--origin-dy, 0px), 0) scale(0.22) !important;
+    transition: transform var(--mat-dialog-transition-duration, 140ms) cubic-bezier(0.4, 0, 1, 1) !important;
+    will-change: transform, opacity;
+  }
+
+  .mdc-dialog--open .mat-mdc-dialog-surface {
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    transition: transform var(--mat-dialog-transition-duration, 180ms) cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .mdc-dialog--closing .mat-mdc-dialog-surface {
+    transform: translate3d(var(--origin-dx, 0px), var(--origin-dy, 0px), 0) scale(0.22) !important;
+    transition: transform var(--mat-dialog-transition-duration, 140ms) cubic-bezier(0.4, 0, 1, 1) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rg-origin-backdrop,
+  .rg-origin-backdrop.is-closing,
+  .rg-origin-modal,
+  .rg-origin-modal.is-closing {
+    animation: none !important;
+  }
+
+  .cdk-overlay-pane.rg-origin-dialog {
+    .mat-mdc-dialog-inner-container,
+    .mdc-dialog--closing .mat-mdc-dialog-inner-container {
+      transition: none !important;
+    }
+
+    .mat-mdc-dialog-surface,
+    .mdc-dialog--open .mat-mdc-dialog-surface,
+    .mdc-dialog--closing .mat-mdc-dialog-surface {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+}

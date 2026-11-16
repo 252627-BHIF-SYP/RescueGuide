@@ -53,9 +53,9 @@
                 class="custom-list-item clickable-row"
                 role="button"
                 tabindex="0"
-                (click)="previewPlan(plan)"
-                (keydown.enter)="previewPlan(plan)"
-                (keydown.space)="previewPlan(plan); $event.preventDefault()"
+                (click)="previewPlan(plan, $event)"
+                (keydown.enter)="previewPlan(plan, $event)"
+                (keydown.space)="previewPlan(plan, $event); $event.preventDefault()"
                 aria-label="Einsatzplan Vorschau anzeigen"
               >
                 <div class="plan-item">
@@ -69,10 +69,10 @@
                   </div>
 
                   <div class="actions">
-                    <button mat-icon-button (click)="$event.stopPropagation(); editPlan(plan)" title="Bearbeiten" aria-label="Plan bearbeiten" type="button">
+                    <button mat-icon-button (click)="$event.stopPropagation(); editPlan(plan, $event)" title="Bearbeiten" aria-label="Plan bearbeiten" type="button">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button class="btn-delete" (click)="$event.stopPropagation(); deletePlan(plan)" title="Löschen" aria-label="Plan löschen" type="button">
+                    <button mat-icon-button class="btn-delete" (click)="$event.stopPropagation(); deletePlan(plan, $event)" title="Löschen" aria-label="Plan löschen" type="button">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
@@ -87,7 +87,7 @@
                 @if (planSearchTerm) {
                   <button type="button" class="btn-empty-reset" (click)="clearPlanSearch()">Suche leeren</button>
                 } @else {
-                  <button mat-flat-button class="create-btn empty-cta" (click)="createPlan()" type="button">
+                  <button mat-flat-button class="create-btn empty-cta" (click)="createPlan($event)" type="button">
                     <mat-icon>add</mat-icon>
                     Ersten Einsatzplan erstellen
                   </button>
@@ -98,7 +98,7 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-flat-button class="create-btn" (click)="createPlan()" type="button">
+          <button mat-flat-button class="create-btn" (click)="createPlan($event)" type="button">
             <mat-icon>add</mat-icon>
             <span>Plan erstellen</span>
           </button>
@@ -143,9 +143,9 @@
                 class="custom-list-item clickable-row"
                 role="button"
                 tabindex="0"
-                (click)="previewMeasure(measure)"
-                (keydown.enter)="previewMeasure(measure)"
-                (keydown.space)="previewMeasure(measure); $event.preventDefault()"
+                (click)="previewMeasure(measure, $event)"
+                (keydown.enter)="previewMeasure(measure, $event)"
+                (keydown.space)="previewMeasure(measure, $event); $event.preventDefault()"
                 aria-label="Sofortmaßnahme Vorschau anzeigen"
               >
                 <div class="measure-item">
@@ -157,10 +157,10 @@
                     </div>
 
                     <div class="actions">
-                      <button mat-icon-button (click)="$event.stopPropagation(); editMeasure(measure)" title="Bearbeiten" aria-label="Maßnahme bearbeiten" type="button">
+                      <button mat-icon-button (click)="$event.stopPropagation(); editMeasure(measure, $event)" title="Bearbeiten" aria-label="Maßnahme bearbeiten" type="button">
                         <mat-icon>edit</mat-icon>
                       </button>
-                      <button mat-icon-button class="btn-delete" (click)="$event.stopPropagation(); deleteMeasure(measure)" title="Löschen" aria-label="Maßnahme löschen" type="button">
+                      <button mat-icon-button class="btn-delete" (click)="$event.stopPropagation(); deleteMeasure(measure, $event)" title="Löschen" aria-label="Maßnahme löschen" type="button">
                         <mat-icon>delete</mat-icon>
                       </button>
                     </div>
@@ -176,7 +176,7 @@
                 @if (measureSearchTerm) {
                   <button type="button" class="btn-empty-reset" (click)="clearMeasureSearch()">Suche leeren</button>
                 } @else {
-                  <button mat-flat-button class="create-btn empty-cta" (click)="createMeasure()" type="button">
+                  <button mat-flat-button class="create-btn empty-cta" (click)="createMeasure($event)" type="button">
                     <mat-icon>add</mat-icon>
                     Erste Maßnahme anlegen
                   </button>
@@ -187,7 +187,7 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-flat-button class="create-btn" (click)="createMeasure()" type="button">
+          <button mat-flat-button class="create-btn" (click)="createMeasure($event)" type="button">
             <mat-icon>add</mat-icon>
             <span>Neue Maßnahme erstellen</span>
           </button>
