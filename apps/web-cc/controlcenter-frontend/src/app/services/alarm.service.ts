@@ -21,15 +21,8 @@ export class AlarmService {
   private signaling = inject(SignalingService);
   private emergencyService = inject(EmergencyService);
 
-  // TEMP: Mock-Alarm für Styling-Zwecke – vor dem Commit wieder auf null zurücksetzen
-  private alarmSubject = new BehaviorSubject<AlarmData | null>({
-    id: 'caller-101',
-    type: 'Medizinischer Notfall',
-    location: 'Landstraße 42, 4020 Linz',
-    caller: 'Ersthelfer #101',
-    lat: 48.3069,
-    lng: 14.2858,
-  });
+  // Alarme entstehen ausschließlich durch eingehende Notrufe der Mobile App
+  private alarmSubject = new BehaviorSubject<AlarmData | null>(null);
   public alarmStream$ = this.alarmSubject.asObservable();
 
   constructor() {
