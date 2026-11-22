@@ -91,7 +91,15 @@ if (!app.Environment.IsEnvironment("Testing"))
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         if (db.Database.IsRelational())
         {
-            try { db.Database.Migrate(); } catch { }
+            try
+            {
+                db.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                // Nicht mehr still verschlucken: sonst fehlen Spalten unbemerkt und Endpunkte liefern 500
+                app.Logger.LogError(ex, "Datenbank-Migration fehlgeschlagen");
+            }
         }
         else
         {

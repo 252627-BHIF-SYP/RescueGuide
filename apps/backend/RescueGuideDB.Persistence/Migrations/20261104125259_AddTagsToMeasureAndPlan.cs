@@ -15,13 +15,15 @@ namespace RescueGuideDB.Persistence.Migrations
                 name: "Tags",
                 table: "Plans",
                 type: "text[]",
-                nullable: false);
+                nullable: false,
+                defaultValueSql: "'{}'::text[]");
 
             migrationBuilder.AddColumn<List<string>>(
                 name: "Tags",
                 table: "Measures",
                 type: "text[]",
-                nullable: false);
+                nullable: false,
+                defaultValueSql: "'{}'::text[]");
         }
 
         /// <inheritdoc />
