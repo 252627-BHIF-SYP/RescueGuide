@@ -21,4 +21,9 @@ export class DashboardService {
   getEmergencies(): Observable<DashboardEmergency[]> {
     return this.http.get<DashboardEmergency[]>(`${environment.apiUrl}/Emergency/dashboard`);
   }
+
+  /** Löscht den Einsatz inkl. Einsatzprotokoll (Cascade im Backend). */
+  deleteEmergency(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/Emergency/${id}`);
+  }
 }

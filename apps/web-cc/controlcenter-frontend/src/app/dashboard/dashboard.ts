@@ -8,7 +8,10 @@ import { DashboardEmergency, DashboardService } from '../services/dashboard.serv
 import { EmergencyProtocol, EmergencyService } from '../services/emergency.service';
 import { PdfExportService, PdfExportMetadata } from '../services/pdf-export.service';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDeleteDialog } from '../instruction-menu/dialogs/confirm-delete-dialog/confirm-delete-dialog';
 import {
+  openDialogFromTrigger,
   computeOriginVars,
   ORIGIN_CLOSE_DURATION_MS,
   resolveTriggerElement,
@@ -23,6 +26,7 @@ import {
     MatCardModule,
     MatIconModule,
     MatTooltipModule,
+    MatDialogModule,
     EmergencyChecklist,
   ],
   templateUrl: './dashboard.html',
@@ -32,6 +36,8 @@ export class Dashboard implements OnInit, OnDestroy {
   private readonly dashboardService = inject(DashboardService);
   private readonly emergencyService = inject(EmergencyService);
   private readonly pdfExportService = inject(PdfExportService);
+  private readonly dialog = inject(MatDialog);
+  readonly isDeletingProtocol = signal<boolean>(false);
 
   private refreshInterval?: ReturnType<typeof setInterval>;
 
@@ -85,6 +91,8 @@ export class Dashboard implements OnInit, OnDestroy {
 
   @HostListener('window:keydown.escape')
   onEscapeKey(): void {
+    // Escape schließt zuerst nur den offenen Lösch-Bestätigungsdialog
+    if (this.dialog.openDialogs.length > 0) return;
     if (this.selectedEmergency()) {
       this.closeProtocolDialog();
     }
@@ -190,6 +198,47 @@ export class Dashboard implements OnInit, OnDestroy {
         this.isSavingProtocol.set(false);
         this.protocolError.set('Fehler beim Speichern der Änderungen.');
       },
+    });
+  }
+
+  // ── Einsatzprotokoll löschen (mit Sicherheitsabfrage) ──
+  deleteSelectedEmergency(event?: Event): void {
+    const emergency = this.selectedEmergency();
+    if (!emergency || this.isDeletingProtocol()) return;
+
+    const typeLabel = this.selectedProtocol()?.type?.trim() || emergency.emergencyType || 'Einsatz';
+    const dialogRef = openDialogFromTrigger(
+      this.dialog,
+      ConfirmDeleteDialog,
+      {
+        width: '460px',
+        data: {
+          type: 'protocol',
+          name: `#${emergency.id} – ${typeLabel}`,
+          isActive: emergency.status === 'Active',
+        },
+      },
+      event,
+    );
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+
+      this.isDeletingProtocol.set(true);
+      this.dashboardService.deleteEmergency(emergency.id).subscribe({
+        next: () => {
+          this.isDeletingProtocol.set(false);
+          this.emergencies.update((list) => list.filter((e) => e.id !== emergency.id));
+          // Ungespeicherte Änderungen sind hinfällig – Modal direkt schließen
+          this.hasUnsavedChanges.set(false);
+          this.closeProtocolDialog();
+        },
+        error: (err) => {
+          console.error('Fehler beim Löschen des Einsatzprotokolls', err);
+          this.isDeletingProtocol.set(false);
+          this.protocolError.set('Das Einsatzprotokoll konnte nicht gelöscht werden.');
+        },
+      });
     });
   }
 

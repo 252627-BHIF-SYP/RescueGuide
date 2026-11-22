@@ -4,18 +4,31 @@
       <mat-icon>warning_amber</mat-icon>
     </div>
     <div class="title-group">
-      <h2 mat-dialog-title class="dialog-title">
-        {{ data.type === 'plan' ? 'Einsatzplan löschen?' : 'Sofortmaßnahme löschen?' }}
-      </h2>
+      <h2 mat-dialog-title class="dialog-title">{{ title }}</h2>
       <p class="subtitle">Diese Aktion kann nicht rückgängig gemacht werden.</p>
     </div>
   </div>
 
   <mat-dialog-content class="confirm-body">
     <p class="main-prompt">
-      Möchten Sie {{ data.type === 'plan' ? 'den Einsatzplan' : 'die Sofortmaßnahme' }}
+      Möchten Sie {{ targetLabel }}
       <strong class="target-name">„{{ data.name }}“</strong> wirklich endgültig aus dem System entfernen?
     </p>
+
+    @if (data.type === 'protocol') {
+      <div class="danger-warning-box">
+        <mat-icon class="box-icon">report_problem</mat-icon>
+        <div class="box-content">
+          <strong>Der gesamte Einsatz wird gelöscht.</strong>
+          <p>
+            Alle erfassten Protokolldaten inklusive Maßnahmenverlauf gehen verloren.
+            @if (data.isActive) {
+              <br /><strong>Achtung:</strong> Dieser Einsatz ist noch als <strong>aktiv</strong> markiert.
+            }
+          </p>
+        </div>
+      </div>
+    }
 
     @if (data.type === 'measure' && data.affectedPlansCount && data.affectedPlansCount > 0) {
       <div class="danger-warning-box">

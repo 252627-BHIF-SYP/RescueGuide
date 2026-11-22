@@ -100,6 +100,22 @@ if (!app.Environment.IsEnvironment("Testing"))
                 // Nicht mehr still verschlucken: sonst fehlen Spalten unbemerkt und Endpunkte liefern 500
                 app.Logger.LogError(ex, "Datenbank-Migration fehlgeschlagen");
             }
+
+            // Standard-Maßnahmen & -Pläne für Tests und Demos anlegen (idempotent)
+            try
+            {
+                var seeded = RescueGuideDB.Persistence.Seed.DefaultInstructionSeeder.SeedAsync(db).GetAwaiter().GetResult();
+                if (seeded.MeasuresAdded > 0 || seeded.PlansAdded > 0)
+                {
+                    app.Logger.LogInformation(
+                        "Standarddaten angelegt: {Measures} Maßnahmen, {Plans} Pläne",
+                        seeded.MeasuresAdded, seeded.PlansAdded);
+                }
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogError(ex, "Anlegen der Standard-Maßnahmen/-Pläne fehlgeschlagen");
+            }
         }
         else
         {

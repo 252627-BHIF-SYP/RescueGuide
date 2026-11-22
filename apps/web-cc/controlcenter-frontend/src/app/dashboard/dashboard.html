@@ -218,6 +218,17 @@
               <mat-icon>picture_as_pdf</mat-icon>
               <span>Protokoll exportieren</span>
             </button>
+
+            <button
+              type="button"
+              class="btn-delete-protocol"
+              (click)="deleteSelectedEmergency($event)"
+              [disabled]="isDeletingProtocol() || loadingProtocol()"
+              title="Dieses Einsatzprotokoll endgültig löschen"
+            >
+              <mat-icon>delete_outline</mat-icon>
+              <span>{{ isDeletingProtocol() ? 'Wird gelöscht...' : 'Protokoll löschen' }}</span>
+            </button>
           </div>
 
           <div class="footer-right">

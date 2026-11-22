@@ -508,6 +508,42 @@ h2 {
         }
       }
 
+      // Destruktive Aktion: bewusst zurückhaltend, rot erst beim Hover
+      .btn-delete-protocol {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid transparent;
+        background: transparent;
+        color: #64748b;
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: inherit;
+        padding: 7px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+
+        mat-icon {
+          font-size: 17px;
+          width: 17px;
+          height: 17px;
+        }
+
+        &:hover:not(:disabled) {
+          background: #fef2f2;
+          color: #dc2626;
+          border-color: #fecaca;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
       .btn-save-changes {
         appearance: none;
         -webkit-appearance: none;
