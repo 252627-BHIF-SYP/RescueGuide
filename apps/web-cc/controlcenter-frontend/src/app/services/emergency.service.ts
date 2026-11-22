@@ -28,6 +28,8 @@ export interface EmergencyProtocol {
   alarmedNA: boolean;
   alarmedPol: boolean;
   alarmedFW: boolean;
+  /** JSON-serialisierter Maßnahmenverlauf (InstructionHistoryEntry[]) */
+  instructionHistory?: string | null;
 }
 
 @Injectable({

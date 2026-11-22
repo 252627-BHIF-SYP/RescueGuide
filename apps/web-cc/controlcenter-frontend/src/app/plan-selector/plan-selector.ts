@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, HostListener, ViewChild, ElementR
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -11,31 +11,11 @@ import { InstructionMenuService, Measure, Plan } from '../services/instruction-m
 import { PreviewPlanDialog } from '../instruction-menu/dialogs/preview-plan-dialog/preview-plan-dialog';
 import { PreviewMeasureDialog } from '../instruction-menu/dialogs/preview-measure-dialog/preview-measure-dialog';
 import { SignalingService } from '../services/signaling.service';
-import { CallContextService } from '../services/call-context.service';
+import { FlowStep, InstructionFlowService } from '../services/instruction-flow.service';
 import { environment } from '../../environments/environment';
 import { openDialogFromTrigger } from '../utils/dialog-origin.util';
 
 export type FilterCategory = 'all' | 'plans' | 'measures';
-
-export interface QueueItem {
-  uid: string;
-  type: 'plan' | 'measure';
-  id: number;
-  name: string;
-  description?: string;
-  imageUrl?: string;
-  plan?: Plan;
-  measure?: Measure;
-  stepsCount: number;
-  tags?: string[];
-}
-
-interface DispatchProgress {
-  completedCount: number;
-  totalSteps: number;
-  currentTitle: string;
-  complete: boolean;
-}
 
 @Component({
   selector: 'app-plan-selector',
@@ -56,17 +36,17 @@ interface DispatchProgress {
 export class PlanSelector implements OnInit, OnDestroy {
   @ViewChild('catalogSearchInput') catalogSearchInput?: ElementRef<HTMLInputElement>;
 
-  // Persisted state across component lifecycles / tab switching
-  private static savedQueue: QueueItem[] = [];
+  // Persisted UI state across component lifecycles / tab switching
   private static savedSearchTerm = '';
   private static savedFilterCategory: FilterCategory = 'all';
 
   private service = inject(InstructionMenuService);
   private dialog = inject(MatDialog);
   private signaling = inject(SignalingService);
-  private callContext = inject(CallContextService);
+  readonly flow = inject(InstructionFlowService);
   private subscriptions = new Subscription();
   private dispatchTimer: any = null;
+  private advanceTimer: any = null;
 
   // Catalog Data from service
   allPlans: Plan[] = [];
@@ -76,29 +56,18 @@ export class PlanSelector implements OnInit, OnDestroy {
   filteredPlans: Plan[] = [];
   filteredMeasures: Measure[] = [];
 
-  // Warteschlange (Queue)
-  queue: QueueItem[] = [...PlanSelector.savedQueue];
-
   // UI state
   searchTerm = PlanSelector.savedSearchTerm;
   filterCategory: FilterCategory = PlanSelector.savedFilterCategory;
 
-  // Feedback banner & dispatch progress
+  // Feedback banner
   dispatchNotice: string | null = null;
   dispatchError = false;
-  dispatchProgress: DispatchProgress | null = null;
   advancePending = false;
-
-  private readonly onInstructionProgress = (payload: any) => {
-    if (payload?.from !== this.callContext.getActiveCallId() || !payload.progress) return;
-    this.dispatchProgress = payload.progress as DispatchProgress;
-    this.advancePending = false;
-  };
 
   ngOnInit(): void {
     this.service.fetchInitialData();
     this.signaling.connect(environment.signalingUrl, 'controlcenter');
-    this.signaling.on('instruction-progress', this.onInstructionProgress);
 
     this.subscriptions.add(
       this.service.plans$.subscribe((plans) => {
@@ -117,10 +86,8 @@ export class PlanSelector implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.signaling.off('instruction-progress', this.onInstructionProgress);
-    if (this.dispatchTimer) {
-      clearTimeout(this.dispatchTimer);
-    }
+    if (this.dispatchTimer) clearTimeout(this.dispatchTimer);
+    if (this.advanceTimer) clearTimeout(this.advanceTimer);
   }
 
   // ── Keyboard shortcuts ──────────────────────────────────────────────
@@ -134,12 +101,7 @@ export class PlanSelector implements OnInit, OnDestroy {
       tag === 'select' ||
       !!target?.isContentEditable;
 
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      if (this.queue.length > 0) {
-        event.preventDefault();
-        this.sendQueue();
-      }
-    } else if (!isEditable && event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    if (!isEditable && event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey) {
       const inputEl = this.catalogSearchInput?.nativeElement;
       if (inputEl && inputEl.offsetParent !== null) {
         event.preventDefault();
@@ -153,7 +115,6 @@ export class PlanSelector implements OnInit, OnDestroy {
   }
 
   private syncSavedState(): void {
-    PlanSelector.savedQueue = [...this.queue];
     PlanSelector.savedSearchTerm = this.searchTerm;
     PlanSelector.savedFilterCategory = this.filterCategory;
   }
@@ -198,131 +159,112 @@ export class PlanSelector implements OnInit, OnDestroy {
     this.applyFilter();
   }
 
-  // ── Warteschlange (Queue) Operations ────────────────────────────────
-  addToQueue(type: 'plan' | 'measure', rawItem: Plan | Measure, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-
-    const uid = `${type}-${rawItem.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  // ── Live-Warteschlange ──────────────────────────────────────────────
+  /** Jede hinzugefügte Maßnahme / jeder Plan geht sofort an den Ersthelfer. */
+  addToQueue(
+    type: 'plan' | 'measure',
+    rawItem: Plan | Measure,
+    event?: Event,
+    index?: number,
+  ): void {
+    event?.stopPropagation();
 
     if (type === 'plan') {
       const plan = rawItem as Plan;
-      this.queue.push({
-        uid,
-        type: 'plan',
-        id: plan.id,
-        name: plan.name,
-        plan,
-        stepsCount: plan.measures?.length || 0,
-        tags: plan.tags ? [...plan.tags] : [],
-      });
+      if (!plan.measures?.length) {
+        this.showDispatchNotice(`Der Plan „${plan.name}“ enthält keine Maßnahmen.`, true);
+        return;
+      }
+      this.flow.addPlan(plan, index);
     } else {
-      const measure = rawItem as Measure;
-      this.queue.push({
-        uid,
-        type: 'measure',
-        id: measure.id,
-        name: measure.name,
-        description: measure.description,
-        imageUrl: measure.imageUrl,
-        measure,
-        stepsCount: 1,
-        tags: measure.tags ? [...measure.tags] : [],
-      });
+      this.flow.addMeasure(rawItem as Measure, index);
     }
 
-    this.syncSavedState();
+    if (!this.flow.canReachMobile) {
+      this.showDispatchNotice(
+        'Keine aktive Verbindung zum Ersthelfer – die Schritte werden übertragen, sobald der Videoanruf steht.',
+        true,
+      );
+    }
   }
 
-  removeFromQueue(index: number, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-    this.queue.splice(index, 1);
-    this.syncSavedState();
+  removeFromQueue(step: FlowStep, event?: Event): void {
+    event?.stopPropagation();
+    this.flow.removePending(step.uid);
+  }
+
+  removePlanGroup(step: FlowStep, event?: Event): void {
+    event?.stopPropagation();
+    if (step.planInstanceId) this.flow.removePlanInstance(step.planInstanceId);
   }
 
   clearQueue(): void {
-    this.queue = [];
-    this.syncSavedState();
+    this.flow.clearPending();
   }
 
-  onQueueDrop(event: CdkDragDrop<QueueItem[]>): void {
+  onQueueDrop(event: CdkDragDrop<FlowStep[]>): void {
     if (event.previousContainer === event.container) {
-      // Reorder within queue
-      moveItemInArray(this.queue, event.previousIndex, event.currentIndex);
-      this.syncSavedState();
-    } else {
-      // Dropped from catalog into queue
-      const rawData = event.item.data;
-      if (rawData) {
-        const type: 'plan' | 'measure' = rawData.measures !== undefined ? 'plan' : 'measure';
-        const uid = `${type}-${rawData.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-        const newItem: QueueItem =
-          type === 'plan'
-            ? {
-                uid,
-                type: 'plan',
-                id: rawData.id,
-                name: rawData.name,
-                plan: rawData,
-                stepsCount: rawData.measures?.length || 0,
-                tags: rawData.tags ? [...rawData.tags] : [],
-              }
-            : {
-                uid,
-                type: 'measure',
-                id: rawData.id,
-                name: rawData.name,
-                description: rawData.description,
-                imageUrl: rawData.imageUrl,
-                measure: rawData,
-                stepsCount: 1,
-                tags: rawData.tags ? [...rawData.tags] : [],
-              };
-
-        this.queue.splice(event.currentIndex, 0, newItem);
-        this.syncSavedState();
-      }
+      this.flow.movePending(event.previousIndex, event.currentIndex);
+      return;
     }
+
+    // Aus dem Katalog in die Warteschlange gezogen -> sofort an den Ersthelfer übergeben
+    const rawData = event.item.data;
+    if (!rawData) return;
+    const type: 'plan' | 'measure' = rawData.measures !== undefined ? 'plan' : 'measure';
+    this.addToQueue(type, rawData, undefined, event.currentIndex);
   }
 
-  // Count occurrences of an item in the queue
+  isCurrent(step: FlowStep): boolean {
+    return this.flow.currentStep()?.uid === step.uid;
+  }
+
+  /** Ob ein Schritt die erste Zeile seiner Plan-Gruppe in der offenen Liste ist */
+  isPlanGroupStart(index: number): boolean {
+    const list = this.flow.pendingSteps();
+    const step = list[index];
+    if (!step?.planInstanceId) return false;
+    return list[index - 1]?.planInstanceId !== step.planInstanceId;
+  }
+
   countInQueue(type: 'plan' | 'measure', id: number): number {
-    return this.queue.filter((q) => q.type === type && q.id === id).length;
+    const steps = [...this.flow.completedSteps(), ...this.flow.pendingSteps()];
+    if (type === 'measure') {
+      return steps.filter((s) => !s.planInstanceId && s.measureId === id).length;
+    }
+    return new Set(steps.filter((s) => s.planId === id).map((s) => s.planInstanceId)).size;
   }
 
-  get totalStepsInQueue(): number {
-    return this.queue.reduce((acc, curr) => acc + curr.stepsCount, 0);
+  get progressPercent(): number {
+    const total = this.flow.totalSteps();
+    if (total === 0) return 0;
+    return Math.round((this.flow.completedSteps().length / total) * 100);
+  }
+
+  formatTime(iso?: string): string {
+    if (!iso) return '–';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '–';
+    return d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
   // ── Full Preview Dialogs ────────────────────────────────────────────
   previewPlan(plan: Plan, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-
+    event?.stopPropagation();
     openDialogFromTrigger(
       this.dialog,
       PreviewPlanDialog,
       {
         width: '650px',
         panelClass: 'preview-plan-dialog',
-        data: {
-          plan,
-          isSelected: this.countInQueue('plan', plan.id) > 0,
-        },
+        data: { plan, isSelected: this.countInQueue('plan', plan.id) > 0 },
       },
       event,
     );
   }
 
   previewMeasure(measure: Measure, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-
+    event?.stopPropagation();
     openDialogFromTrigger(
       this.dialog,
       PreviewMeasureDialog,
@@ -339,107 +281,17 @@ export class PlanSelector implements OnInit, OnDestroy {
     );
   }
 
-  // ── Send queue action ───────────────────────────────────────────────
-  sendQueue(): void {
-    if (this.queue.length === 0) return;
-
-    const targetId = this.callContext.getActiveCallId();
-    if (!targetId || !this.signaling.isConnected) {
-      this.showDispatchNotice(
-        'Keine aktive Verbindung zum Ersthelfer (Warte auf Videoanruf).',
-        true,
-      );
-      return;
-    }
-
-    const steps: {
-      id: number;
-      name: string;
-      description: string;
-      imageUrl?: string;
-      planName?: string;
-      tags?: string[];
-    }[] = [];
-    const titles: string[] = [];
-
-    // Process queue in EXACT sequential order!
-    for (const q of this.queue) {
-      if (q.type === 'plan' && q.plan) {
-        titles.push(q.plan.name);
-        for (const m of q.plan.measures ?? []) {
-          steps.push({
-            ...m,
-            planName: q.plan.name,
-            tags: m.tags || q.plan.tags || [],
-          });
-        }
-      } else if (q.type === 'measure' && q.measure) {
-        titles.push(q.measure.name);
-        steps.push({
-          ...q.measure,
-          tags: q.measure.tags || [],
-        });
-      }
-    }
-
-    if (steps.length === 0) {
-      this.showDispatchNotice('Die Warteschlange enthält keine ausführbaren Schritte.', true);
-      return;
-    }
-
-    const title = titles.join(' ➔ ') || 'Einsatzmaßnahmen';
-    this.signaling.emit('instruction-plan', {
-      from: 'controlcenter',
-      to: targetId,
-      plan: { title, items: steps },
-    });
-
-    this.dispatchProgress = {
-      completedCount: 0,
-      totalSteps: steps.length,
-      currentTitle: steps[0].name,
-      complete: false,
-    };
-    this.advancePending = false;
-    this.dispatchError = false;
-
-    this.showDispatchNotice(
-      `Warteschlange übermittelt: ${this.queue.length} Maßnahmen (${steps.length} Schritte in Reihenfolge).`,
-      false,
-    );
-  }
-
-  get progressPercent(): number {
-    if (!this.dispatchProgress || this.dispatchProgress.totalSteps === 0) return 0;
-    return Math.round(
-      (this.dispatchProgress.completedCount / this.dispatchProgress.totalSteps) * 100,
-    );
-  }
-
+  // ── Fernsteuerung ───────────────────────────────────────────────────
   get canAdvanceInstruction(): boolean {
-    return (
-      this.signaling.isConnected &&
-      !!this.callContext.getActiveCallId() &&
-      !this.dispatchProgress?.complete &&
-      !this.advancePending
-    );
+    return this.flow.canReachMobile && !!this.flow.currentStep() && !this.advancePending;
   }
 
   advanceMobileInstruction(): void {
     if (!this.canAdvanceInstruction) return;
-
-    const targetId = this.callContext.getActiveCallId();
-    if (!targetId) return;
-
     this.advancePending = true;
-    this.signaling.emit('advance-instruction', {
-      from: 'controlcenter',
-      to: targetId,
-    });
-
-    setTimeout(() => {
-      this.advancePending = false;
-    }, 1500);
+    this.flow.requestAdvance();
+    if (this.advanceTimer) clearTimeout(this.advanceTimer);
+    this.advanceTimer = setTimeout(() => (this.advancePending = false), 1500);
   }
 
   dismissNotice(): void {
@@ -454,9 +306,7 @@ export class PlanSelector implements OnInit, OnDestroy {
     this.dispatchNotice = msg;
     this.dispatchError = isError;
 
-    if (this.dispatchTimer) {
-      clearTimeout(this.dispatchTimer);
-    }
+    if (this.dispatchTimer) clearTimeout(this.dispatchTimer);
     this.dispatchTimer = setTimeout(() => {
       this.dispatchNotice = null;
       this.dispatchTimer = null;

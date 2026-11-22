@@ -16,6 +16,7 @@ import { AuthService } from '../services/auth.service';
 import { SignalingService } from '../services/signaling.service';
 import { CallContextService } from '../services/call-context.service';
 import { EmergencyService } from '../services/emergency.service';
+import { InstructionFlowService } from '../services/instruction-flow.service';
 import { environment } from '../../environments/environment';
 import { Subscription } from 'rxjs';
 
@@ -37,6 +38,7 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
   private signaling = inject(SignalingService);
   private callContext = inject(CallContextService);
   private emergencyService = inject(EmergencyService);
+  private instructionFlow = inject(InstructionFlowService);
   private cdr = inject(ChangeDetectorRef);
 
   activeAlarm = signal<AlarmData | null>(null);
@@ -145,6 +147,8 @@ export class AlarmNotificationComponent implements OnInit, OnDestroy {
       alarm.location.startsWith('Koordinaten:')
         ? ''
         : alarm.location;
+    // Neuer Einsatz -> leerer Maßnahmen-Ablauf
+    this.instructionFlow.reset();
     this.emergencyService.setActiveCallerLocation(alarm.id, alarm.lat, alarm.lng);
     this.emergencyService.createEmergency({
       date: now.toISOString().split('T')[0],

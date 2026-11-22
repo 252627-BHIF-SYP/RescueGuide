@@ -84,13 +84,22 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("instruction-plan", (payload) => {
+    // Live-Warteschlange: Leitstelle -> Ersthelfer (aktueller Stand aller offenen Schritte)
+    socket.on("instruction-queue", (payload) => {
         const target = registry.get(payload.to);
         if (target) {
-            io.to(target).emit("instruction-plan", {
+            io.to(target).emit("instruction-queue", {
                 from: payload.from,
-                plan: payload.plan,
+                items: payload.items,
             });
+        }
+    });
+
+    // Ersthelfer fordert den aktuellen Warteschlangen-Stand an (z. B. nach Verbindungsaufbau)
+    socket.on("instruction-sync-request", (payload) => {
+        const target = registry.get(payload.to);
+        if (target) {
+            io.to(target).emit("instruction-sync-request", { from: payload.from });
         }
     });
 

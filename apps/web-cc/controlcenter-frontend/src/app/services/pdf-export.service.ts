@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { EmergencyProtocol } from './emergency.service';
+import { parseInstructionHistory } from './instruction-flow.service';
 
 export interface PdfExportMetadata {
   emergencyId?: number | string | null;
@@ -217,7 +218,51 @@ export class PdfExportService {
 
     startY = (doc as any).lastAutoTable.finalY + 6;
 
-    // Sektion 4: Zeitstempel relevanter Ereignisse
+    // Sektion 4: Maßnahmenverlauf beim Ersthelfer (inkl. Abschlusszeitpunkten)
+    const history = parseInstructionHistory(protocol.instructionHistory);
+    if (history.length > 0) {
+      const formatSeconds = (ts?: string | null): string => {
+        if (!ts) return '–';
+        const d = new Date(ts);
+        if (isNaN(d.getTime())) return '–';
+        return d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' Uhr';
+      };
+
+      autoTable(doc, {
+        startY: startY,
+        theme: 'grid',
+        head: [['#', '4. MASSNAHMENVERLAUF ERSTHELFER', 'ÜBERGEBEN', 'ERLEDIGT']],
+        body: history.map((e) => [
+          String(e.order),
+          e.planName ? `${e.name}\n(${e.planName})` : e.name,
+          formatSeconds(e.addedAt),
+          e.status === 'erledigt' ? formatSeconds(e.completedAt) : 'nicht erledigt',
+        ]),
+        headStyles: {
+          fillColor: [71, 85, 105],
+          textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 9,
+        },
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 2.6,
+          textColor: darkSlate,
+          lineColor: [226, 232, 240],
+        },
+        columnStyles: {
+          0: { cellWidth: 10, halign: 'right' },
+          1: { cellWidth: 'auto', fontStyle: 'bold' },
+          2: { cellWidth: 30 },
+          3: { cellWidth: 32 },
+        },
+        margin: { left: margin, right: margin },
+      });
+
+      startY = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // Sektion 5: Zeitstempel relevanter Ereignisse
     const timelineBody = [
       ['Notrufeingang / Einsatzstart', formatTimestamp(meta?.startedAt), 'Eröffnung des Notfalls im System'],
       [

@@ -24,11 +24,15 @@ class _ConnectingScreenState extends State<ConnectingScreen>
   Timer? _timer;
 
   String _currentAddress = "Suche Standort...";
-  String _instructionTitle = '';
-  List<Map<String, dynamic>> _instructionItems = [];
-  int _instructionIndex = 0;
-  int _completedInstructionCount = 0;
-  bool _instructionComplete = false;
+  /// Noch offene Schritte in der Reihenfolge der Leitstelle (erster = aktueller Schritt)
+  List<Map<String, dynamic>> _pendingItems = [];
+
+  /// Erledigte Schritte (uid + Abschlusszeitpunkt) – werden nie wieder angezeigt
+  final List<Map<String, String>> _completedItems = [];
+  final Set<String> _completedUids = {};
+
+  Map<String, dynamic>? get _currentItem =>
+      _pendingItems.isEmpty ? null : _pendingItems.first;
 
   @override
   void initState() {
@@ -52,6 +56,8 @@ class _ConnectingScreenState extends State<ConnectingScreen>
         _isCallAccepted = true;
       });
       _startTimer();
+      // Bereits übergebene Schritte von der Leitstelle abholen
+      _webRTCService.requestInstructionSync();
     };
 
     _webRTCService.onCallFailed = (reason) {
@@ -63,10 +69,10 @@ class _ConnectingScreenState extends State<ConnectingScreen>
       if (!mounted) return;
       _exitCall('Notruf wurde beendet');
     };
-    _webRTCService.onInstructionPlanReceived = _receiveInstructionPlan;
+    _webRTCService.onInstructionQueueReceived = _receiveInstructionQueue;
     _webRTCService.onInstructionNextRequested = () {
       if (!mounted) return;
-      _moveInstruction(1);
+      _completeCurrentInstruction();
     };
 
     final settings = await SettingsService.init();
@@ -74,58 +80,54 @@ class _ConnectingScreenState extends State<ConnectingScreen>
     await _webRTCService.init(settings.serverUrl.trim());
   }
 
-  void _receiveInstructionPlan(Map<String, dynamic> plan) {
-    final rawItems = plan['items'];
-    if (rawItems is! List) return;
-
-    final items = rawItems
-        .whereType<Map>()
-        .map((item) => Map<String, dynamic>.from(item))
+  /// Die Leitstelle schickt bei jeder Änderung (hinzufügen, umsortieren,
+  /// entfernen) den kompletten Stand der offenen Schritte.
+  void _receiveInstructionQueue(List<Map<String, dynamic>> items) {
+    if (!mounted) return;
+    final pending = items
+        .where((item) => (item['uid'] ?? '').toString().isNotEmpty)
         .where((item) => (item['name'] ?? '').toString().trim().isNotEmpty)
+        // bereits erledigte Schritte bleiben erledigt (z. B. bei Überschneidungen)
+        .where((item) => !_completedUids.contains(item['uid'].toString()))
         .toList();
-    if (items.isEmpty || !mounted) return;
 
-    setState(() {
-      _instructionTitle = (plan['title'] ?? 'Erste-Hilfe-Anleitung').toString();
-      _instructionItems = items;
-      _instructionIndex = 0;
-      _completedInstructionCount = 0;
-      _instructionComplete = false;
-    });
+    setState(() => _pendingItems = pending);
     _sendInstructionProgress();
   }
 
   void _sendInstructionProgress() {
-    final currentItem = _instructionItems.isEmpty
-        ? null
-        : _instructionItems[_instructionIndex];
     _webRTCService.sendInstructionProgress({
-      'currentIndex': _instructionIndex,
-      'totalSteps': _instructionItems.length,
-      'completedCount': _completedInstructionCount,
-      'currentTitle': _instructionComplete
-          ? ''
-          : (currentItem?['name'] ?? '').toString(),
-      'complete': _instructionComplete,
+      'currentUid': _currentItem?['uid'],
+      'currentTitle': (_currentItem?['name'] ?? '').toString(),
+      'remaining': _pendingItems.length,
+      'completedCount': _completedItems.length,
+      'totalSteps': _completedItems.length + _pendingItems.length,
+      'complete': _pendingItems.isEmpty && _completedItems.isNotEmpty,
+      'completed': _completedItems,
     });
   }
 
-  void _moveInstruction(int direction) {
-    if (_instructionItems.isEmpty || _instructionComplete) return;
+  /// „Weiter“: aktueller Schritt ist erledigt und wird in der Leitstelle eingefroren.
+  void _completeCurrentInstruction() {
+    final current = _currentItem;
+    if (current == null) return;
+    final uid = current['uid'].toString();
+
     setState(() {
-      if (direction > 0) {
-        _completedInstructionCount = _instructionIndex + 1;
-        if (_instructionIndex == _instructionItems.length - 1) {
-          _instructionComplete = true;
-        } else {
-          _instructionIndex++;
-        }
-      } else if (_instructionIndex > 0) {
-        _instructionIndex--;
-        _completedInstructionCount = _instructionIndex;
-      }
+      _completedUids.add(uid);
+      _completedItems.add({
+        'uid': uid,
+        'completedAt': DateTime.now().toUtc().toIso8601String(),
+      });
+      _pendingItems = _pendingItems.sublist(1);
     });
     _sendInstructionProgress();
+  }
+
+  String get _remainingLabel {
+    final remaining = _pendingItems.length;
+    if (remaining <= 1) return 'Letzter Schritt';
+    return '$remaining verbleibend';
   }
 
   Future<void> _determinePosition() async {
@@ -311,7 +313,7 @@ class _ConnectingScreenState extends State<ConnectingScreen>
           _buildHeader(),
           const SizedBox(height: 10),
           Expanded(
-            child: _instructionItems.isEmpty || _instructionComplete
+            child: _currentItem == null
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: _buildVideoPreview(),
@@ -377,11 +379,13 @@ class _ConnectingScreenState extends State<ConnectingScreen>
   }
 
   Widget _buildInstructionWorkspace() {
-    final item = _instructionItems[_instructionIndex];
+    final item = _currentItem!;
     final imageUrl = (item['imageUrl'] ?? '').toString();
-    final progress =
-        (_instructionIndex + (_instructionComplete ? 1 : 0)) /
-        _instructionItems.length;
+    final planName = (item['planName'] ?? '').toString();
+    final description = (item['description'] ?? '').toString();
+    final isLastStep = _pendingItems.length == 1;
+    final total = _completedItems.length + _pendingItems.length;
+    final progress = total == 0 ? 0.0 : _completedItems.length / total;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -400,19 +404,7 @@ class _ConnectingScreenState extends State<ConnectingScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _instructionComplete
-                        ? 'Alle Schritte erledigt'
-                        : 'Schritt ${_instructionIndex + 1} von ${_instructionItems.length}',
-                    style: const TextStyle(
-                      color: Color(0xFF16704F),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _instructionComplete
-                        ? 'Der Fortschritt wurde an die Leitstelle übermittelt.'
-                        : (item['name'] ?? '').toString(),
+                    (item['name'] ?? '').toString(),
                     style: const TextStyle(
                       fontSize: 24,
                       height: 1.15,
@@ -420,21 +412,20 @@ class _ConnectingScreenState extends State<ConnectingScreen>
                       color: Color(0xFF17221C),
                     ),
                   ),
-                  if (!_instructionComplete && item['planName'] != null) ...[
+                  if (planName.isNotEmpty) ...[
                     const SizedBox(height: 5),
                     Text(
-                      item['planName'].toString(),
+                      planName,
                       style: const TextStyle(color: Colors.black54),
                     ),
                   ],
                   const SizedBox(height: 14),
-                  if (!_instructionComplete &&
-                      (item['description'] ?? '').toString().isNotEmpty)
+                  if (description.isNotEmpty)
                     Text(
-                      item['description'].toString(),
+                      description,
                       style: const TextStyle(fontSize: 17, height: 1.45),
                     ),
-                  if (!_instructionComplete && imageUrl.isNotEmpty) ...[
+                  if (imageUrl.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -448,37 +439,15 @@ class _ConnectingScreenState extends State<ConnectingScreen>
                     ),
                   ],
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      if (_instructionIndex > 0 && !_instructionComplete)
-                        OutlinedButton.icon(
-                          onPressed: () => _moveInstruction(-1),
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text('Zurück'),
-                        ),
-                      const Spacer(),
-                      FilledButton.icon(
-                        onPressed: _instructionComplete
-                            ? null
-                            : () => _moveInstruction(1),
-                        icon: Icon(
-                          _instructionComplete
-                              ? Icons.check
-                              : _instructionIndex ==
-                                    _instructionItems.length - 1
-                              ? Icons.done_all
-                              : Icons.arrow_forward,
-                        ),
-                        label: Text(
-                          _instructionComplete
-                              ? 'Abgeschlossen'
-                              : _instructionIndex ==
-                                    _instructionItems.length - 1
-                              ? 'Plan abschließen'
-                              : 'Nächster Schritt',
-                        ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton.icon(
+                      onPressed: _completeCurrentInstruction,
+                      icon: Icon(
+                        isLastStep ? Icons.done_all : Icons.arrow_forward,
                       ),
-                    ],
+                      label: Text(isLastStep ? 'Erledigt' : 'Weiter'),
+                    ),
                   ),
                 ],
               ),
@@ -489,7 +458,7 @@ class _ConnectingScreenState extends State<ConnectingScreen>
             left: 16,
             right: 142,
             child: Text(
-              _instructionTitle,
+              planName.isNotEmpty ? planName : 'Erste-Hilfe-Anleitung',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -509,15 +478,64 @@ class _ConnectingScreenState extends State<ConnectingScreen>
               child: _buildVideoPreview(),
             ),
           ),
+          // Fortschritt: zählt die verbleibenden Schritte herunter
           Positioned(
             top: 82,
             left: 16,
             right: 142,
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 5,
-              color: const Color(0xFF16805D),
-              backgroundColor: const Color(0xFFDCE7DF),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 5,
+                  color: const Color(0xFF16805D),
+                  backgroundColor: const Color(0xFFDCE7DF),
+                ),
+                const SizedBox(height: 10),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.4),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  ),
+                  child: Container(
+                    key: ValueKey(_pendingItems.length),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDDF1E6),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isLastStep ? Icons.flag : Icons.hourglass_bottom,
+                          size: 16,
+                          color: const Color(0xFF16704F),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          _remainingLabel,
+                          style: const TextStyle(
+                            color: Color(0xFF16704F),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

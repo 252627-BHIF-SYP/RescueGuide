@@ -158,6 +158,9 @@ namespace RescueGuideDB.Persistence.Migrations
                     b.Property<string>("InjuredCount")
                         .HasColumnType("text");
 
+                    b.Property<string>("InstructionHistory")
+                        .HasColumnType("text");
+
                     b.Property<string>("Time")
                         .HasColumnType("text");
 

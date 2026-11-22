@@ -24,4 +24,10 @@ public class EmergencyProtocol
     public bool AlarmedNA { get; set; }
     public bool AlarmedPol { get; set; }
     public bool AlarmedFW { get; set; }
+
+    /// <summary>
+    /// JSON-serialisierter Maßnahmenverlauf (an den Ersthelfer übergebene Schritte
+    /// inkl. Übergabe- und Abschlusszeitpunkten). Wird bei Notfallbeendigung gesetzt.
+    /// </summary>
+    public string? InstructionHistory { get; set; }
 }

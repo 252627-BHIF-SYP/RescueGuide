@@ -21,17 +21,19 @@
   }
 
   <!-- Mobile / First Responder Progress Banner (if active) -->
-  @if (dispatchProgress) {
+  @if (flow.hasSteps()) {
     <section class="dispatch-progress-card animate-slide-down" aria-live="polite">
       <div class="progress-heading">
         <div class="progress-title-group">
-          <mat-icon class="pulse-icon">sync</mat-icon>
+          <mat-icon class="pulse-icon" [class.idle]="!flow.currentStep()">{{
+            flow.currentStep() ? 'sync' : 'task_alt'
+          }}</mat-icon>
           <strong>{{
-            dispatchProgress.complete ? 'Übermittlung abgeschlossen' : 'Ablauf beim Ersthelfer'
+            flow.currentStep() ? 'Live-Ablauf beim Ersthelfer' : 'Alle Schritte erledigt'
           }}</strong>
         </div>
         <span class="progress-step-text"
-          >{{ dispatchProgress.completedCount }} / {{ dispatchProgress.totalSteps }} Schritte</span
+          >{{ flow.completedSteps().length }} / {{ flow.totalSteps() }} erledigt</span
         >
       </div>
       <div
@@ -43,11 +45,11 @@
       >
         <span [style.width.%]="progressPercent"></span>
       </div>
-      @if (!dispatchProgress.complete && dispatchProgress.currentTitle) {
+      @if (flow.currentStep(); as current) {
         <div class="progress-current">
           <div class="progress-current-copy">
-            <span>Aktueller Schritt beim Ersthelfer:</span>
-            <strong>{{ dispatchProgress.currentTitle }}</strong>
+            <span>Ersthelfer arbeitet gerade an:</span>
+            <strong>{{ current.name }}</strong>
           </div>
           <button
             type="button"
@@ -173,7 +175,7 @@
                         @if (countInQueue('plan', plan.id) > 0) {
                           <span class="in-queue-badge">
                             <mat-icon>check</mat-icon>
-                            {{ countInQueue('plan', plan.id) }}x in Vorbereitung
+                            {{ countInQueue('plan', plan.id) }}x übergeben
                           </span>
                         }
                       </div>
@@ -195,7 +197,7 @@
                         type="button"
                         class="btn-add-to-queue"
                         (click)="addToQueue('plan', plan, $event)"
-                        matTooltip="Zur Übertragung hinzufügen"
+                        matTooltip="Sofort an Ersthelfer übergeben"
                         aria-label="Hinzufügen"
                       >
                         <mat-icon>add</mat-icon>
@@ -231,7 +233,7 @@
                         @if (countInQueue('measure', measure.id) > 0) {
                           <span class="in-queue-badge">
                             <mat-icon>check</mat-icon>
-                            {{ countInQueue('measure', measure.id) }}x in Vorbereitung
+                            {{ countInQueue('measure', measure.id) }}x übergeben
                           </span>
                         }
                       </div>
@@ -253,7 +255,7 @@
                         type="button"
                         class="btn-add-to-queue"
                         (click)="addToQueue('measure', measure, $event)"
-                        matTooltip="Zur Übertragung hinzufügen"
+                        matTooltip="Sofort an Ersthelfer übergeben"
                         aria-label="Hinzufügen"
                       >
                         <mat-icon>add</mat-icon>
@@ -278,7 +280,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- SPALTE 2: WARTESCHLANGE (Reihenfolge & Senden)                 -->
+    <!-- SPALTE 2: LIVE-ABLAUF (Verlauf & Warteschlange des Ersthelfers) -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <section class="queue-column">
       <!-- Queue Header Bar -->
@@ -286,140 +288,198 @@
         <div class="queue-title-row">
           <div class="title-with-icon">
             <mat-icon class="queue-icon">playlist_add_check</mat-icon>
-            <h3>Vorbereitung zur Übertragung</h3>
+            <h3>Live-Ablauf beim Ersthelfer</h3>
           </div>
           <div class="queue-header-badges">
-            <span class="queue-count-pill" [class.has-items]="queue.length > 0">
-              {{ queue.length }} {{ queue.length === 1 ? 'Element' : 'Elemente' }}
+            <span class="queue-count-pill" [class.has-items]="flow.pendingSteps().length > 0">
+              {{ flow.pendingSteps().length }} offen
             </span>
-            @if (queue.length > 0) {
+            @if (flow.pendingSteps().length > 0) {
               <button
                 type="button"
                 class="btn-clear-queue"
                 (click)="clearQueue()"
-                matTooltip="Vorbereitung vollständig leeren"
+                matTooltip="Alle offenen Schritte entfernen (erledigte bleiben erhalten)"
               >
                 <mat-icon>delete_sweep</mat-icon>
-                <span>Leeren</span>
+                <span>Offene leeren</span>
               </button>
             }
           </div>
         </div>
       </div>
 
-      <!-- Queue Drag & Drop Dropzone / List -->
-      <div
-        class="queue-body"
-        cdkDropList
-        id="queueDropList"
-        [cdkDropListData]="queue"
-        [cdkDropListConnectedTo]="['catalogDropList']"
-        (cdkDropListDropped)="onQueueDrop($event)"
-      >
-        <!-- EMPTY STATE: Dropzone -->
-        @if (queue.length === 0) {
-          <div class="queue-empty-dropzone">
-            <div class="dropzone-bubble">
-              <mat-icon>playlist_play</mat-icon>
-            </div>
-            <h4>Vorbereitung zur Übertragung ist leer</h4>
-            <p>
-              Klicken Sie im Katalog auf <strong>+</strong> oder ziehen Sie Pläne und Maßnahmen hierher, um sie für den Ersthelfer vorzubereiten.
-            </p>
+      <div class="queue-body">
+        <!-- ── VERLAUF: erledigte, eingefrorene Schritte ─────────────── -->
+        @if (flow.completedSteps().length > 0) {
+          <div class="flow-section-label">
+            <mat-icon>lock</mat-icon>
+            <span>Verlauf – erledigt</span>
+            <span class="flow-section-count">{{ flow.completedSteps().length }}</span>
           </div>
-        }
-
-        <!-- FILLED QUEUE: Draggable items list -->
-        @if (queue.length > 0) {
-          <div class="queue-items-container">
-            @for (item of queue; track item.uid; let i = $index) {
-              <div class="queue-item-row" cdkDrag>
-                <!-- Drag Grip Handle -->
-                <div class="drag-handle" cdkDragHandle matTooltip="Ziehen zum Verschieben">
-                  <mat-icon>drag_indicator</mat-icon>
+          <div class="queue-items-container history-list">
+            @for (step of flow.completedSteps(); track step.uid; let i = $index) {
+              <div
+                class="queue-item-row frozen"
+                matTooltip="Vom Ersthelfer erledigt – kann nicht mehr verändert werden"
+              >
+                <div class="frozen-icon">
+                  <mat-icon>check_circle</mat-icon>
                 </div>
-
-                <!-- Position Number -->
                 <div class="queue-pos-badge">
                   <span>{{ i + 1 }}.</span>
                 </div>
-
-                <!-- Type Icon & Pill -->
-                <div
-                  class="queue-type-badge"
-                  [class.plan]="item.type === 'plan'"
-                  [class.measure]="item.type === 'measure'"
-                >
-                  <mat-icon>{{ item.type === 'plan' ? 'playlist_play' : 'healing' }}</mat-icon>
-                  <span>{{ item.type === 'plan' ? 'Plan' : 'Maßnahme' }}</span>
-                </div>
-
-                <!-- Item Title -->
                 <div class="queue-item-info">
-                  <span class="queue-item-title">{{ item.name }}</span>
+                  <span class="queue-item-title">{{ step.name }}</span>
+                  @if (step.planName) {
+                    <span class="queue-item-sub">{{ step.planName }}</span>
+                  }
                 </div>
+                <span class="completed-time" [attr.aria-label]="'Erledigt um ' + formatTime(step.completedAt)">
+                  <mat-icon>schedule</mat-icon>
+                  {{ formatTime(step.completedAt) }}
+                </span>
+              </div>
+            }
+          </div>
+        }
 
-                <!-- Row Actions: Preview & Remove [⊗] -->
-                <div class="queue-item-actions">
-                  @if (item.type === 'plan' && item.plan) {
+        <!-- ── WARTESCHLANGE: offene Schritte (live umsortierbar) ────── -->
+        @if (flow.completedSteps().length > 0 || flow.pendingSteps().length > 0) {
+          <div class="flow-section-label pending">
+            <mat-icon>{{ flow.canReachMobile ? 'sync' : 'sync_disabled' }}</mat-icon>
+            <span>Warteschlange – offen</span>
+            <span class="flow-section-count">{{ flow.pendingSteps().length }}</span>
+          </div>
+        }
+
+        <div
+          class="queue-drop-area"
+          cdkDropList
+          id="queueDropList"
+          [cdkDropListData]="flow.pendingSteps()"
+          [cdkDropListConnectedTo]="['catalogDropList']"
+          (cdkDropListDropped)="onQueueDrop($event)"
+        >
+          @if (flow.pendingSteps().length === 0) {
+            <div class="queue-empty-dropzone" [class.compact]="flow.completedSteps().length > 0">
+              <div class="dropzone-bubble">
+                <mat-icon>playlist_play</mat-icon>
+              </div>
+              <h4>
+                {{
+                  flow.completedSteps().length > 0
+                    ? 'Keine offenen Schritte'
+                    : 'Noch keine Maßnahmen übergeben'
+                }}
+              </h4>
+              <p>
+                Klicken Sie im Katalog auf <strong>+</strong> oder ziehen Sie Pläne und Maßnahmen
+                hierher – sie erscheinen <strong>sofort</strong> beim Ersthelfer.
+              </p>
+            </div>
+          } @else {
+            <div class="queue-items-container">
+              @for (step of flow.pendingSteps(); track step.uid; let i = $index) {
+                @if (isPlanGroupStart(i)) {
+                  <div class="plan-group-label">
+                    <mat-icon>playlist_play</mat-icon>
+                    <span>{{ step.planName }}</span>
                     <button
                       type="button"
-                      class="row-action-btn preview"
-                      (click)="previewPlan(item.plan, $event)"
-                      matTooltip="Vorschau des Plans"
-                      aria-label="Vorschau"
+                      class="btn-remove-group"
+                      (click)="removePlanGroup(step, $event)"
+                      matTooltip="Alle offenen Schritte dieses Plans entfernen"
                     >
-                      <mat-icon>visibility</mat-icon>
+                      <mat-icon>close</mat-icon>
                     </button>
-                  } @else if (item.type === 'measure' && item.measure) {
+                  </div>
+                }
+                <div
+                  class="queue-item-row"
+                  [class.current]="isCurrent(step)"
+                  [class.in-plan]="!!step.planInstanceId"
+                  cdkDrag
+                  [cdkDragData]="step"
+                >
+                  <div class="drag-handle" cdkDragHandle matTooltip="Ziehen zum Verschieben">
+                    <mat-icon>drag_indicator</mat-icon>
+                  </div>
+
+                  <div class="queue-pos-badge">
+                    <span>{{ flow.completedSteps().length + i + 1 }}.</span>
+                  </div>
+
+                  @if (isCurrent(step)) {
+                    <span class="current-badge">
+                      <span class="live-dot"></span>
+                      Aktuell
+                    </span>
+                  } @else {
+                    <div
+                      class="queue-type-badge"
+                      [class.plan]="!!step.planInstanceId"
+                      [class.measure]="!step.planInstanceId"
+                    >
+                      <mat-icon>{{ step.planInstanceId ? 'playlist_play' : 'healing' }}</mat-icon>
+                      <span>{{ step.planInstanceId ? 'Plan' : 'Maßnahme' }}</span>
+                    </div>
+                  }
+
+                  <div class="queue-item-info">
+                    <span class="queue-item-title">{{ step.name }}</span>
+                  </div>
+
+                  <div class="queue-item-actions">
                     <button
                       type="button"
                       class="row-action-btn preview"
-                      (click)="previewMeasure(item.measure, $event)"
+                      (click)="previewMeasure(step.measure, $event)"
                       matTooltip="Vorschau der Maßnahme"
                       aria-label="Vorschau"
                     >
                       <mat-icon>visibility</mat-icon>
                     </button>
-                  }
 
-                  <button
-                    type="button"
-                    class="btn-remove-queue"
-                    (click)="removeFromQueue(i, $event)"
-                    matTooltip="Aus Vorbereitung entfernen"
-                    aria-label="Aus Vorbereitung entfernen"
-                  >
-                    <mat-icon>close</mat-icon>
-                  </button>
+                    <button
+                      type="button"
+                      class="btn-remove-queue"
+                      (click)="removeFromQueue(step, $event)"
+                      matTooltip="Beim Ersthelfer entfernen"
+                      aria-label="Beim Ersthelfer entfernen"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            }
-          </div>
-        }
+              }
+            </div>
+          }
+        </div>
       </div>
 
-      <!-- Sticky Queue Bottom Action Dock -->
+      <!-- Bottom Status Dock -->
       <div class="queue-bottom-dock">
         <div class="dock-stats">
-          <span class="dock-summary-label">Bereit zum Übertragen:</span>
+          <span class="dock-summary-label">Ablauf</span>
           <span class="dock-summary-steps">
-            <strong>{{ queue.length }}</strong> {{ queue.length === 1 ? 'Paket' : 'Pakete' }} &bull;
-            <strong>{{ totalStepsInQueue }}</strong> Einzelschritte
+            <strong>{{ flow.completedSteps().length }}</strong> erledigt &bull;
+            <strong>{{ flow.pendingSteps().length }}</strong> offen
           </span>
         </div>
 
-        <button
-          type="button"
-          class="btn-send-queue"
-          [disabled]="queue.length === 0"
-          (click)="sendQueue()"
-          matTooltip="Reihenfolge sofort an Ersthelfer übertragen (Strg + Enter)"
+        <span
+          class="sync-status"
+          [class.live]="flow.canReachMobile"
+          [matTooltip]="
+            flow.canReachMobile
+              ? 'Änderungen werden sofort an die Mobile App übertragen'
+              : 'Kein aktiver Videoanruf – Schritte werden beim Verbindungsaufbau übertragen'
+          "
         >
-          <mat-icon class="send-icon">send</mat-icon>
-          <span class="send-text">Senden</span>
-          <kbd class="shortcut-pill">Strg + ↵</kbd>
-        </button>
+          <span class="live-dot"></span>
+          {{ flow.canReachMobile ? 'Live synchronisiert' : 'Nicht verbunden' }}
+        </span>
       </div>
     </section>
   </div>

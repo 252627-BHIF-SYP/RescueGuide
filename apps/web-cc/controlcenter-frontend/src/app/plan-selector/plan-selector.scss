@@ -980,70 +980,235 @@ $radius:        var(--rg-radius-md);
     }
   }
 
-  .btn-send-queue {
-    appearance: none;
-    -webkit-appearance: none;
-    border: 1px solid #1a4282;
-    background: #2353a1;
-    color: #ffffff;
-    font-size: 0.82rem;
-    font-weight: 600;
-    font-family: inherit;
-    padding: 7px 16px;
-    border-radius: var(--rg-radius-sm);
+  .sync-status {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
-    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    white-space: nowrap;
 
-    .send-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      line-height: 16px;
+    .live-dot {
+      background: #94a3b8;
+      animation: none;
     }
 
-    .send-text {
-      letter-spacing: 0.02em;
-    }
+    &.live {
+      background: $success-soft;
+      border-color: #a7f3d0;
+      color: #047857;
 
-    .shortcut-pill {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 1px 6px;
-      border-radius: 4px;
-      color: #ffffff;
-      letter-spacing: 0;
-    }
-
-    &:hover:not(:disabled) {
-      background: #1b4588;
-      border-color: #14366e;
-      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.15);
-    }
-
-    &:active:not(:disabled) {
-      background: #14366e;
-    }
-
-    &:disabled {
-      background: #f1f5f9;
-      color: #94a3b8;
-      border: 1px solid #e2e8f0;
-      box-shadow: none;
-      cursor: not-allowed;
-
-      .shortcut-pill {
-        background: #e2e8f0;
-        border-color: #cbd5e1;
-        color: #94a3b8;
+      .live-dot {
+        background: #10b981;
+        animation: livePulse 1.6s ease-in-out infinite;
       }
     }
+  }
+}
+
+// ── Live-Ablauf: Verlauf (eingefroren) & Warteschlange ─────────────────
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.flow-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-muted;
+  padding: 2px 2px 0;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .flow-section-count {
+    margin-left: auto;
+    background: #f1f5f9;
+    border-radius: 999px;
+    padding: 0 7px;
+    font-size: 0.7rem;
+  }
+
+  &.pending {
+    margin-top: 4px;
+  }
+}
+
+.queue-drop-area {
+  flex: 1;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-empty-dropzone.compact {
+  flex: 0 0 auto;
+  padding: 14px 16px;
+
+  .dropzone-bubble {
+    display: none;
+  }
+}
+
+.queue-item-row {
+  .queue-item-info .queue-item-sub {
+    font-size: 0.72rem;
+    color: $text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Erledigt & eingefroren: kein Drag, keine Aktionen
+  &.frozen {
+    background: #f8fafc;
+    border-style: dashed;
+    box-shadow: none;
+    cursor: default;
+
+    &:hover {
+      border-color: $border;
+      box-shadow: none;
+    }
+
+    .frozen-icon {
+      display: flex;
+      color: #10b981;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .queue-pos-badge {
+      color: #94a3b8;
+    }
+
+    .queue-item-title {
+      color: #64748b;
+    }
+
+    .completed-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #047857;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 13px;
+        width: 13px;
+        height: 13px;
+      }
+    }
+  }
+
+  // Schritt, an dem der Ersthelfer gerade arbeitet
+  &.current {
+    border-color: $accent;
+    background: $accent-soft;
+    box-shadow: 0 0 0 1px $accent inset;
+
+    .current-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: $accent;
+      color: #ffffff;
+      flex-shrink: 0;
+
+      .live-dot {
+        background: #ffffff;
+        animation: livePulse 1.6s ease-in-out infinite;
+      }
+    }
+  }
+
+  &.in-plan {
+    margin-left: 10px;
+  }
+}
+
+.plan-group-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2563eb;
+  padding: 2px 2px 0;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .btn-remove-group {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    margin-left: auto;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--rg-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+  }
+}
+
+.dispatch-progress-card .progress-heading .progress-title-group .pulse-icon.idle {
+  animation: none;
+  color: #10b981;
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
   }
 }
 

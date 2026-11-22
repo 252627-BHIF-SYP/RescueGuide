@@ -24,7 +24,7 @@ class WebRTCService {
   Function(String)? onCallFailed;
   Function()? onCallEnd;
   Function()? onCallAccepted;
-  Function(Map<String, dynamic>)? onInstructionPlanReceived;
+  Function(List<Map<String, dynamic>>)? onInstructionQueueReceived;
   Function()? onInstructionNextRequested;
 
   Map<String, dynamic>? _currentLocation;
@@ -125,10 +125,16 @@ class WebRTCService {
       'call-rejected',
       (data) => onCallFailed?.call(data['reason'] ?? 'Abgelehnt'),
     );
-    socket!.on('instruction-plan', (data) {
-      final plan = data is Map ? data['plan'] : null;
-      if (plan is Map) {
-        onInstructionPlanReceived?.call(Map<String, dynamic>.from(plan));
+    // Live-Warteschlange: aktueller Stand aller offenen Schritte von der Leitstelle
+    socket!.on('instruction-queue', (data) {
+      final items = data is Map ? data['items'] : null;
+      if (items is List) {
+        onInstructionQueueReceived?.call(
+          items
+              .whereType<Map>()
+              .map((item) => Map<String, dynamic>.from(item))
+              .toList(),
+        );
       }
     });
     socket!.on('instruction-next', (_) {
@@ -282,6 +288,12 @@ class WebRTCService {
     } finally {
       client.close(force: true);
     }
+  }
+
+  /// Fordert den aktuellen Warteschlangen-Stand bei der Leitstelle an.
+  void requestInstructionSync() {
+    if (socket == null || !socket!.connected) return;
+    socket!.emit('instruction-sync-request', {'from': selfId, 'to': targetId});
   }
 
   void sendInstructionProgress(Map<String, dynamic> progress) {

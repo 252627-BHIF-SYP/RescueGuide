@@ -96,6 +96,11 @@ public class EmergencyProtocolController : ControllerBase
         existingProtocol.AlarmedNA = protocol.AlarmedNA;
         existingProtocol.AlarmedPol = protocol.AlarmedPol;
         existingProtocol.AlarmedFW = protocol.AlarmedFW;
+        // Verlauf nur überschreiben, wenn er mitgeschickt wird (ältere Clients senden ihn nicht)
+        if (protocol.InstructionHistory != null)
+        {
+            existingProtocol.InstructionHistory = protocol.InstructionHistory;
+        }
 
         var emergency = await _context.Emergencies.FindAsync(existingProtocol.EmergencyId);
         if (emergency != null && !string.IsNullOrWhiteSpace(protocol.Type))
@@ -137,5 +142,6 @@ public class EmergencyProtocolController : ControllerBase
         public bool AlarmedNA { get; set; }
         public bool AlarmedPol { get; set; }
         public bool AlarmedFW { get; set; }
+        public string? InstructionHistory { get; set; }
     }
 }

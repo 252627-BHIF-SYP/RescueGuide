@@ -315,6 +315,45 @@
 
         </div>
       </section>
+
+      <!-- ── MASSNAHMENVERLAUF (an Ersthelfer übergeben, schreibgeschützt) ── -->
+      @if (instructionHistory.length > 0) {
+        <section class="form-card-panel history-panel">
+          <div class="panel-header">
+            <div class="panel-header-title">
+              <mat-icon class="panel-icon">fact_check</mat-icon>
+              <span class="panel-title">Maßnahmenverlauf Ersthelfer</span>
+            </div>
+            <span class="panel-badge secondary">
+              {{ completedHistoryCount }} / {{ instructionHistory.length }} erledigt
+            </span>
+          </div>
+
+          <ol class="history-list">
+            @for (entry of instructionHistory; track entry.order) {
+              <li class="history-entry" [class.open]="entry.status !== 'erledigt'">
+                <mat-icon class="history-status-icon">{{
+                  entry.status === 'erledigt' ? 'check_circle' : 'radio_button_unchecked'
+                }}</mat-icon>
+                <span class="history-order">{{ entry.order }}.</span>
+                <span class="history-name">
+                  {{ entry.name }}
+                  @if (entry.planName) {
+                    <small>{{ entry.planName }}</small>
+                  }
+                </span>
+                <span class="history-time">
+                  @if (entry.status === 'erledigt') {
+                    erledigt {{ formatHistoryTime(entry.completedAt) }}
+                  } @else {
+                    nicht erledigt
+                  }
+                </span>
+              </li>
+            }
+          </ol>
+        </section>
+      }
     </form>
   </mat-card-content>
 </mat-card>

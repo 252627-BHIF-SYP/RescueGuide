@@ -22,6 +22,7 @@ import { LocationService, Notruf } from '../services/location.service';
 import { EmergencyProtocol, EmergencyService } from '../services/emergency.service';
 import { PdfExportService } from '../services/pdf-export.service';
 import { AuthService } from '../services/auth.service';
+import { InstructionFlowService } from '../services/instruction-flow.service';
 import {
   computeOriginVars,
   ORIGIN_CLOSE_DURATION_MS,
@@ -73,6 +74,7 @@ export class EmergencyPage implements OnInit, OnDestroy {
   public emergencyService = inject(EmergencyService);
   public pdfExportService = inject(PdfExportService);
   public authService = inject(AuthService);
+  private instructionFlow = inject(InstructionFlowService);
 
   lastLocation = signal<Notruf | null>(null);
   status = computed(() => (this.lastLocation() ? 'Aktueller Notruf' : 'Kein Standort verfügbar'));
@@ -281,6 +283,16 @@ export class EmergencyPage implements OnInit, OnDestroy {
     if (this.videoCallComponent) {
       this.videoCallComponent.endCall(false);
     }
+
+    // Live-Maßnahmenverlauf (inkl. Abschlusszeitpunkten) ins Einsatzprotokoll übernehmen
+    const history = this.instructionFlow.buildHistory();
+    if (history.length > 0) {
+      this.emergencyService.protocol.update((p) => ({
+        ...p,
+        instructionHistory: JSON.stringify(history),
+      }));
+    }
+    this.instructionFlow.reset();
 
     // Protokoll im Backend schließen, aber Session für Nachbearbeitung behalten! (Issue 133)
     this.emergencyService.endEmergency(true);

@@ -11,6 +11,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EmergencyProtocol, EmergencyService } from '../services/emergency.service';
 import { PdfExportService, PdfExportMetadata } from '../services/pdf-export.service';
+import {
+  InstructionHistoryEntry,
+  parseInstructionHistory,
+} from '../services/instruction-flow.service';
 
 @Component({
   selector: 'app-emergency-checklist',
@@ -119,6 +123,21 @@ export class EmergencyChecklist {
         break;
     }
     this.onFieldChange();
+  }
+
+  get instructionHistory(): InstructionHistoryEntry[] {
+    return parseInstructionHistory(this.emergencyData()?.instructionHistory);
+  }
+
+  get completedHistoryCount(): number {
+    return this.instructionHistory.filter((e) => e.status === 'erledigt').length;
+  }
+
+  formatHistoryTime(iso?: string | null): string {
+    if (!iso) return '–';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '–';
+    return `${d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} Uhr`;
   }
 
   exportPdf() {
