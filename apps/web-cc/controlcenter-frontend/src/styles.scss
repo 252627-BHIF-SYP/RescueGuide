@@ -41,7 +41,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .preview-plan-dialog .mat-dialog-container,
 .preview-measure-dialog .mat-mdc-dialog-container,
 .preview-measure-dialog .mat-dialog-container {
-  max-height: 85vh;
+  max-height: 85dvh;
   width: min(90vw, 650px);
 }
 
@@ -51,7 +51,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .preview-measure-dialog .mat-dialog-content {
   display: flex;
   flex-direction: column;
-  max-height: calc(85vh - 96px);
+  max-height: calc(85dvh - 96px);
   overflow: hidden;
 }
 
@@ -69,32 +69,34 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 :root {
-  --rg-primary: #2353a1;
-  --rg-primary-dark: #1b4384;
-  --rg-primary-hover: #2d62b8;
-  --rg-primary-soft: #eef4fc;
-  --rg-primary-border: #c2d7f3;
+  --rg-primary: oklch(0.4541 0.1369 259.74);
+  --rg-primary-dark: oklch(0.3931 0.1183 259.74);
+  --rg-primary-hover: oklch(0.5074 0.1474 259.69);
+  --rg-primary-soft: oklch(0.9649 0.0125 255.51);
+  --rg-primary-border: oklch(0.8724 0.0450 255.64);
 
-  --rg-danger: #d92632;
-  --rg-danger-dark: #b81b26;
-  --rg-danger-soft: #fef2f2;
-  --rg-danger-border: #fecaca;
+  --rg-danger: oklch(0.5729 0.2113 24.42);
+  --rg-danger-dark: oklch(0.5039 0.1892 24.76);
+  --rg-danger-soft: oklch(0.9705 0.0129 17.38);
+  --rg-danger-border: oklch(0.8845 0.0593 18.33);
 
-  --rg-success: #16a34a;
-  --rg-success-soft: #f0fdf4;
-  --rg-success-border: #86efac;
+  --rg-success: oklch(0.6271 0.1699 149.21);
+  --rg-success-soft: oklch(0.9819 0.0181 155.83);
+  --rg-success-border: oklch(0.8712 0.1363 154.45);
 
-  --rg-bg: #f0f4fa;
-  --rg-surface: #ffffff;
-  --rg-surface-dark: #091220;
-  --rg-border: #d2deee;
-  --rg-border-light: #e8eef8;
-  --rg-text: #0f172a;
-  --rg-text-muted: #334155;
+  --rg-bg: oklch(0.9658 0.0091 258.34);
+  --rg-surface: oklch(1.0000 0 0);
+  --rg-surface-dark: oklch(0.1815 0.0321 258.89);
+  --rg-border: oklch(0.8964 0.0255 255.57);
+  --rg-border-light: oklch(0.9475 0.0149 260.73);
+  --rg-text: oklch(0.2077 0.0398 265.75);
+  --rg-text-muted: oklch(0.3717 0.0392 257.29);
 
   --rg-radius-sm: 4px;
   --rg-radius-md: 8px;
   --rg-radius-pill: 999px;
+
+  --rg-transition-ui: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out, opacity 150ms ease-out;
 }
 
 // ── RG+ Brand Design Tokens & Auth Pages ──
@@ -112,7 +114,7 @@ $rg-red-border:    var(--rg-danger-border);
 $auth-bg:          var(--rg-bg);
 $auth-surface:     var(--rg-surface);
 $auth-border:      var(--rg-border);
-$auth-border-subtle:#e5eef9;
+$auth-border-subtle:oklch(0.9456 0.0177 253.34);
 $auth-accent:      $rg-blue;
 $auth-accent-hover:$rg-blue-dark;
 $auth-accent-soft: $rg-blue-soft;
@@ -126,7 +128,7 @@ $auth-shadow-md:   0 6px 20px rgba(35, 83, 161, 0.12);
 
 body:has(.auth-wrapper) {
   overflow: hidden !important;
-  height: 100vh !important;
+  height: 100dvh !important;
 }
 
 .auth-wrapper,
@@ -136,8 +138,8 @@ body:has(.auth-wrapper) {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
-  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
   background-color: $auth-bg;
   padding: 16px;
@@ -149,13 +151,13 @@ body:has(.auth-wrapper) {
 .signup-card {
   width: 100%;
   max-width: 420px;
-  max-height: 96vh;
+  max-height: 96dvh;
   overflow-y: auto;
   border-radius: $auth-radius !important;
   border: 1px solid $auth-border !important;
   background: $auth-surface !important;
   box-shadow: $auth-shadow-sm !important;
-  transition: box-shadow 0.18s ease;
+  transition: box-shadow 180ms ease-out;
 
   &:hover {
     box-shadow: $auth-shadow-md !important;
@@ -306,7 +308,7 @@ body:has(.auth-wrapper) {
   align-items: center;
   gap: 6px;
   background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  border: 1px solid oklch(0.9250 0.0806 155.99);
   color: #15803d;
   padding: 6px 10px;
   border-radius: var(--rg-radius-md);
@@ -389,7 +391,7 @@ body:has(.auth-wrapper) {
     border: none;
     box-shadow: 0 1px 3px rgba(35, 83, 161, 0.25);
     letter-spacing: 0.02em;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    transition: background-color 150ms ease-out, box-shadow 150ms ease-out;
 
     &:hover:not(:disabled) {
       background-color: $auth-accent-hover !important;
@@ -419,13 +421,13 @@ body:has(.auth-wrapper) {
     color: $auth-text-muted !important;
     background: transparent !important;
     background-color: transparent !important;
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid oklch(0.9288 0.0126 255.51) !important;
     border-radius: var(--rg-radius-sm) !important;
-    transition: all 0.15s ease;
+    transition: var(--rg-transition-ui);
 
     .mdc-button__label {
       color: inherit !important;
-      transition: color 0.15s ease;
+      transition: color 150ms ease-out;
     }
 
     &:hover,
@@ -445,7 +447,7 @@ body:has(.auth-wrapper) {
 .compact-tag-autocomplete.mat-mdc-autocomplete-panel {
   border-radius: var(--rg-radius-md) !important;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
-  border: 1px solid #d2deee !important;
+  border: 1px solid var(--rg-border) !important;
   max-height: 220px !important;
   background: #ffffff !important;
 
@@ -455,7 +457,7 @@ body:has(.auth-wrapper) {
     font-size: 0.83rem !important;
     color: #1e293b !important;
     padding: 0 12px !important;
-    transition: background 0.12s ease;
+    transition: background-color 120ms ease-out;
 
     &:hover, &.mat-mdc-option-active {
       background: #eef4fc !important;
@@ -570,5 +572,35 @@ body:has(.auth-wrapper) {
       transform: none !important;
       transition: none !important;
     }
+  }
+}
+
+// Tastatur-Fokus für Custom-Buttons (Material-Buttons haben eigene Indikatoren)
+button:not(.mdc-button):not(.mdc-icon-button):not(.mat-mdc-icon-button):focus-visible,
+a.nav-link:focus-visible {
+  outline: 2px solid var(--rg-primary);
+  outline-offset: 2px;
+}
+
+@keyframes rgIconSwapIn {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+.rg-icon-swap {
+  animation: rgIconSwapIn 150ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rg-icon-swap {
+    animation: none;
   }
 }

@@ -1,28 +1,28 @@
 // ── RG+ Design Tokens (Control Center Dashboard) ────────────────────────
-$rg-blue:        #2353a1;
-$rg-blue-dark:   #1b4384;
-$rg-blue-hover:  #2d62b8;
-$rg-blue-soft:   #eef4fc;
-$rg-blue-border: #c2d7f3;
+$rg-blue:        var(--rg-primary);
+$rg-blue-dark:   var(--rg-primary-dark);
+$rg-blue-hover:  var(--rg-primary-hover);
+$rg-blue-soft:   var(--rg-primary-soft);
+$rg-blue-border: var(--rg-primary-border);
 
-$rg-red:         #d92632;
-$rg-red-dark:    #b81b26;
-$rg-red-soft:    #fef2f2;
-$rg-red-border:  #fecaca;
+$rg-red:         var(--rg-danger);
+$rg-red-dark:    var(--rg-danger-dark);
+$rg-red-soft:    var(--rg-danger-soft);
+$rg-red-border:  var(--rg-danger-border);
 
-$surface:        #ffffff;
-$canvas:         #f0f4fa;
-$border:         #d2deee;
-$border-light:   #e8eef8;
-$text:           #0f172a;
-$text-muted:     #475569;
-$success:        #16a34a;
-$success-soft:   #f0fdf4;
+$surface:        var(--rg-surface);
+$canvas:         var(--rg-bg);
+$border:         var(--rg-border);
+$border-light:   var(--rg-border-light);
+$text:           var(--rg-text);
+$text-muted:     oklch(0.4455 0.0374 257.28);
+$success:        var(--rg-success);
+$success-soft:   var(--rg-success-soft);
 $radius:         6px;
 
 .dashboard {
   box-sizing: border-box;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 24px clamp(16px, 3vw, 44px);
   background: $canvas;
 }
@@ -42,7 +42,7 @@ $radius:         6px;
 
   button[mat-icon-button] {
     color: $rg-blue;
-    transition: background-color 0.15s ease;
+    transition: background-color 150ms ease-out;
 
     &:hover {
       background-color: $rg-blue-soft;
@@ -93,7 +93,7 @@ h2 {
   font-weight: 700;
   border-radius: 4px;
   background: #e2ebf7;
-  border: 1px solid #c2d7f3;
+  border: 1px solid var(--rg-primary-border);
 }
 
 .active-count,
@@ -120,7 +120,7 @@ h2 {
   border-radius: $radius;
   background: $surface;
   box-shadow: 0 1px 3px rgba(35, 83, 161, 0.04);
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   &.clickable {
     cursor: pointer;
@@ -133,7 +133,7 @@ h2 {
   }
 
   &.active {
-    border-color: #fca5a5;
+    border-color: oklch(0.8077 0.1035 19.57);
     background: #ffffff;
     box-shadow: 0 1px 4px rgba(217, 38, 50, 0.08);
 
@@ -192,6 +192,7 @@ h2 {
     gap: 6px;
 
     .row-btn {
+      position: relative;
       appearance: none;
       -webkit-appearance: none;
       border: 1px solid transparent;
@@ -203,7 +204,13 @@ h2 {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      transition: all 0.15s ease;
+      transition: var(--rg-transition-ui);
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -9px -3px;
+      }
 
       mat-icon {
         font-size: 15px;
@@ -277,15 +284,15 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.15s ease-out;
+  animation: fadeIn 150ms ease-out;
 
   .protocol-modal {
     width: 95vw;
     max-width: 1100px;
-    height: 90vh;
+    height: 90dvh;
     background: #ffffff;
     border-radius: 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid oklch(0.8690 0.0198 252.89);
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
     display: flex;
     flex-direction: column;
@@ -294,7 +301,7 @@ h2 {
     .modal-header {
       padding: 12px 20px;
       background: #ffffff;
-      border-bottom: 1px solid #dce4ef;
+      border-bottom: 1px solid oklch(0.9160 0.0173 256.28);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -353,6 +360,7 @@ h2 {
         gap: 8px;
 
         .btn-close-modal {
+          position: relative;
           appearance: none;
           -webkit-appearance: none;
           border: none;
@@ -365,7 +373,13 @@ h2 {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.15s ease;
+          transition: var(--rg-transition-ui);
+
+          &::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+          }
 
           mat-icon {
             font-size: 20px;
@@ -433,7 +447,7 @@ h2 {
     .modal-footer {
       padding: 12px 20px;
       background: #ffffff;
-      border-top: 1px solid #dce4ef;
+      border-top: 1px solid oklch(0.9160 0.0173 256.28);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -475,6 +489,7 @@ h2 {
       }
 
       .btn-export-pdf {
+        position: relative;
         appearance: none;
         -webkit-appearance: none;
         border: 1px solid $rg-red-border;
@@ -488,7 +503,13 @@ h2 {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.15s ease;
+        transition: var(--rg-transition-ui);
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -7px -5px;
+        }
 
         mat-icon {
           font-size: 16px;
@@ -510,6 +531,7 @@ h2 {
 
       // Destruktive Aktion: bewusst zurückhaltend, rot erst beim Hover
       .btn-delete-protocol {
+        position: relative;
         appearance: none;
         -webkit-appearance: none;
         border: 1px solid transparent;
@@ -524,7 +546,13 @@ h2 {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.15s ease;
+        transition: var(--rg-transition-ui);
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -7px -5px;
+        }
 
         mat-icon {
           font-size: 17px;
@@ -535,7 +563,7 @@ h2 {
         &:hover:not(:disabled) {
           background: #fef2f2;
           color: #dc2626;
-          border-color: #fecaca;
+          border-color: var(--rg-danger-border);
         }
 
         &:disabled {
@@ -545,6 +573,7 @@ h2 {
       }
 
       .btn-save-changes {
+        position: relative;
         appearance: none;
         -webkit-appearance: none;
         border: 1px solid $rg-blue;
@@ -558,7 +587,13 @@ h2 {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.15s ease;
+        transition: var(--rg-transition-ui);
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -7px -5px;
+        }
 
         mat-icon {
           font-size: 16px;
@@ -574,7 +609,7 @@ h2 {
         &.saved {
           background: #ecfdf5;
           color: #065f46;
-          border-color: #a7f3d0;
+          border-color: oklch(0.9049 0.0895 164.15);
         }
 
         &:disabled {
@@ -582,7 +617,7 @@ h2 {
           cursor: not-allowed;
           background: #f1f5f9;
           color: #94a3b8;
-          border-color: #e2e8f0;
+          border-color: oklch(0.9288 0.0126 255.51);
         }
       }
     }
@@ -590,7 +625,95 @@ h2 {
 }
 
 .animate-scale-up {
-  animation: scaleUp 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: scaleUp 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+// ── Skeleton Loading States ──────────────────────────────────────────
+.skeleton-row {
+  cursor: default;
+
+  .sk {
+    display: block;
+    height: 10px;
+    margin-top: 0;
+    border-radius: 4px;
+    background: var(--rg-border-light);
+    animation: rgSkeletonPulse 1.2s ease-in-out infinite;
+  }
+
+  .sk-strong {
+    width: 70%;
+    height: 12px;
+  }
+
+  .sk-sub {
+    width: 45%;
+    margin-top: 6px;
+  }
+
+  .field .sk-sub {
+    margin-top: 0;
+  }
+
+  .field .sk-strong {
+    margin-top: 6px;
+  }
+
+  .sk-btn {
+    width: 64px;
+    height: 24px;
+  }
+}
+
+.modal-skeleton {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 1020px;
+  margin: 0 auto;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+
+  .sk-panel {
+    background: var(--rg-surface);
+    border: 1px solid var(--rg-border);
+    border-radius: var(--rg-radius-md);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sk {
+    display: block;
+    border-radius: 4px;
+    background: var(--rg-border-light);
+    animation: rgSkeletonPulse 1.2s ease-in-out infinite;
+  }
+
+  .sk-title {
+    width: 40%;
+    height: 12px;
+  }
+
+  .sk-field {
+    height: 35px;
+  }
+}
+
+@keyframes rgSkeletonPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row .sk,
+  .modal-skeleton .sk {
+    animation: none;
+  }
 }
 
 @keyframes fadeIn {

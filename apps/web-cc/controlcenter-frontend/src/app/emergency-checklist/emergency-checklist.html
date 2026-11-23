@@ -192,11 +192,19 @@
                   id="callerType"
                   type="text"
                   class="custom-input no-icon"
+                  list="callerTypeSuggestions"
                   [(ngModel)]="emergencyData().callerType"
                   name="callerType"
                   (ngModelChange)="onFieldChange()"
                   placeholder="z.B. Ersthelfer, Zeuge"
                 />
+                <datalist id="callerTypeSuggestions">
+                  <option value="Ersthelfer"></option>
+                  <option value="Zeuge"></option>
+                  <option value="Betroffener"></option>
+                  <option value="Angehöriger"></option>
+                  <option value="Passant"></option>
+                </datalist>
               </div>
             </div>
           </div>
@@ -255,7 +263,11 @@
                 (click)="toggleAlarm('RD')"
               >
                 <div class="chip-check-box">
-                  <mat-icon>{{ emergencyData().alarmedRD ? 'check' : 'add' }}</mat-icon>
+                  @if (emergencyData().alarmedRD) {
+                    <mat-icon class="rg-icon-swap">check</mat-icon>
+                  } @else {
+                    <mat-icon class="rg-icon-swap">add</mat-icon>
+                  }
                 </div>
                 <div class="chip-text">
                   <span class="chip-code">RD</span>
@@ -271,7 +283,11 @@
                 (click)="toggleAlarm('NA')"
               >
                 <div class="chip-check-box">
-                  <mat-icon>{{ emergencyData().alarmedNA ? 'check' : 'add' }}</mat-icon>
+                  @if (emergencyData().alarmedNA) {
+                    <mat-icon class="rg-icon-swap">check</mat-icon>
+                  } @else {
+                    <mat-icon class="rg-icon-swap">add</mat-icon>
+                  }
                 </div>
                 <div class="chip-text">
                   <span class="chip-code">NA</span>
@@ -287,7 +303,11 @@
                 (click)="toggleAlarm('Pol')"
               >
                 <div class="chip-check-box">
-                  <mat-icon>{{ emergencyData().alarmedPol ? 'check' : 'add' }}</mat-icon>
+                  @if (emergencyData().alarmedPol) {
+                    <mat-icon class="rg-icon-swap">check</mat-icon>
+                  } @else {
+                    <mat-icon class="rg-icon-swap">add</mat-icon>
+                  }
                 </div>
                 <div class="chip-text">
                   <span class="chip-code">Pol</span>
@@ -303,7 +323,11 @@
                 (click)="toggleAlarm('FW')"
               >
                 <div class="chip-check-box">
-                  <mat-icon>{{ emergencyData().alarmedFW ? 'check' : 'add' }}</mat-icon>
+                  @if (emergencyData().alarmedFW) {
+                    <mat-icon class="rg-icon-swap">check</mat-icon>
+                  } @else {
+                    <mat-icon class="rg-icon-swap">add</mat-icon>
+                  }
                 </div>
                 <div class="chip-text">
                   <span class="chip-code">FW</span>

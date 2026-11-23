@@ -5,10 +5,10 @@
 
 .sidebar {
   width: 220px;
-  height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
   background: #ffffff;
-  border-right: 1px solid #d6e0ee;
+  border-right: 1px solid oklch(0.9033 0.0220 256.74);
   display: flex;
   flex-direction: column;
   padding: 16px 12px;
@@ -17,7 +17,7 @@
 // ── Header ─────────────────────────────────────────────────────────────
 .sidebar-header {
   padding: 4px 6px 16px;
-  border-bottom: 1px solid #e7eef8;
+  border-bottom: 1px solid oklch(0.9467 0.0154 257.20);
   margin-bottom: 14px;
 }
 
@@ -75,14 +75,14 @@
   font-weight: 600;
   color: #475569;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   .nav-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
     color: #64748b;
-    transition: color 0.15s ease;
+    transition: color 150ms ease-out;
   }
 
   &:hover {
@@ -98,7 +98,7 @@
     color: #2353a1;
     font-weight: 700;
     background: #ebf2fc;
-    border: 1px solid #d0e1f9;
+    border: 1px solid oklch(0.9045 0.0377 256.97);
 
     .nav-icon {
       color: #2353a1;
@@ -109,7 +109,7 @@
 .emergency-link {
   color: #d92632 !important;
   background: #fef2f2 !important;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--rg-danger-border);
   font-weight: 700;
 
   .nav-icon {
@@ -118,14 +118,14 @@
 
   &:hover {
     background: #fee2e2 !important;
-    border-color: #fca5a5;
+    border-color: oklch(0.8077 0.1035 19.57);
   }
 }
 
 // ── Footer ─────────────────────────────────────────────────────────────
 .sidebar-footer {
   padding-top: 12px;
-  border-top: 1px solid #e7eef8;
+  border-top: 1px solid oklch(0.9467 0.0154 257.20);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -141,7 +141,7 @@
   color: #1e293b;
   background: #f0f5fc;
   border-radius: 6px;
-  border: 1px solid #dbe6f6;
+  border: 1px solid oklch(0.9214 0.0248 257.65);
 
   .user-icon {
     font-size: 18px;
@@ -158,6 +158,7 @@
 }
 
 .logout-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,13 +166,19 @@
   width: 100%;
   padding: 8px 12px;
   background: transparent;
-  border: 1px solid #dce2ea;
+  border: 1px solid oklch(0.9105 0.0127 255.51);
   border-radius: 6px;
   color: #526075;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px 0;
+  }
 
   mat-icon {
     font-size: 16px;
@@ -182,6 +189,6 @@
   &:hover {
     background: #fef2f2;
     color: #d92632;
-    border-color: #fecaca;
+    border-color: var(--rg-danger-border);
   }
 }

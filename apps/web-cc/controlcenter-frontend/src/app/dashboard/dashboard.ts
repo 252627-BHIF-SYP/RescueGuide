@@ -9,6 +9,7 @@ import { EmergencyProtocol, EmergencyService } from '../services/emergency.servi
 import { PdfExportService, PdfExportMetadata } from '../services/pdf-export.service';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { ConfirmDeleteDialog } from '../instruction-menu/dialogs/confirm-delete-dialog/confirm-delete-dialog';
 import {
   openDialogFromTrigger,
@@ -27,6 +28,7 @@ import {
     MatIconModule,
     MatTooltipModule,
     MatDialogModule,
+    CdkTrapFocus,
     EmergencyChecklist,
   ],
   templateUrl: './dashboard.html',

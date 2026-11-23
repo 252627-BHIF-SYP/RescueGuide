@@ -1,14 +1,14 @@
 :host {
   display: block;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
 .app-layout {
   display: flex;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: #f0f4fa;
 }
@@ -16,7 +16,7 @@
 .layout-content {
   flex: 1;
   min-width: 0;
-  height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
   overflow-x: hidden;
   background: #f0f4fa;

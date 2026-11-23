@@ -6,15 +6,15 @@ $accent-border: var(--rg-primary-border);
 $surface:       var(--rg-surface);
 $border:        var(--rg-border);
 $border-light:  var(--rg-border-light);
-$border-input:  #cbd5e1;
+$border-input:  oklch(0.8690 0.0198 252.89);
 $text:          var(--rg-text);
 $text-muted:    var(--rg-text-muted);
 $success:       var(--rg-success);
 $success-soft:  var(--rg-success-soft);
 $success-border:var(--rg-success-border);
-$pending-soft:  #f8fafc;
-$pending-border:#cbd5e1;
-$pending-text:  #475569;
+$pending-soft:  oklch(0.9842 0.0034 247.86);
+$pending-border:oklch(0.8690 0.0198 252.89);
+$pending-text:  oklch(0.4455 0.0374 257.28);
 $radius:        var(--rg-radius-md);
 
 :host {
@@ -143,7 +143,7 @@ $radius:        var(--rg-radius-md);
     align-items: center;
     justify-content: space-between;
     padding-bottom: 8px;
-    border-bottom: 1px solid #edf2f9;
+    border-bottom: 1px solid oklch(0.9594 0.0108 256.70);
 
     .panel-header-title {
       display: flex;
@@ -182,7 +182,7 @@ $radius:        var(--rg-radius-md);
       &.secondary {
         background: #f1f5f9;
         color: #475569;
-        border: 1px solid #e2e8f0;
+        border: 1px solid oklch(0.9288 0.0126 255.51);
       }
     }
   }
@@ -200,7 +200,7 @@ $radius:        var(--rg-radius-md);
   flex-direction: column;
   gap: 3px;
   position: relative;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   .label-row {
     display: flex;
@@ -223,7 +223,7 @@ $radius:        var(--rg-radius-md);
       font-weight: 600;
       padding: 1px 6px;
       border-radius: 4px;
-      transition: all 0.15s ease;
+      transition: var(--rg-transition-ui);
 
       mat-icon {
         font-size: 11px;
@@ -240,7 +240,7 @@ $radius:        var(--rg-radius-md);
       &.pending {
         background: #f1f5f9;
         color: $pending-text;
-        border: 1px solid #e2e8f0;
+        border: 1px solid oklch(0.9288 0.0126 255.51);
       }
     }
   }
@@ -250,12 +250,12 @@ $radius:        var(--rg-radius-md);
     .custom-select,
     .custom-textarea {
       background: #ffffff;
-      border-color: #94a3b8;
+      border-color: oklch(0.7107 0.0351 256.79);
       border-left: 3px solid $success;
       color: #0f172a;
 
       &:hover {
-        border-color: #64748b;
+        border-color: oklch(0.5544 0.0407 257.42);
         border-left-color: $success;
       }
 
@@ -281,7 +281,7 @@ $radius:        var(--rg-radius-md);
       border-color: $border-input;
 
       &:hover {
-        border-color: #94a3b8;
+        border-color: oklch(0.7107 0.0351 256.79);
       }
 
       &:focus,
@@ -317,7 +317,7 @@ $radius:        var(--rg-radius-md);
     color: #94a3b8;
     pointer-events: none;
     z-index: 2;
-    transition: color 0.15s ease;
+    transition: color 150ms ease-out;
   }
 
   .field-check-icon {
@@ -356,7 +356,7 @@ $radius:        var(--rg-radius-md);
   border: 1px solid $border-input;
   border-radius: 4px;
   box-sizing: border-box;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   &::placeholder {
     color: #94a3b8;
@@ -370,6 +370,10 @@ $radius:        var(--rg-radius-md);
 
   &.no-icon {
     padding-left: 10px;
+  }
+
+  &[list]::-webkit-calendar-picker-indicator {
+    display: none !important;
   }
 }
 
@@ -397,7 +401,7 @@ $radius:        var(--rg-radius-md);
   background: #f8fafc;
   border: 1px dashed $border;
   border-radius: var(--rg-radius-md);
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   &.field-filled {
     background: #f8fafc;
@@ -425,19 +429,19 @@ $radius:        var(--rg-radius-md);
   gap: 7px;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   .chip-check-box {
     width: 18px;
     height: 18px;
     border-radius: var(--rg-radius-sm);
-    border: 1.5px solid #94a3b8;
+    border: 1.5px solid oklch(0.7107 0.0351 256.79);
     background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     color: transparent;
-    transition: all 0.15s ease;
+    transition: var(--rg-transition-ui);
     flex-shrink: 0;
 
     mat-icon {
@@ -464,9 +468,7 @@ $radius:        var(--rg-radius-md);
       font-size: 0.75rem;
       font-weight: 500;
       color: #475569;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
   }
 
@@ -489,11 +491,11 @@ $radius:        var(--rg-radius-md);
     // Rettungsdienst (Vibrant Red)
     &.rd {
       background: #fef2f2;
-      border-color: #ef4444;
+      border-color: oklch(0.6368 0.2078 25.33);
 
       .chip-check-box {
         background: #d92632;
-        border-color: #d92632;
+        border-color: var(--rg-danger);
       }
 
       .chip-code {
@@ -504,11 +506,11 @@ $radius:        var(--rg-radius-md);
     // Notarzt (Amber / Medical)
     &.na {
       background: #fffbeb;
-      border-color: #f59e0b;
+      border-color: oklch(0.7686 0.1647 70.08);
 
       .chip-check-box {
         background: #d97706;
-        border-color: #d97706;
+        border-color: oklch(0.6658 0.1574 58.32);
       }
 
       .chip-code {
@@ -519,11 +521,11 @@ $radius:        var(--rg-radius-md);
     // Polizei (Vibrant Police Blue #2353a1)
     &.pol {
       background: #eef4fc;
-      border-color: #3b82f6;
+      border-color: oklch(0.6231 0.1880 259.81);
 
       .chip-check-box {
         background: #2353a1;
-        border-color: #2353a1;
+        border-color: var(--rg-primary);
       }
 
       .chip-code {
@@ -534,11 +536,11 @@ $radius:        var(--rg-radius-md);
     // Feuerwehr (Feuerwehrrot / Flame Orange-Red)
     &.fw {
       background: #fff7ed;
-      border-color: #f97316;
+      border-color: oklch(0.7049 0.1867 47.60);
 
       .chip-check-box {
         background: #ea580c;
-        border-color: #ea580c;
+        border-color: oklch(0.6461 0.1943 41.12);
       }
 
       .chip-code {

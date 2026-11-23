@@ -1,10 +1,10 @@
-$danger: #d92632;
-$danger-dark: #b91c1c;
-$danger-soft: #fef2f2;
-$danger-border: #fecaca;
-$text: #0f172a;
-$muted: #475569;
-$border: #d2deee;
+$danger: var(--rg-danger);
+$danger-dark: oklch(0.5054 0.1905 27.52);
+$danger-soft: var(--rg-danger-soft);
+$danger-border: var(--rg-danger-border);
+$text: var(--rg-text);
+$muted: oklch(0.4455 0.0374 257.28);
+$border: var(--rg-border);
 
 .confirm-dialog-shell {
   padding: 0;
@@ -141,7 +141,7 @@ $border: #d2deee;
     padding: 0 20px;
     font-weight: 700;
     box-shadow: 0 2px 6px rgba(217, 38, 50, 0.25);
-    transition: background 0.15s, box-shadow 0.15s;
+    transition: background-color 150ms ease-out, box-shadow 150ms ease-out;
 
     mat-icon {
       font-size: 18px;

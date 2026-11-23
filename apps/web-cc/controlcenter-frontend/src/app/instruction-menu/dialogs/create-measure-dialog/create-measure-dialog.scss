@@ -1,12 +1,12 @@
 // ── Shared Dialog Tokens (RescueGuide Palette) ─────────────────────────
-$accent:        #2353a1;
-$accent-dark:   #1d4485;
-$accent-soft:   #eef4fc;
-$accent-border: #bfd5f5;
-$danger:        #d92632;
-$text:          #0f172a;
-$muted:         #475569;
-$border:        #d2deee;
+$accent:        var(--rg-primary);
+$accent-dark:   oklch(0.3969 0.1179 260.06);
+$accent-soft:   var(--rg-primary-soft);
+$accent-border: oklch(0.8670 0.0505 257.68);
+$danger:        var(--rg-danger);
+$text:          var(--rg-text);
+$muted:         oklch(0.4455 0.0374 257.28);
+$border:        var(--rg-border);
 
 // ── Dialog Title (identisch zu CreatePlanDialog) ───────────────────────
 .dialog-title {
@@ -32,7 +32,7 @@ $border:        #d2deee;
 .custom-dialog-content {
   padding: 18px 24px !important;
   height: 560px;
-  max-height: 86vh;
+  max-height: 86dvh;
   overflow: hidden !important;
   box-sizing: border-box;
 
@@ -173,6 +173,7 @@ $border:        #d2deee;
       border: 1px solid $accent-border;
 
       .btn-remove-tag {
+        position: relative;
         border: none;
         background: transparent;
         padding: 0;
@@ -182,7 +183,13 @@ $border:        #d2deee;
         justify-content: center;
         color: $accent;
         opacity: 0.7;
-        transition: opacity 0.15s;
+        transition: opacity 150ms ease-out, color 150ms ease-out;
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -8px -8px -8px -4px;
+        }
 
         mat-icon {
           font-size: 14px;
@@ -212,7 +219,7 @@ $border:        #d2deee;
       border-radius: 6px;
       background: #ffffff;
       outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
 
       &:focus {
         border-color: $accent;
@@ -304,7 +311,7 @@ $border:        #d2deee;
   gap: 8px;
   flex: 1 1 auto;
   min-height: 0;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
 
   &.drag-over {
     border-color: $accent;
@@ -318,7 +325,7 @@ $border:        #d2deee;
     gap: 6px;
     background: #fee2e2;
     color: $danger;
-    border: 1px solid #fecaca;
+    border: 1px solid var(--rg-danger-border);
     border-radius: 6px;
     padding: 6px 10px;
     font-size: 0.74rem;
@@ -347,6 +354,7 @@ $border:        #d2deee;
     }
 
     .btn-remove-media {
+      position: relative;
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -358,6 +366,12 @@ $border:        #d2deee;
       cursor: pointer;
       padding: 2px 6px;
       border-radius: 4px;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -12px -6px;
+      }
 
       mat-icon {
         font-size: 16px;
@@ -390,7 +404,7 @@ $border:        #d2deee;
     justify-content: center;
     padding: 20px 14px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: var(--rg-transition-ui);
     text-align: center;
     gap: 4px;
     flex: 1 1 auto;
@@ -510,7 +524,7 @@ $border:        #d2deee;
     padding: 0 20px !important;
     font-weight: 700 !important;
     box-shadow: 0 2px 6px rgba(35, 83, 161, 0.2) !important;
-    transition: background 0.15s, box-shadow 0.15s, transform 0.15s !important;
+    transition: background-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out !important;
 
     &[disabled] {
       background-color: #e2e8f0 !important;

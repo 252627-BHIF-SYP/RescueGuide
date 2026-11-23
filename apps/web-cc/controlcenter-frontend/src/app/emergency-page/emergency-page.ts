@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { VideoCall } from '../video-call/video-call';
 import { EmergencyChecklist } from '../emergency-checklist/emergency-checklist';
 import { PlanSelector } from '../plan-selector/plan-selector';
@@ -32,7 +33,7 @@ import {
 @Component({
   selector: 'app-emergency-page',
   standalone: true,
-  imports: [CommonModule, MatIcon, MatButton, VideoCall, EmergencyChecklist, PlanSelector],
+  imports: [CommonModule, MatIcon, MatButton, CdkTrapFocus, VideoCall, EmergencyChecklist, PlanSelector],
   templateUrl: './emergency-page.html',
   styleUrl: './emergency-page.scss',
 })

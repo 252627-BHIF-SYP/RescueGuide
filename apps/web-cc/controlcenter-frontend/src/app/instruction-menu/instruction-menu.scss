@@ -1,16 +1,16 @@
 // ── RG+ Design Tokens (Instruction Menu) ──────────────────────────────
-$bg:           #f0f4fa;
-$surface:      #ffffff;
-$border:       #d2deee;
-$accent:       #2353a1;
-$accent-dark:  #1d4485;
-$accent-soft:  #eef4fc;
-$accent-border:#bfd5f5;
-$danger:       #d92632;
-$danger-dark:  #b91c1c;
-$danger-soft:  #fef2f2;
-$text:         #0f172a;
-$muted:        #475569;
+$bg:           var(--rg-bg);
+$surface:      var(--rg-surface);
+$border:       var(--rg-border);
+$accent:       var(--rg-primary);
+$accent-dark:  oklch(0.3969 0.1179 260.06);
+$accent-soft:  var(--rg-primary-soft);
+$accent-border:oklch(0.8670 0.0505 257.68);
+$danger:       var(--rg-danger);
+$danger-dark:  oklch(0.5054 0.1905 27.52);
+$danger-soft:  var(--rg-danger-soft);
+$text:         var(--rg-text);
+$muted:        oklch(0.4455 0.0374 257.28);
 $radius:       6px;
 $shadow-sm:    0 1px 3px rgba(35, 83, 161, 0.06);
 $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
@@ -167,7 +167,7 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
   padding: 0 16px;
   background: #f8fafc;
   border-bottom: 1px solid $border;
-  transition: all 0.15s ease;
+  transition: var(--rg-transition-ui);
   flex-shrink: 0;
 
   &:focus-within {
@@ -196,6 +196,7 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
   }
 
   .btn-clear-search {
+    position: relative;
     border: none;
     background: transparent;
     color: #94a3b8;
@@ -203,6 +204,12 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
     padding: 0;
     display: flex;
     align-items: center;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -11px -8px;
+    }
 
     mat-icon {
       font-size: 16px;
@@ -225,11 +232,11 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
     min-height: 52px;
     margin-bottom: 8px;
     border: 1px solid $border !important;
-    border-radius: 8px !important;
+    border-radius: $radius !important;
     background: $surface;
     overflow: hidden !important;
     box-sizing: border-box;
-    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    transition: background-color 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, transform 100ms ease-out;
 
     .mdc-list-item__content {
       width: 100% !important;
@@ -355,7 +362,7 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
   font-size: 0.84rem;
   text-align: center;
   border: 1px dashed $border;
-  border-radius: 8px;
+  border-radius: $radius;
 
   mat-icon {
     font-size: 32px;
@@ -365,6 +372,7 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
   }
 
   .btn-empty-reset {
+    position: relative;
     border: none;
     background: $accent-soft;
     color: $accent;
@@ -373,6 +381,12 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
     font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -10px 0;
+    }
 
     &:hover {
       background: $accent-border;
@@ -404,9 +418,9 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
     justify-content: center !important;
     color: $muted !important;
     background: transparent !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     box-sizing: border-box !important;
-    transition: color 0.15s ease, background-color 0.15s ease;
+    transition: color 150ms ease-out, background-color 150ms ease-out;
 
     mat-icon {
       font-size: 18px !important;
@@ -434,7 +448,8 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
     }
 
     ::ng-deep .mat-mdc-button-touch-target {
-      display: none !important;
+      width: 36px !important;
+      height: 44px !important;
     }
   }
 }
@@ -450,7 +465,7 @@ $shadow-md:    0 3px 10px rgba(35, 83, 161, 0.10);
   font-size: 0.84rem !important;
   letter-spacing: 0.01em !important;
   box-shadow: 0 2px 6px rgba(35, 83, 161, 0.2) !important;
-  transition: background 0.15s, box-shadow 0.15s, transform 0.15s !important;
+  transition: background-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out !important;
 
   mat-icon { font-size: 18px; margin-right: 4px; }
 

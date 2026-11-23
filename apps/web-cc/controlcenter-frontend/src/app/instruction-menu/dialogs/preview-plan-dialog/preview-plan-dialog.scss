@@ -1,9 +1,9 @@
-$accent:       #2353a1;
-$accent-hover: #1b4384;
-$accent-soft:  #eef4fc;
-$border:       #d2deee;
-$text:         #0f172a;
-$text-muted:   #475569;
+$accent:       var(--rg-primary);
+$accent-hover: var(--rg-primary-dark);
+$accent-soft:  var(--rg-primary-soft);
+$border:       var(--rg-border);
+$text:         var(--rg-text);
+$text-muted:   oklch(0.4455 0.0374 257.28);
 
 .dialog-title {
   display: flex;
@@ -26,7 +26,7 @@ $text-muted:   #475569;
 
 .custom-dialog-content {
   padding: 18px 24px !important;
-  max-height: 72vh;
+  max-height: 72dvh;
   background-color: #fafbfc;
   overflow-y: auto;
 }
@@ -90,7 +90,7 @@ $text-muted:   #475569;
       font-weight: 600;
       color: $accent;
       background: $accent-soft;
-      border: 1px solid #bfd5f5;
+      border: 1px solid oklch(0.8670 0.0505 257.68);
       padding: 2px 8px;
       border-radius: 4px;
     }
@@ -111,7 +111,7 @@ $text-muted:   #475569;
     gap: 8px;
     margin-bottom: 14px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid oklch(0.9683 0.0069 247.90);
 
     mat-icon {
       color: $accent;

@@ -16,7 +16,20 @@
   </header>
 
   @if (loading()) {
-    <div class="message">Notrufe werden geladen...</div>
+    <section aria-busy="true">
+      <div class="section-title"><h2>Aktive Notrufe</h2></div>
+      <div class="emergency-list" role="status" aria-label="Notrufe werden geladen">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="emergency-row skeleton-row" aria-hidden="true">
+            <div class="main-info"><span class="sk sk-strong"></span><span class="sk sk-sub"></span></div>
+            <div class="field"><span class="sk sk-sub"></span><span class="sk sk-strong"></span></div>
+            <div class="field"><span class="sk sk-sub"></span><span class="sk sk-strong"></span></div>
+            <div class="field"><span class="sk sk-sub"></span><span class="sk sk-strong"></span></div>
+            <div class="row-status-and-actions"><span class="sk sk-btn"></span></div>
+          </div>
+        }
+      </div>
+    </section>
   } @else if (error()) {
     <div class="message error">
       <span>{{ error() }}</span>
@@ -145,6 +158,11 @@
         class="protocol-modal rg-origin-modal"
         [class.is-closing]="isClosingProtocolModal()"
         [ngStyle]="protocolOriginStyle()"
+        cdkTrapFocus
+        [cdkTrapFocusAutoCapture]="true"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="protocol-modal-title"
         (click)="$event.stopPropagation()"
       >
         <!-- Modal Header -->
@@ -154,7 +172,7 @@
               <mat-icon>edit_document</mat-icon>
             </div>
             <div class="title-text">
-              <h2>Einsatzprotokoll #{{ selectedEmergency()!.id }}</h2>
+              <h2 id="protocol-modal-title">Einsatzprotokoll #{{ selectedEmergency()!.id }}</h2>
               <p>
                 Status: {{ selectedEmergency()!.status === 'Active' ? 'Aktiv' : 'Abgeschlossen' }}
                 &bull; Notrufbeginn: {{ selectedEmergency()!.startedAt | date: 'dd.MM.yyyy, HH:mm' }} Uhr
@@ -181,9 +199,16 @@
         <!-- Modal Body: Checklist / Loading / Error -->
         <div class="modal-body">
           @if (loadingProtocol()) {
-            <div class="modal-status-box loading">
-              <mat-icon class="spinning">sync</mat-icon>
-              <span>Einsatzprotokoll wird aus der Datenbank geladen...</span>
+            <div class="modal-skeleton" role="status" aria-label="Einsatzprotokoll wird geladen">
+              @for (panel of [1, 2]; track panel) {
+                <div class="sk-panel" aria-hidden="true">
+                  <span class="sk sk-title"></span>
+                  <span class="sk sk-field"></span>
+                  <span class="sk sk-field"></span>
+                  <span class="sk sk-field"></span>
+                  <span class="sk sk-field"></span>
+                </div>
+              }
             </div>
           } @else if (protocolError()) {
             <div class="modal-status-box error">
@@ -246,7 +271,11 @@
               [disabled]="isSavingProtocol() || loadingProtocol() || !selectedProtocol() || !hasUnsavedChanges()"
               title="Änderungen im Einsatzprotokoll speichern"
             >
-              <mat-icon>{{ saveSuccess() ? 'check' : 'save' }}</mat-icon>
+              @if (saveSuccess()) {
+                <mat-icon class="rg-icon-swap">check</mat-icon>
+              } @else {
+                <mat-icon class="rg-icon-swap">save</mat-icon>
+              }
               <span>{{ isSavingProtocol() ? 'Speichern...' : (saveSuccess() ? 'Gespeichert' : 'Änderungen speichern') }}</span>
             </button>
           </div>

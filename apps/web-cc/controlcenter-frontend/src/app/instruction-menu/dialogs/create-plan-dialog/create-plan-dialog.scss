@@ -1,11 +1,11 @@
-$accent:        #2353a1;
-$accent-dark:   #1d4485;
-$accent-soft:   #eef4fc;
-$accent-border: #bfd5f5;
-$danger:        #d92632;
-$text:          #0f172a;
-$muted:         #475569;
-$border:        #d2deee;
+$accent:        var(--rg-primary);
+$accent-dark:   oklch(0.3969 0.1179 260.06);
+$accent-soft:   var(--rg-primary-soft);
+$accent-border: oklch(0.8670 0.0505 257.68);
+$danger:        var(--rg-danger);
+$text:          var(--rg-text);
+$muted:         oklch(0.4455 0.0374 257.28);
+$border:        var(--rg-border);
 
 .dialog-title {
   display: flex;
@@ -29,7 +29,7 @@ $border:        #d2deee;
 .custom-dialog-content {
   padding: 18px 24px !important;
   height: 560px;
-  max-height: 86vh;
+  max-height: 86dvh;
   overflow: hidden !important;
   box-sizing: border-box;
 
@@ -146,17 +146,18 @@ $border:        #d2deee;
       display: inline-flex;
       align-items: center;
       background: #eef4fc;
-      border: 1px solid #c2d7f3;
+      border: 1px solid var(--rg-primary-border);
       border-radius: 12px;
       padding: 1px 4px 1px 7px;
-      transition: all 0.15s ease;
+      transition: var(--rg-transition-ui);
 
       &:hover {
         background: #e0ecfa;
-        border-color: #a8caf5;
+        border-color: oklch(0.8291 0.0709 254.49);
       }
 
       .btn-measure-tags-pill {
+        position: relative;
         display: inline-flex;
         align-items: center;
         gap: 4px;
@@ -168,6 +169,12 @@ $border:        #d2deee;
         border: none;
         cursor: pointer;
 
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -12px 0;
+        }
+
         .pill-sparkle {
           font-size: 13px;
           width: 13px;
@@ -177,6 +184,7 @@ $border:        #d2deee;
       }
 
       .btn-dismiss-pill {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -189,7 +197,13 @@ $border:        #d2deee;
         color: #64748b;
         cursor: pointer;
         margin-left: 2px;
-        transition: all 0.12s ease;
+        transition: background-color 120ms ease-out, color 120ms ease-out;
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -14px -8px -14px -1px;
+        }
 
         mat-icon {
           font-size: 12px;
@@ -232,6 +246,7 @@ $border:        #d2deee;
       border: 1px solid $accent-border;
 
       .btn-remove-tag {
+        position: relative;
         border: none;
         background: transparent;
         padding: 0;
@@ -241,6 +256,12 @@ $border:        #d2deee;
         justify-content: center;
         color: $accent;
         opacity: 0.7;
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -8px -8px -8px -4px;
+        }
 
         mat-icon {
           font-size: 14px;
@@ -443,7 +464,7 @@ $border:        #d2deee;
     min-height: 36px !important;
     height: 36px !important;
     background: #eef4fc !important;
-    border: 2px dashed #2353a1 !important;
+    border: 2px dashed var(--rg-primary) !important;
     border-radius: 6px !important;
     box-sizing: border-box !important;
     margin: 2px 0 !important;
@@ -463,7 +484,7 @@ $border:        #d2deee;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     cursor: grab;
     user-select: none;
-    transition: box-shadow 0.15s, border-color 0.15s, background-color 0.15s;
+    transition: box-shadow 150ms ease-out, border-color 150ms ease-out, background-color 150ms ease-out;
 
     &:hover {
       border-color: rgba(35, 83, 161, 0.4);
@@ -510,6 +531,7 @@ $border:        #d2deee;
     }
 
     .btn-remove-step {
+      position: relative;
       border: none;
       background: transparent;
       color: #94a3b8;
@@ -519,8 +541,14 @@ $border:        #d2deee;
       align-items: center;
       justify-content: center;
       border-radius: 4px;
-      transition: all 0.12s ease;
+      transition: color 120ms ease-out, background-color 120ms ease-out;
       flex-shrink: 0;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -8px -6px;
+      }
 
       mat-icon {
         font-size: 15px;
@@ -550,7 +578,7 @@ $border:        #d2deee;
   width: 100% !important;
   box-sizing: border-box !important;
   border-radius: 6px !important;
-  border: 2px solid #2353a1 !important;
+  border: 2px solid var(--rg-primary) !important;
   background: #ffffff !important;
   box-shadow: 0 10px 25px rgba(35, 83, 161, 0.25) !important;
   display: flex !important;
@@ -705,6 +733,7 @@ $border:        #d2deee;
     }
 
     .clear-search-btn {
+      position: relative;
       border: none;
       background: transparent;
       padding: 0;
@@ -712,6 +741,12 @@ $border:        #d2deee;
       cursor: pointer;
       display: flex;
       align-items: center;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -7px -8px;
+      }
 
       mat-icon {
         font-size: 14px;
@@ -759,8 +794,8 @@ $border:        #d2deee;
       height: 32px !important;
       border-radius: 6px;
       margin-bottom: 2px;
-      border-bottom: 1px solid #f8fafc;
-      transition: background-color 0.12s ease;
+      border-bottom: 1px solid oklch(0.9842 0.0034 247.86);
+      transition: background-color 120ms ease-out;
 
       ::ng-deep .mdc-list-item__content {
         padding: 0 6px !important;

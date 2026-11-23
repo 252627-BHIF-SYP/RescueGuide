@@ -35,7 +35,11 @@
               [class.copied]="copiedCoords()"
               title="GPS-Koordinaten in Zwischenablage kopieren"
             >
-              <mat-icon>{{ copiedCoords() ? 'check' : 'content_copy' }}</mat-icon>
+              @if (copiedCoords()) {
+                <mat-icon class="rg-icon-swap">check</mat-icon>
+              } @else {
+                <mat-icon class="rg-icon-swap">content_copy</mat-icon>
+              }
               <span>{{ copiedCoords() ? 'Kopiert' : 'Kopieren' }}</span>
             </button>
           }
@@ -51,7 +55,11 @@
             [disabled]="mapUrl === null"
             title="Einsatzort-Karte umschalten (Taste M)"
           >
-            <mat-icon>{{ showMap() ? 'layers_clear' : 'map' }}</mat-icon>
+            @if (showMap()) {
+              <mat-icon class="rg-icon-swap">layers_clear</mat-icon>
+            } @else {
+              <mat-icon class="rg-icon-swap">map</mat-icon>
+            }
             <span>{{ showMap() ? 'Karte schließen' : 'Karte' }}</span>
           </button>
         </div>
@@ -138,12 +146,17 @@
           class="map-modal-window rg-origin-modal"
           [class.is-closing]="isMapClosing()"
           [ngStyle]="mapOriginStyle()"
+          cdkTrapFocus
+          [cdkTrapFocusAutoCapture]="true"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="map-modal-title"
           (click)="$event.stopPropagation()"
         >
           <div class="map-modal-header">
             <div class="map-title-left">
               <mat-icon class="map-icon">map</mat-icon>
-              <span class="map-heading">Einsatzort-Karte</span>
+              <span class="map-heading" id="map-modal-title">Einsatzort-Karte</span>
               <span class="map-addr-hint" [title]="displayAddress()">{{ displayAddress() }}</span>
             </div>
             <div class="map-controls">
@@ -196,6 +209,8 @@
           class="confirm-modal-card rg-origin-modal"
           [class.is-closing]="isEndConfirmClosing()"
           [ngStyle]="endConfirmOriginStyle()"
+          cdkTrapFocus
+          [cdkTrapFocusAutoCapture]="true"
           (click)="$event.stopPropagation()"
         >
           <div class="confirm-modal-header">
@@ -233,7 +248,15 @@
     <!-- ── PROTOKOLL-NACHBEARBEITUNGS-MODAL (Issue 133 & 97) ── -->
     @if (isPostEmergencyReview()) {
       <div class="modal-backdrop" (click)="finishReviewAndExit()">
-        <div class="protocol-modal animate-scale-up" (click)="$event.stopPropagation()">
+        <div
+          class="protocol-modal animate-scale-up"
+          cdkTrapFocus
+          [cdkTrapFocusAutoCapture]="true"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="review-modal-title"
+          (click)="$event.stopPropagation()"
+        >
           <!-- Modal Header -->
           <header class="modal-header">
             <div class="modal-title-left">
@@ -241,7 +264,7 @@
                 <mat-icon>edit_document</mat-icon>
               </div>
               <div class="title-text">
-                <h2>Einsatzprotokoll</h2>
+                <h2 id="review-modal-title">Einsatzprotokoll</h2>
                 <p>
                   Status: Beendet &bull; Einsatzdauer: {{ formatTime(durationSeconds()) }}
                   @if (authService.userName()) {
@@ -305,7 +328,11 @@
                 [disabled]="isSaving() || !hasUnsavedChanges()"
                 title="Aktuellen Stand des Protokolls manuell sichern"
               >
-                <mat-icon>{{ saveSuccess() ? 'check' : 'save' }}</mat-icon>
+                @if (saveSuccess()) {
+                  <mat-icon class="rg-icon-swap">check</mat-icon>
+                } @else {
+                  <mat-icon class="rg-icon-swap">save</mat-icon>
+                }
                 <span>{{ isSaving() ? 'Speichern...' : (saveSuccess() ? 'Gespeichert' : 'Änderungen speichern') }}</span>
               </button>
 
@@ -313,10 +340,10 @@
                 type="button"
                 class="btn-finish-dashboard"
                 (click)="finishReviewAndExit()"
-                title="Notfall abschließen und zum Dashboard wechseln"
+                [title]="hasUnsavedChanges() ? 'Änderungen speichern, Notfall abschließen und zum Dashboard wechseln' : 'Notfall abschließen und zum Dashboard wechseln'"
               >
                 <mat-icon>dashboard</mat-icon>
-                <span>Notfall abschließen</span>
+                <span>{{ hasUnsavedChanges() ? 'Speichern & abschließen' : 'Notfall abschließen' }}</span>
               </button>
             </div>
           </footer>
