@@ -130,6 +130,8 @@
             <app-emergency-checklist
               [emergencyData]="emergencyData()"
               [meta]="reviewMeta()"
+              [showMeasuresCta]="true"
+              (openMeasures)="activeTab = 'plans'"
             ></app-emergency-checklist>
           </div>
           <div class="tab-pane" [class.tab-hidden]="activeTab !== 'plans'">

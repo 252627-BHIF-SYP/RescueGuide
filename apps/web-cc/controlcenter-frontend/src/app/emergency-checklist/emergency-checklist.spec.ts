@@ -113,4 +113,63 @@ describe('EmergencyChecklist', () => {
     const alarmSection = rightPanel?.querySelector('.alarm-section');
     expect(alarmSection).toBeTruthy();
   });
+
+  it('should support wizard 1-click emergency type, injured presets, activeWizardStep, and openMeasures CTA', () => {
+    const emptyProtocol: EmergencyProtocol = {
+      type: '',
+      callerName: '',
+      callerType: '',
+      callbackNumber: '',
+      address: '',
+      injuredCount: '',
+      description: '',
+      dispatcherName: '',
+      date: '',
+      time: '',
+      alarmedRD: false,
+      alarmedNA: false,
+      alarmedPol: false,
+      alarmedFW: false,
+    };
+    fixture.componentRef.setInput('emergencyData', emptyProtocol);
+    fixture.componentRef.setInput('showMeasuresCta', true);
+    fixture.detectChanges();
+
+    expect(component.activeWizardStep).toBe(1);
+    expect(component.isCoreTriageComplete).toBeFalse();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const brandTile = Array.from(host.querySelectorAll('.type-tile')).find((el) =>
+      el.textContent?.includes('Brand'),
+    ) as HTMLButtonElement;
+    expect(brandTile).toBeTruthy();
+    brandTile.click();
+    fixture.detectChanges();
+    expect(component.emergencyData().type).toBe('Brand');
+    expect(component.activeWizardStep).toBe(2);
+
+    const injuredTwoBtn = Array.from(host.querySelectorAll('.injured-pill')).find(
+      (el) => el.textContent?.trim() === '2',
+    ) as HTMLButtonElement;
+    expect(injuredTwoBtn).toBeTruthy();
+    injuredTwoBtn.click();
+    fixture.detectChanges();
+    expect(component.emergencyData().injuredCount).toBe(2);
+    expect(component.isInjuredPresetActive(2)).toBeTrue();
+    expect(component.activeWizardStep).toBe(3);
+
+    emptyProtocol.description = 'Küchenbrand, 2 Personen verletzt';
+    component.onFieldChange();
+    fixture.detectChanges();
+    expect(component.isCoreTriageComplete).toBeTrue();
+    expect(component.coreTriageDoneCount).toBe(3);
+    expect(component.activeWizardStep).toBe(4);
+
+    let emitted = false;
+    component.openMeasures.subscribe(() => (emitted = true));
+    const ctaBtn = host.querySelector('.btn-goto-measures') as HTMLButtonElement;
+    expect(ctaBtn).toBeTruthy();
+    ctaBtn.click();
+    expect(emitted).toBeTrue();
+  });
 });

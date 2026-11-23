@@ -1,14 +1,8 @@
-import { Component, input, output, inject } from '@angular/core';
+import { Component, input, output, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard, MatCardContent } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { EmergencyProtocol, EmergencyService } from '../services/emergency.service';
 import { PdfExportService, PdfExportMetadata } from '../services/pdf-export.service';
 import {
@@ -19,34 +13,43 @@ import {
 @Component({
   selector: 'app-emergency-checklist',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatIcon,
-    MatCard,
-    MatCardContent,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatTooltipModule,
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIcon, MatCard, MatCardContent],
   templateUrl: './emergency-checklist.html',
   styleUrl: './emergency-checklist.scss',
 })
 export class EmergencyChecklist {
   emergencyData = input.required<EmergencyProtocol>();
   showExportButton = input<boolean>(true);
+  showMeasuresCta = input<boolean>(false);
   meta = input<PdfExportMetadata | null>(null);
 
   protocolChange = output<EmergencyProtocol>();
+  openMeasures = output<void>();
 
   private emergencyService = inject(EmergencyService);
   public pdfExportService = inject(PdfExportService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly totalFields = 7;
+
+  readonly emergencyTypes: ReadonlyArray<{ value: string; label: string; icon: string }> = [
+    { value: 'Medizinischer Notfall', label: 'Medizinischer Notfall', icon: 'medical_services' },
+    { value: 'Verkehrsunfall', label: 'Verkehrsunfall', icon: 'car_crash' },
+    { value: 'Brand', label: 'Brand', icon: 'local_fire_department' },
+    { value: 'Polizeilicher Notfall', label: 'Polizeilicher Notfall', icon: 'local_police' },
+    { value: 'Technische Hilfeleistung', label: 'Technische Hilfeleistung', icon: 'build' },
+    { value: 'Sonstiges', label: 'Sonstiges', icon: 'emergency' },
+  ];
+
+  readonly injuredPresets: ReadonlyArray<number> = [0, 1, 2, 3, 4];
+
+  readonly wizardSteps: ReadonlyArray<{ num: number; label: string }> = [
+    { num: 1, label: 'Notfallart' },
+    { num: 2, label: 'Verletzte' },
+    { num: 3, label: 'Kurz-Lage' },
+    { num: 4, label: 'Alarmierung & Ort' },
+    { num: 5, label: 'Anrufer & Details' },
+  ];
 
   isFilled(field: string): boolean {
     const d = this.emergencyData();
@@ -101,7 +104,71 @@ export class EmergencyChecklist {
     return c;
   }
 
+  selectEmergencyType(type: string): void {
+    this.emergencyData().type = type;
+    this.onFieldChange();
+  }
+
+  selectInjuredCount(count: number): void {
+    this.emergencyData().injuredCount = count;
+    this.onFieldChange();
+  }
+
+  isInjuredPresetActive(count: number): boolean {
+    return this.isFilled('injuredCount') && Number(this.emergencyData().injuredCount) === count;
+  }
+
+  isStepDone(step: number): boolean {
+    switch (step) {
+      case 1:
+        return this.isFilled('type');
+      case 2:
+        return this.isFilled('injuredCount');
+      case 3:
+        return this.isFilled('description');
+      case 4:
+        return this.isFilled('alarms') && this.isFilled('address');
+      case 5:
+        return this.isFilled('callerName') && this.isFilled('callbackNumber');
+      default:
+        return false;
+    }
+  }
+
+  get activeWizardStep(): number {
+    for (let step = 1; step <= 5; step++) {
+      if (!this.isStepDone(step)) {
+        return step;
+      }
+    }
+    return 0;
+  }
+
+  get coreTriageDoneCount(): number {
+    let count = 0;
+    if (this.isStepDone(1)) count++;
+    if (this.isStepDone(2)) count++;
+    if (this.isStepDone(3)) count++;
+    return count;
+  }
+
+  get isCoreTriageComplete(): boolean {
+    return this.isStepDone(1) && this.isStepDone(2) && this.isStepDone(3);
+  }
+
+  scrollToStep(stepNumber: number): void {
+    if (typeof document === 'undefined') return;
+    const stepEl = document.getElementById(`wizard-step-${stepNumber}`);
+    if (!stepEl) return;
+    stepEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const focusable = stepEl.querySelector<HTMLElement>(
+      'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled)',
+    );
+    focusable?.focus({ preventScroll: true });
+  }
+
   onFieldChange() {
+    this.cdr.markForCheck();
     this.emergencyService.updateProtocol(this.emergencyData());
     this.protocolChange.emit(this.emergencyData());
   }

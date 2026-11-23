@@ -1,4 +1,4 @@
-// ── RG+ Design Tokens (Emergency Checklist / CAD Protocol) ─────────────
+// ── RG+ Design Tokens (Emergency Checklist / CAD Triage Wizard) ─────────
 $accent:        var(--rg-primary);
 $accent-soft:   var(--rg-primary-soft);
 $accent-hover:  var(--rg-primary-dark);
@@ -27,112 +27,175 @@ $radius:        var(--rg-radius-md);
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #f0f4fa;
+  background: var(--rg-bg);
   border: 1px solid $border;
   border-radius: $radius;
-  box-shadow: 0 1px 4px rgba(35, 83, 161, 0.05);
+  box-shadow: 0 1px 4px oklch(0.4541 0.1369 259.74 / 0.05);
   overflow: hidden;
 
-  // ── Scrollable Protocol Content ────────────────────────────────────
   .protocol-content {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 12px 14px;
+    padding: 10px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+// ── Top Wizard Progress Strip ────────────────────────────────────────
+.wizard-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 8px 12px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-sizing: border-box;
+}
+
+.wizard-steps-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.wizard-step-pill {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 5px;
+  border-radius: var(--rg-radius-pill);
+  border: 1px solid $border;
+  background: $pending-soft;
+  color: $pending-text;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--rg-transition-ui);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -5px -2px;
+  }
+
+  .step-pill-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: oklch(0.9288 0.0126 255.51);
+    color: $text-muted;
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 12px;
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  &:hover {
+    border-color: $accent-border;
+    background: $accent-soft;
+    color: $accent;
+  }
+
+  &.active {
+    border-color: $accent;
+    background: $accent-soft;
+    color: $accent;
+    font-weight: 700;
+
+    .step-pill-num {
+      background: $accent;
+      color: $surface;
+    }
+  }
+
+  &.done {
+    border-color: $success-border;
+    background: $success-soft;
+    color: oklch(0.45 0.14 149);
+
+    .step-pill-num {
+      background: $success;
+      color: $surface;
+    }
+  }
+}
+
+.wizard-progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .progress-count {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .wizard-progress-track {
+    width: 84px;
+    height: 6px;
+    border-radius: var(--rg-radius-pill);
+    background: oklch(0.9288 0.0126 255.51);
+    overflow: hidden;
+
+    .wizard-progress-fill {
+      display: block;
+      height: 100%;
+      background: $success;
+      border-radius: var(--rg-radius-pill);
+      transition: width 220ms ease-out;
+    }
   }
 }
 
 // ── Two-Panel Grid ──────────────────────────────────────────────────
 .protocol-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 12px;
   width: 100%;
-  max-width: 1020px;
+  max-width: 1040px;
   margin: 0 auto;
+  align-items: start;
 
-  @media (max-width: 800px) {
+  @media (max-width: 860px) {
     grid-template-columns: 1fr;
-  }
-}
-
-// ── Maßnahmenverlauf (read-only, volle Breite) ──────────────────────
-.history-panel {
-  grid-column: 1 / -1;
-
-  .history-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .history-entry {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    background: $success-soft;
-    border: 1px solid $success-border;
-    font-size: 0.8rem;
-    color: $text;
-
-    .history-status-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: #15803d;
-      flex-shrink: 0;
-    }
-
-    .history-order {
-      font-weight: 800;
-      color: #64748b;
-      min-width: 20px;
-    }
-
-    .history-name {
-      flex: 1;
-      min-width: 0;
-      font-weight: 700;
-
-      small {
-        margin-left: 6px;
-        font-weight: 500;
-        color: $text-muted;
-      }
-    }
-
-    .history-time {
-      font-size: 0.75rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      color: #15803d;
-      white-space: nowrap;
-    }
-
-    &.open {
-      background: $pending-soft;
-      border-color: $pending-border;
-      border-style: dashed;
-
-      .history-status-icon,
-      .history-time {
-        color: $pending-text;
-      }
-    }
   }
 }
 
 // ── Card Panel Container ────────────────────────────────────────────
 .form-card-panel {
-  background: #ffffff;
+  background: $surface;
   border: 1px solid $border;
   border-radius: $radius;
-  box-shadow: 0 1px 3px rgba(35, 83, 161, 0.04);
+  box-shadow: 0 1px 3px oklch(0.4541 0.1369 259.74 / 0.04);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -167,21 +230,24 @@ $radius:        var(--rg-radius-md);
     }
 
     .panel-badge {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 4px;
+      font-variant-numeric: tabular-nums;
+      padding: 2px 8px;
+      border-radius: var(--rg-radius-sm);
+      background: $accent-soft;
+      color: $accent;
+      border: 1px solid $accent-border;
 
-      &.primary {
-        background: $accent-soft;
-        color: $accent;
-        border: 1px solid $accent-border;
+      &.done {
+        background: $success-soft;
+        color: oklch(0.45 0.14 149);
+        border-color: $success-border;
       }
 
       &.secondary {
-        background: #f1f5f9;
-        color: #475569;
+        background: oklch(0.9683 0.0069 247.90);
+        color: $pending-text;
         border: 1px solid oklch(0.9288 0.0126 255.51);
       }
     }
@@ -190,7 +256,352 @@ $radius:        var(--rg-radius-md);
   .panel-body {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 10px;
+  }
+}
+
+// ── Wizard Step Cards ───────────────────────────────────────────────
+.wizard-step-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 6px;
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: var(--rg-transition-ui);
+
+  &.step-active {
+    border-color: $accent;
+    box-shadow: 0 0 0 2px oklch(0.4541 0.1369 259.74 / 0.14);
+    background: oklch(0.9930 0.0035 255.50);
+
+    .step-num-badge {
+      background: $accent;
+      color: $surface;
+      border-color: $accent;
+    }
+  }
+
+  &.step-done {
+    border-left: 3px solid $success;
+
+    .step-num-badge {
+      background: $success;
+      color: $surface;
+      border-color: $success;
+    }
+  }
+
+  .step-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    .step-title-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+
+      .step-num-badge {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: oklch(0.9475 0.0149 260.73);
+        border: 1px solid $border;
+        color: $text-muted;
+        font-size: 0.74rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: var(--rg-transition-ui);
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+
+      .step-title {
+        font-size: 0.84rem;
+        font-weight: 800;
+        color: $text;
+      }
+    }
+
+    .step-status-pill {
+      font-size: 0.71rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: var(--rg-radius-sm);
+      background: $pending-soft;
+      color: $pending-text;
+      border: 1px solid oklch(0.9288 0.0126 255.51);
+      white-space: nowrap;
+
+      &.active {
+        background: $accent-soft;
+        color: $accent;
+        border-color: $accent-border;
+      }
+
+      &.done {
+        background: $success-soft;
+        color: oklch(0.45 0.14 149);
+        border-color: $success-border;
+      }
+    }
+
+    .step-hint {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: $pending-text;
+    }
+  }
+}
+
+// ── Step 1: 1-Klick Emergency Type Tiles (2x3 Grid) ─────────────────
+.type-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.type-tile {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: var(--rg-radius-sm);
+  border: 1px solid $border;
+  background: $surface;
+  color: $text;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: var(--rg-transition-ui);
+
+  .type-tile-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $pending-text;
+    flex-shrink: 0;
+    transition: color 150ms ease-out;
+  }
+
+  .type-tile-label {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .type-tile-check {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: $accent;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: $accent-soft;
+    border-color: $accent-border;
+
+    .type-tile-icon {
+      color: $accent;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: $accent;
+    box-shadow: 0 0 0 2px oklch(0.4541 0.1369 259.74 / 0.25);
+  }
+
+  &.selected {
+    border-color: $accent;
+    background: $accent-soft;
+    color: $accent;
+    box-shadow: inset 3px 0 0 $accent;
+
+    .type-tile-icon {
+      color: $accent;
+    }
+  }
+}
+
+// ── Step 2: Injured Quick-Pills + Input ─────────────────────────────
+.injured-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.injured-presets {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.injured-pill {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 36px;
+  height: 35px;
+  padding: 0 10px;
+  border-radius: var(--rg-radius-sm);
+  border: 1px solid $border-input;
+  background: $surface;
+  color: $text;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: var(--rg-transition-ui);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -5px -2px;
+  }
+
+  &:hover {
+    background: $accent-soft;
+    border-color: $accent-border;
+    color: $accent;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: $accent;
+    box-shadow: 0 0 0 2px oklch(0.4541 0.1369 259.74 / 0.25);
+  }
+
+  &.selected {
+    background: $accent;
+    border-color: $accent;
+    color: $surface;
+  }
+}
+
+.injured-input-wrapper {
+  flex: 1;
+  min-width: 110px;
+}
+
+// ── Triage Handoff Banner (zu Maßnahmen senden) ─────────────────────
+.triage-handoff-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 11px;
+  border-radius: 6px;
+  border: 1px dashed $accent-border;
+  background: $accent-soft;
+  transition: var(--rg-transition-ui);
+
+  &.ready {
+    border-style: solid;
+    border-color: $success-border;
+    background: $success-soft;
+
+    .handoff-copy {
+      color: oklch(0.40 0.12 149);
+
+      .handoff-icon {
+        color: $success;
+      }
+    }
+  }
+
+  .handoff-copy {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1;
+    min-width: 180px;
+    font-size: 0.77rem;
+    font-weight: 700;
+    color: $accent;
+
+    .handoff-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+  }
+
+  .btn-goto-measures {
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: var(--rg-radius-sm);
+    border: 1px solid $accent-border;
+    background: $surface;
+    color: $accent;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: var(--rg-transition-ui);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -3px 0;
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: $accent;
+      border-color: $accent;
+      color: $surface;
+    }
+
+    &.primary-cta {
+      background: $accent;
+      border-color: $accent;
+      color: $surface;
+      box-shadow: 0 2px 6px oklch(0.4541 0.1369 259.74 / 0.25);
+
+      &:hover {
+        background: $accent-hover;
+        border-color: $accent-hover;
+      }
+    }
   }
 }
 
@@ -211,7 +622,7 @@ $radius:        var(--rg-radius-md);
     .input-label {
       font-size: 0.78rem;
       font-weight: 700;
-      color: #334155;
+      color: $text-muted;
       letter-spacing: 0.01em;
     }
 
@@ -219,10 +630,10 @@ $radius:        var(--rg-radius-md);
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 600;
       padding: 1px 6px;
-      border-radius: 4px;
+      border-radius: var(--rg-radius-sm);
       transition: var(--rg-transition-ui);
 
       mat-icon {
@@ -233,12 +644,12 @@ $radius:        var(--rg-radius-md);
 
       &.filled {
         background: $success-soft;
-        color: #15803d;
+        color: oklch(0.45 0.14 149);
         border: 1px solid $success-border;
       }
 
       &.pending {
-        background: #f1f5f9;
+        background: oklch(0.9683 0.0069 247.90);
         color: $pending-text;
         border: 1px solid oklch(0.9288 0.0126 255.51);
       }
@@ -247,12 +658,11 @@ $radius:        var(--rg-radius-md);
 
   &.field-filled {
     .custom-input,
-    .custom-select,
     .custom-textarea {
-      background: #ffffff;
+      background: $surface;
       border-color: oklch(0.7107 0.0351 256.79);
       border-left: 3px solid $success;
-      color: #0f172a;
+      color: $text;
 
       &:hover {
         border-color: oklch(0.5544 0.0407 257.42);
@@ -263,7 +673,7 @@ $radius:        var(--rg-radius-md);
       &:focus-visible {
         border-color: $accent;
         border-left-color: $accent;
-        box-shadow: 0 0 0 2px rgba(35, 83, 161, 0.2);
+        box-shadow: 0 0 0 2px oklch(0.4541 0.1369 259.74 / 0.2);
         outline: none;
       }
     }
@@ -275,9 +685,8 @@ $radius:        var(--rg-radius-md);
 
   &.field-pending {
     .custom-input,
-    .custom-select,
     .custom-textarea {
-      background: #ffffff;
+      background: $surface;
       border-color: $border-input;
 
       &:hover {
@@ -287,7 +696,7 @@ $radius:        var(--rg-radius-md);
       &:focus,
       &:focus-visible {
         border-color: $accent;
-        box-shadow: 0 0 0 2px rgba(35, 83, 161, 0.2);
+        box-shadow: 0 0 0 2px oklch(0.4541 0.1369 259.74 / 0.2);
         outline: none;
       }
     }
@@ -298,15 +707,29 @@ $radius:        var(--rg-radius-md);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-// ── Inputs & Selects Wrappers with Icons ────────────────────────────
-.input-wrapper,
-.select-wrapper {
+// ── Inputs & Wrappers with Icons ─────────────────────────────────────
+.input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
+
+  &.field-filled {
+    .custom-input {
+      border-color: oklch(0.7107 0.0351 256.79);
+      border-left: 3px solid $success;
+    }
+
+    .field-icon {
+      color: $success !important;
+    }
+  }
 
   .field-icon {
     position: absolute;
@@ -314,7 +737,7 @@ $radius:        var(--rg-radius-md);
     font-size: 17px;
     width: 17px;
     height: 17px;
-    color: #94a3b8;
+    color: oklch(0.67 0.02 256);
     pointer-events: none;
     z-index: 2;
     transition: color 150ms ease-out;
@@ -330,21 +753,9 @@ $radius:        var(--rg-radius-md);
     pointer-events: none;
     z-index: 2;
   }
-
-  .select-arrow {
-    position: absolute;
-    right: 28px;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: #64748b;
-    pointer-events: none;
-    z-index: 2;
-  }
 }
 
 .custom-input,
-.custom-select,
 .custom-textarea {
   width: 100%;
   appearance: none;
@@ -352,14 +763,14 @@ $radius:        var(--rg-radius-md);
   font-family: inherit;
   font-size: 0.83rem;
   color: $text;
-  background: #ffffff;
+  background: $surface;
   border: 1px solid $border-input;
-  border-radius: 4px;
+  border-radius: var(--rg-radius-sm);
   box-sizing: border-box;
   transition: var(--rg-transition-ui);
 
   &::placeholder {
-    color: #94a3b8;
+    color: oklch(0.62 0.02 256);
     font-size: 0.8rem;
   }
 }
@@ -369,7 +780,7 @@ $radius:        var(--rg-radius-md);
   padding: 0 28px 0 32px;
 
   &.no-icon {
-    padding-left: 10px;
+    padding: 0 28px 0 10px;
   }
 
   &[list]::-webkit-calendar-picker-indicator {
@@ -377,34 +788,23 @@ $radius:        var(--rg-radius-md);
   }
 }
 
-.custom-select {
-  height: 35px;
-  padding: 0 46px 0 32px;
-  cursor: pointer;
-
-  option {
-    background: #ffffff;
-    color: $text;
-  }
-}
-
 .custom-textarea {
   padding: 7px 10px;
   line-height: 1.35;
-  resize: none;
-  height: 64px;
+  resize: vertical;
+  min-height: 54px;
 }
 
 // ── Alarm Section (2x2 Grid) ────────────────────────────────────────
 .alarm-section {
   padding: 8px 10px;
-  background: #f8fafc;
+  background: $pending-soft;
   border: 1px dashed $border;
-  border-radius: var(--rg-radius-md);
+  border-radius: $radius;
   transition: var(--rg-transition-ui);
 
   &.field-filled {
-    background: #f8fafc;
+    background: $pending-soft;
     border-color: $success-border;
     border-style: solid;
   }
@@ -418,11 +818,12 @@ $radius:        var(--rg-radius-md);
 }
 
 .alarm-chip {
+  position: relative;
   appearance: none;
   -webkit-appearance: none;
   border: 1px solid $border;
-  background: #ffffff;
-  border-radius: 4px;
+  background: $surface;
+  border-radius: var(--rg-radius-sm);
   padding: 6px 8px;
   display: flex;
   align-items: center;
@@ -431,12 +832,18 @@ $radius:        var(--rg-radius-md);
   text-align: left;
   transition: var(--rg-transition-ui);
 
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+  }
+
   .chip-check-box {
     width: 18px;
     height: 18px;
     border-radius: var(--rg-radius-sm);
     border: 1.5px solid oklch(0.7107 0.0351 256.79);
-    background: #ffffff;
+    background: $surface;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -461,90 +868,157 @@ $radius:        var(--rg-radius-md);
     .chip-code {
       font-size: 0.82rem;
       font-weight: 800;
-      color: #334155;
+      color: $text-muted;
     }
 
     .chip-name {
       font-size: 0.75rem;
       font-weight: 500;
-      color: #475569;
+      color: $pending-text;
       overflow-wrap: anywhere;
     }
   }
 
   &:hover {
-    background: #eef4fc;
+    background: $accent-soft;
     border-color: $accent-border;
   }
 
   &:focus-visible {
     outline: none;
     border-color: $accent;
-    box-shadow: 0 0 0 2px rgba(35, 83, 161, 0.25);
+    box-shadow: 0 0 0 2px oklch(0.4541 0.1369 259.74 / 0.25);
   }
 
   &.active {
     .chip-check-box {
-      color: #ffffff;
+      color: $surface;
     }
 
-    // Rettungsdienst (Vibrant Red)
     &.rd {
-      background: #fef2f2;
+      background: var(--rg-danger-soft);
       border-color: oklch(0.6368 0.2078 25.33);
 
       .chip-check-box {
-        background: #d92632;
+        background: var(--rg-danger);
         border-color: var(--rg-danger);
       }
 
       .chip-code {
-        color: #b81b26;
+        color: var(--rg-danger-dark);
       }
     }
 
-    // Notarzt (Amber / Medical)
     &.na {
-      background: #fffbeb;
+      background: oklch(0.985 0.02 95);
       border-color: oklch(0.7686 0.1647 70.08);
 
       .chip-check-box {
-        background: #d97706;
+        background: oklch(0.6658 0.1574 58.32);
         border-color: oklch(0.6658 0.1574 58.32);
       }
 
       .chip-code {
-        color: #b45309;
+        color: oklch(0.50 0.14 55);
       }
     }
 
-    // Polizei (Vibrant Police Blue #2353a1)
     &.pol {
-      background: #eef4fc;
+      background: $accent-soft;
       border-color: oklch(0.6231 0.1880 259.81);
 
       .chip-check-box {
-        background: #2353a1;
-        border-color: var(--rg-primary);
+        background: $accent;
+        border-color: $accent;
       }
 
       .chip-code {
-        color: #173b75;
+        color: $accent-hover;
       }
     }
 
-    // Feuerwehr (Feuerwehrrot / Flame Orange-Red)
     &.fw {
-      background: #fff7ed;
+      background: oklch(0.98 0.02 55);
       border-color: oklch(0.7049 0.1867 47.60);
 
       .chip-check-box {
-        background: #ea580c;
+        background: oklch(0.6461 0.1943 41.12);
         border-color: oklch(0.6461 0.1943 41.12);
       }
 
       .chip-code {
-        color: #c2410c;
+        color: oklch(0.52 0.16 41);
+      }
+    }
+  }
+}
+
+// ── Maßnahmenverlauf (read-only, volle Breite) ──────────────────────
+.history-panel {
+  grid-column: 1 / -1;
+
+  .history-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .history-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: $success-soft;
+    border: 1px solid $success-border;
+    font-size: 0.8rem;
+    color: $text;
+
+    .history-status-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: oklch(0.45 0.14 149);
+      flex-shrink: 0;
+    }
+
+    .history-order {
+      font-weight: 800;
+      color: $pending-text;
+      min-width: 20px;
+    }
+
+    .history-name {
+      flex: 1;
+      min-width: 0;
+      font-weight: 700;
+
+      small {
+        margin-left: 6px;
+        font-weight: 500;
+        color: $text-muted;
+      }
+    }
+
+    .history-time {
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: oklch(0.45 0.14 149);
+      white-space: nowrap;
+    }
+
+    &.open {
+      background: $pending-soft;
+      border-color: $pending-border;
+      border-style: dashed;
+
+      .history-status-icon,
+      .history-time {
+        color: $pending-text;
       }
     }
   }
