@@ -314,28 +314,6 @@
             </div>
 
             <div class="footer-right">
-              @if (saveSuccess()) {
-                <span class="save-toast-msg success">
-                  <mat-icon>check_circle</mat-icon> Änderungen erfolgreich gespeichert!
-                </span>
-              }
-
-              <button
-                type="button"
-                class="btn-save-changes"
-                [class.saved]="saveSuccess()"
-                (click)="savePostReviewProtocol()"
-                [disabled]="isSaving() || !hasUnsavedChanges()"
-                title="Aktuellen Stand des Protokolls manuell sichern"
-              >
-                @if (saveSuccess()) {
-                  <mat-icon class="rg-icon-swap">check</mat-icon>
-                } @else {
-                  <mat-icon class="rg-icon-swap">save</mat-icon>
-                }
-                <span>{{ isSaving() ? 'Speichern...' : (saveSuccess() ? 'Gespeichert' : 'Änderungen speichern') }}</span>
-              </button>
-
               <button
                 type="button"
                 class="btn-finish-dashboard"

@@ -63,8 +63,6 @@ export class EmergencyPage implements OnInit, OnDestroy {
   isPostEmergencyReview = signal<boolean>(false);
   endedEmergencyId = signal<number | null>(null);
   emergencyEndedAt = signal<Date | null>(null);
-  isSaving = signal<boolean>(false);
-  saveSuccess = signal<boolean>(false);
   hasUnsavedChanges = signal<boolean>(false);
   private initialReviewProtocolSnapshot = '';
 
@@ -304,18 +302,6 @@ export class EmergencyPage implements OnInit, OnDestroy {
 
   onReviewProtocolChanged(updated: EmergencyProtocol): void {
     this.hasUnsavedChanges.set(JSON.stringify(updated) !== this.initialReviewProtocolSnapshot);
-  }
-
-  savePostReviewProtocol() {
-    this.isSaving.set(true);
-    this.emergencyService.executeSaveProtocol();
-    setTimeout(() => {
-      this.isSaving.set(false);
-      this.initialReviewProtocolSnapshot = JSON.stringify(this.emergencyData());
-      this.hasUnsavedChanges.set(false);
-      this.saveSuccess.set(true);
-      setTimeout(() => this.saveSuccess.set(false), 3000);
-    }, 400);
   }
 
   exportPdf() {
